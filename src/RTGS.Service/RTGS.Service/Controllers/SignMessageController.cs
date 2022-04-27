@@ -26,14 +26,19 @@ public class SignMessageController : ControllerBase
 	{
 		var bankPartnerConnectionsTable = _storageTableResolver.GetTable("bankPartnerConnections");
 
-		var connectionId = bankPartnerConnectionsTable
+		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
-			.Where(x => x.PartitionKey == signMessageRequest.RtgsGlobalId)
-			.Where(x => x.RowKey == signMessageRequest.Alias)
-			.SingleOrDefault()
-			.ConnectionId;
+			.Where(bankPartnerConnection =>
+				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId &&
+				bankPartnerConnection.RowKey == signMessageRequest.Alias)
+			.ToList();
 
-		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, connectionId);
+		if (!bankPartnerConnections.Any())
+		{
+			return NotFound();
+		}
+
+		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, bankPartnerConnections.First().ConnectionId);
 
 		var signMessageResponse = new SignMessageResponse
 		{
