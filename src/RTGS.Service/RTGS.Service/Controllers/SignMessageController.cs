@@ -28,7 +28,8 @@ public class SignMessageController : ControllerBase
 
 		var connectionId = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
-			.Where(x => x.Alias == signMessageRequest.Alias)
+			.Where(x => x.PartitionKey == signMessageRequest.RtgsGlobalId)
+			.Where(x => x.RowKey == signMessageRequest.Alias)
 			.SingleOrDefault()
 			.ConnectionId;
 
@@ -36,7 +37,6 @@ public class SignMessageController : ControllerBase
 
 		var signMessageResponse = new SignMessageResponse
 		{
-			Alias = signMessageRequest.Alias,
 			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
 			PublicDidSignature = signDocumentResponse.PublicDidSignature,
 		};
