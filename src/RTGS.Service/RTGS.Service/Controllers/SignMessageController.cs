@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.Service.Dtos;
+using RTGS.Service.Models;
+using RTGS.Service.Storage;
 
 namespace RTGS.Service.Controllers;
 
@@ -8,16 +10,26 @@ namespace RTGS.Service.Controllers;
 [ApiController]
 public class SignMessageController : ControllerBase
 {
-	private IJsonSignaturesClient _jsonSignaturesClient;
+	private readonly IStorageTableResolver _storageTableResolver;
+	private readonly IJsonSignaturesClient _jsonSignaturesClient;
 
-	public SignMessageController(IJsonSignaturesClient jsonSignaturesClient)
+	public SignMessageController(
+		IStorageTableResolver storageTableResolver, 
+		IJsonSignaturesClient jsonSignaturesClient)
 	{
+		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
 	}
 
 	[HttpPost]
 	public IActionResult Post(SignMessageRequest signMessageRequest)
 	{
+		var bankPartnerConnectionsTable = _storageTableResolver.GetTable("bankPartnerConnections");
+
+		var x = bankPartnerConnectionsTable
+			.Query<BankPartnerConnection>()
+			.Where(x => x.Alias == signMessageRequest.Alias);
+
 		return Ok();
 	}
 }
