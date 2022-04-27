@@ -14,12 +14,16 @@ public class StorageTableResolver : IStorageTableResolver
 	public TableClient GetTable(string tableName)
 	{
 		if (string.IsNullOrWhiteSpace(tableName))
+		{
 			throw new ArgumentException("Value cannot be null or whitespace.", nameof(tableName));
+		}
 
 		var connectionString = _configuration.GetValue<string>("AzureWebJobsStorage");
 
 		if (string.IsNullOrWhiteSpace(connectionString))
+		{
 			throw new InvalidOperationException("AzureWebJobsStorage connection string not in configuration");
+		}
 
 		var tableclient = new TableClient(connectionString, tableName);
 
