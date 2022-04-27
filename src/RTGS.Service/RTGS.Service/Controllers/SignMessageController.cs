@@ -14,7 +14,7 @@ public class SignMessageController : ControllerBase
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
 
 	public SignMessageController(
-		IStorageTableResolver storageTableResolver, 
+		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient)
 	{
 		_storageTableResolver = storageTableResolver;
@@ -22,14 +22,25 @@ public class SignMessageController : ControllerBase
 	}
 
 	[HttpPost]
-	public IActionResult Post(SignMessageRequest signMessageRequest)
+	public async Task<IActionResult> Post(SignMessageRequest signMessageRequest)
 	{
 		var bankPartnerConnectionsTable = _storageTableResolver.GetTable("bankPartnerConnections");
 
-		var x = bankPartnerConnectionsTable
+		var connectionId = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
-			.Where(x => x.Alias == signMessageRequest.Alias);
+			.Where(x => x.Alias == signMessageRequest.Alias)
+			.SingleOrDefault()
+			.ConnectionId;
 
-		return Ok();
+		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, connectionId);
+
+		var signMessageResponse = new SignMessageResponse
+		{
+			Alias = signMessageRequest.Alias,
+			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
+			PublicDidSignature = signDocumentResponse.PublicDidSignature,
+		};
+
+		return Ok(signMessageResponse);
 	}
 }
