@@ -11,6 +11,7 @@ using RTGS.Service.Controllers;
 using RTGS.Service.Dtos;
 using RTGS.Service.Models;
 using RTGS.Service.Storage;
+using RTGS.Service.Tests.Logging;
 using Xunit;
 
 namespace RTGS.Service.Tests.Controllers.SignMessageControllerTests;
@@ -86,7 +87,10 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 			.Setup(storageTableResolver => storageTableResolver.GetTable("bankPartnerConnections"))
 			.Returns(tableClient.Object);
 
+		var logger = new FakeLogger<SignMessageController>();
+
 		_controller = new SignMessageController(
+			logger,
 			storageTableResolver.Object,
 			_jsonSignaturesClientMock.Object);
 	}

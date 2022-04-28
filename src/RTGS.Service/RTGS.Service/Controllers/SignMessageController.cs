@@ -10,13 +10,16 @@ namespace RTGS.Service.Controllers;
 [ApiController]
 public class SignMessageController : ControllerBase
 {
+	private readonly ILogger<SignMessageController> _logger;
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
 
 	public SignMessageController(
+		ILogger<SignMessageController> logger,
 		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient)
 	{
+		_logger = logger;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
 	}
@@ -35,7 +38,24 @@ public class SignMessageController : ControllerBase
 
 		if (!bankPartnerConnections.Any())
 		{
+			_logger.LogError(
+				"No bank partner connection found for alias {Alias} and RTGS Global ID {RtgsGlobalId}",
+				signMessageRequest.Alias,
+				signMessageRequest.RtgsGlobalId);
+
 			return NotFound();
+		}
+
+		if (bankPartnerConnections.Count > 1)
+		{
+			_logger.LogError(
+				"More than one bank partner connection found for alias {Alias} and RTGS Global ID {RtgsGlobalId}",
+				signMessageRequest.Alias,
+				signMessageRequest.RtgsGlobalId);
+
+			return StatusCode(
+				StatusCodes.Status500InternalServerError,
+				"More than one bank partner connection found for given alias and RTGS Global ID");
 		}
 
 		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, bankPartnerConnections.First().ConnectionId);

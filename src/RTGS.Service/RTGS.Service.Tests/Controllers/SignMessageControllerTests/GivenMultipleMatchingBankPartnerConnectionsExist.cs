@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Data.Tables;
 using FluentAssertions;
+using FluentAssertions.Execution;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -16,7 +18,7 @@ using Xunit;
 
 namespace RTGS.Service.Tests.Controllers.SignMessageControllerTests;
 
-public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class GivenMultipleMatchingBankPartnerConnectionsExist : IAsyncLifetime
 {
 	private readonly FakeLogger<SignMessageController> _logger;
 	private readonly SignMessageController _controller;
@@ -24,7 +26,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
-	public GivenNoMatchingBankPartnerConnectionExists()
+	public GivenMultipleMatchingBankPartnerConnectionsExist()
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
@@ -33,21 +35,21 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 			RtgsGlobalId = "rtgs-global-id"
 		};
 
-		var nonMatchingBankPartnerConnection1 = new BankPartnerConnection
+		var matchingBankPartnerConnection1 = new BankPartnerConnection
 		{
-			PartitionKey = "rtgs-global-id-1",
-			RowKey = "alias-1",
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias",
 			ConnectionId = "connection-id-1"
 		};
 
-		var nonMatchingBankPartnerConnection2 = new BankPartnerConnection
+		var matchingBankPartnerConnection2 = new BankPartnerConnection
 		{
-			PartitionKey = "rtgs-global-id-2",
-			RowKey = "alias-2",
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias",
 			ConnectionId = "connection-id-2"
 		};
 
-		var nonMatchingBankPartnerConnection3 = new BankPartnerConnection
+		var nonMatchingBankPartnerConnection = new BankPartnerConnection
 		{
 			PartitionKey = "rtgs-global-id-3",
 			RowKey = "alias-3",
@@ -62,9 +64,9 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 		bankPartnerConnections.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
 			new List<BankPartnerConnection>
 			{
-				nonMatchingBankPartnerConnection1,
-				nonMatchingBankPartnerConnection2,
-				nonMatchingBankPartnerConnection3
+				matchingBankPartnerConnection1,
+				matchingBankPartnerConnection2,
+				nonMatchingBankPartnerConnection
 			}
 			.GetEnumerator());
 
@@ -96,13 +98,19 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 			client.SignJsonDocumentAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 
 	[Fact]
-	public void WhenPostingSignMessageRequest_ThenReturnNotFoundResponse() =>
-		_response.Should().BeOfType<NotFoundResult>();
+	public void WhenPostingSignMessageRequest_ThenReturnInternalServerErrorResponse()
+	{
+		using var _ = new AssertionScope();
+
+		_response.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+		_response.Should().BeOfType<ObjectResult>().Which.Value.Should().BeEquivalentTo("More than one bank partner connection found for given alias and RTGS Global ID");
+	}
 
 	[Fact]
 	public void WhenPostingSignMessageRequest_ThenLog() =>
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				$"No bank partner connection found for alias {_signMessageRequest.Alias} and RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
+				$"More than one bank partner connection found for alias {_signMessageRequest.Alias} and RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
 			});
 }
+

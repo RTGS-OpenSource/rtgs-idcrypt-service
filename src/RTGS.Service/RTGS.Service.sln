@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32002.185
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.Service", "RTGS.Service\RTGS.Service.csproj", "{4644C316-64D1-42A3-867F-7F6D45B25703}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.Service", "RTGS.Service\RTGS.Service.csproj", "{4644C316-64D1-42A3-867F-7F6D45B25703}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.Service.Tests", "RTGS.Service.Tests\RTGS.Service.Tests.csproj", "{7661B70D-2788-4A1D-9B36-7B7BA6CAD03C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.Service.Tests", "RTGS.Service.Tests\RTGS.Service.Tests.csproj", "{7661B70D-2788-4A1D-9B36-7B7BA6CAD03C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B60E7E07-8E30-485B-A971-AB3E649B338A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code", "Code", "{D9A7FD22-6BCC-4FC8-88A0-2873D4203F6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.Service.IntegrationTests", "RTGS.Service.IntegrationTests\RTGS.Service.IntegrationTests.csproj", "{BE31246D-9A8A-48E4-A4E7-ABABA078DD3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +27,10 @@ Global
 		{7661B70D-2788-4A1D-9B36-7B7BA6CAD03C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7661B70D-2788-4A1D-9B36-7B7BA6CAD03C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7661B70D-2788-4A1D-9B36-7B7BA6CAD03C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE31246D-9A8A-48E4-A4E7-ABABA078DD3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE31246D-9A8A-48E4-A4E7-ABABA078DD3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE31246D-9A8A-48E4-A4E7-ABABA078DD3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE31246D-9A8A-48E4-A4E7-ABABA078DD3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4644C316-64D1-42A3-867F-7F6D45B25703} = {D9A7FD22-6BCC-4FC8-88A0-2873D4203F6B}
 		{7661B70D-2788-4A1D-9B36-7B7BA6CAD03C} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
+		{BE31246D-9A8A-48E4-A4E7-ABABA078DD3C} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {072139B7-F9CE-4CC0-A335-02CF53AFB43B}
