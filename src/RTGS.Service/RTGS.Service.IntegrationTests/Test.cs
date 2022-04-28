@@ -3,20 +3,26 @@ using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using RTGS.Service.Dtos;
+using RTGS.Service.IntegrationTests.Fixture;
 using Xunit;
 
 namespace RTGS.Service.IntegrationTests;
 
-public class Test
+[Collection("TestCollection")]
+public class Test 
 {
+	private readonly TestFixture _testFixture;
+
+	public Test(TestFixture testFixture)
+	{
+		_testFixture = testFixture;
+	}
+
 	[Fact]
 	public async Task HelloWorldTest()
 	{
-		var application = new MyWebApplicationFactory();
+		var application = new TestWebApplicationFactory(_testFixture);
 
 		var client = application.CreateClient();
 
@@ -33,23 +39,5 @@ public class Test
 				JsonSerializer.Serialize(signMessageRequest),
 				Encoding.UTF8,
 				MediaTypeNames.Application.Json));
-	}
-
-	private class MyWebApplicationFactory : WebApplicationFactory<Program>
-	{
-		protected override IHost CreateHost(IHostBuilder builder)
-		{
-			builder.ConfigureHostConfiguration(config =>
-			{
-				var jsonTestConfig = new ConfigurationBuilder()
-						.AddJsonFile("testsettings.json")
-						.AddEnvironmentVariables()
-						.Build();
-
-				config.AddConfiguration(jsonTestConfig);
-			});
-
-			return base.CreateHost(builder);
-		}
 	}
 }

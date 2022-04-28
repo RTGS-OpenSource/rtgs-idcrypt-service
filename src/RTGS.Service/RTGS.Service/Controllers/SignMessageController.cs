@@ -13,8 +13,10 @@ public class SignMessageController : ControllerBase
 	private readonly ILogger<SignMessageController> _logger;
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
+	private readonly string _bankPartnerConnectionsTableName;
 
 	public SignMessageController(
+		IConfiguration configuration,
 		ILogger<SignMessageController> logger,
 		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient)
@@ -22,12 +24,14 @@ public class SignMessageController : ControllerBase
 		_logger = logger;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
+
+		_bankPartnerConnectionsTableName = configuration["BankPartnerConnectionsTableName"];
 	}
 
 	[HttpPost]
 	public async Task<IActionResult> Post(SignMessageRequest signMessageRequest)
 	{
-		var bankPartnerConnectionsTable = _storageTableResolver.GetTable("bankPartnerConnections");
+		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()

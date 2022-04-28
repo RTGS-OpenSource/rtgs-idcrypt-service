@@ -6,12 +6,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddTransient<IStorageTableResolver, StorageTableResolver>();
+builder.Services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 
 builder.Services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 	new Uri(builder.Configuration["AgentApiAddress"]),
 	builder.Configuration["AgentApiKey"],
 	new Uri(builder.Configuration["AgentServiceEndpointAddress"])));
+
+builder.Configuration.AddInMemoryCollection(new[]
+{
+	new KeyValuePair<string, string>("BankPartnerConnectionsTableName", "BankPartnerConnections")
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
