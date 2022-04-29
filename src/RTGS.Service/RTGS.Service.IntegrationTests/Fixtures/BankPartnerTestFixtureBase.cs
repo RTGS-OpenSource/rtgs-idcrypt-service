@@ -8,11 +8,11 @@ using RTGS.Service.Storage;
 
 namespace RTGS.Service.IntegrationTests.Fixtures;
 
-public abstract class TableStorageTestFixture
+public abstract class BankPartnerTestFixtureBase
 {
 	private TableClient _bankPartnerConnectionsTable;
 
-	public TableStorageTestFixture()
+	public BankPartnerTestFixtureBase()
 	{
 		LoadConfig();
 		CreateTable();

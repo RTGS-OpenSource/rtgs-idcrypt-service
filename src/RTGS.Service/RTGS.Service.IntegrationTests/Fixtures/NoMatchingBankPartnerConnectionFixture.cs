@@ -3,7 +3,7 @@ using RTGS.Service.Contracts.SignMessage;
 
 namespace RTGS.Service.IntegrationTests.Fixtures;
 
-public class NoMatchingBankPartnerConnectionFixture : TableStorageTestFixture
+public class NoMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
 	public static SignMessageRequest SignMessageRequest => new()
 	{

@@ -9,9 +9,9 @@ namespace RTGS.Service.IntegrationTests;
 
 public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
-	private readonly TableStorageTestFixture _testFixture;
+	private readonly BankPartnerTestFixtureBase _testFixture;
 
-	public TestWebApplicationFactory(TableStorageTestFixture testFixture)
+	public TestWebApplicationFactory(BankPartnerTestFixtureBase testFixture)
 	{
 		_testFixture = testFixture;
 	}

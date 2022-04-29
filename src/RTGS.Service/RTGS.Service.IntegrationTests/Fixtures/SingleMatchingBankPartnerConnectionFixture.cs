@@ -5,7 +5,7 @@ using RTGS.Service.Models;
 
 namespace RTGS.Service.IntegrationTests.Fixtures;
 
-public class SingleMatchingBankPartnerConnectionFixture : TableStorageTestFixture
+public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
 	public List<BankPartnerConnection> BankPartnerConnections = new()
 	{
