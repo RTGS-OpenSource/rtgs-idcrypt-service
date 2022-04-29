@@ -1,59 +1,55 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using RTGS.Service.Dtos;
+using FluentAssertions;
+using RTGS.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.Service.IntegrationTests.Fixtures;
+using RTGS.Service.IntegrationTests.Helpers;
 using Xunit;
 
 namespace RTGS.Service.IntegrationTests.Controllers.SignMessageController;
 
-public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<TestFixture>
+public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
+	private readonly NoMatchingBankPartnerConnectionFixture _testFixture;
+	private HttpResponseMessage _httpResponse;
 
-	public GivenNoMatchingBankPartnerConnectionExists(TestFixture testFixture)
+	public GivenNoMatchingBankPartnerConnectionExists(NoMatchingBankPartnerConnectionFixture testFixture)
 	{
+		_testFixture = testFixture;
+
+		_testFixture.IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
+			.Create()
+			.WithOkResponse(SignDocument.HttpRequestResponseContext)
+			.Build();
+
 		var application = new TestWebApplicationFactory(testFixture);
 
 		_client = application.CreateClient();
 	}
 
-	[Fact]
-	public async Task TestTest()
+	public async Task InitializeAsync()
 	{
-	
-		var signMessageRequest = new SignMessageRequest
-		{
-			Alias = "alias",
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
-		};
-
-		var response = await _client.PostAsync(
+		_httpResponse = await _client.PostAsync(
 			"api/signmessage",
 			new StringContent(
-				JsonSerializer.Serialize(signMessageRequest),
+				JsonSerializer.Serialize(NoMatchingBankPartnerConnectionFixture.SignMessageRequest),
 				Encoding.UTF8,
 				MediaTypeNames.Application.Json));
 	}
 
-	[Fact]
-	public async Task TestTestTest()
-	{
-		var signMessageRequest = new SignMessageRequest
-		{
-			Alias = "alias",
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
-		};
+	public Task DisposeAsync() =>
+		Task.CompletedTask;
 
-		var response = await _client.PostAsync(
-			"api/signmessage",
-			new StringContent(
-				JsonSerializer.Serialize(signMessageRequest),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
-	}
+	[Fact]
+	public void ThenIdCryptAgentIsNotCalled() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(SignDocument.Path);
+
+	[Fact]
+	public void ThenNotFoundResponseReceived() =>
+		_httpResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
 }

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.Service.Config;
-using RTGS.Service.Dtos;
+using RTGS.Service.Contracts.SignMessage;
 using RTGS.Service.Models;
 using RTGS.Service.Storage;
 
@@ -51,24 +51,15 @@ public class SignMessageController : ControllerBase
 			return NotFound();
 		}
 
-		if (bankPartnerConnections.Count > 1)
-		{
-			_logger.LogError(
-				"More than one bank partner connection found for alias {Alias} and RTGS Global ID {RtgsGlobalId}",
-				signMessageRequest.Alias,
-				signMessageRequest.RtgsGlobalId);
+		var bankPartnerConnection = bankPartnerConnections.First();
 
-			return StatusCode(
-				StatusCodes.Status500InternalServerError,
-				"More than one bank partner connection found for given alias and RTGS Global ID");
-		}
-
-		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, bankPartnerConnections.First().ConnectionId);
+		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, bankPartnerConnection.ConnectionId);
 
 		var signMessageResponse = new SignMessageResponse
 		{
 			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
 			PublicDidSignature = signDocumentResponse.PublicDidSignature,
+			Alias = bankPartnerConnection.Alias
 		};
 
 		return Ok(signMessageResponse);

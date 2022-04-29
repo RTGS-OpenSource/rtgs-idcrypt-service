@@ -1,23 +1,36 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using RTGS.Service.Dtos;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using RTGS.Service.Contracts.SignMessage;
+using RTGS.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.Service.IntegrationTests.Fixtures;
-using RTGS.Service.Models;
+using RTGS.Service.IntegrationTests.Helpers;
 using Xunit;
 
 namespace RTGS.Service.IntegrationTests.Controllers.SignMessageController;
 
-public class GivenMatchingBankPartnerConnectionExists : IClassFixture<TestFixture>, IAsyncLifetime
+public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly TestFixture _testFixture;
+	private readonly SingleMatchingBankPartnerConnectionFixture _testFixture;
+	private HttpResponseMessage _httpResponse;
 
-	public GivenMatchingBankPartnerConnectionExists(TestFixture testFixture)
+	public GivenMatchingBankPartnerConnectionExists(SingleMatchingBankPartnerConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
+
+		_testFixture.IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
+			.Create()
+			.WithOkResponse(SignDocument.HttpRequestResponseContext)
+			.Build();
 
 		var application = new TestWebApplicationFactory(testFixture);
 
@@ -26,53 +39,56 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<TestFixtur
 
 	public async Task InitializeAsync()
 	{
-		var bankPartnerConnection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
-			ConnectionId = "connection-id"
-		};
-
-		await _testFixture.InsertBankPartnerConnectionAsync(bankPartnerConnection);
+		_httpResponse = await _client.PostAsync(
+			"api/signmessage",
+			new StringContent(
+				JsonSerializer.Serialize(SingleMatchingBankPartnerConnectionFixture.SignMessageRequest),
+				Encoding.UTF8,
+				MediaTypeNames.Application.Json));
 	}
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
 
 	[Fact]
-	public async Task TestTest()
+	public void WhenCallingIdCryptAgent_ThenBaseAddressIsExpected() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single()
+			.RequestUri!.GetLeftPart(UriPartial.Authority)
+			.Should().Be(_testFixture.Configuration["AgentApiAddress"]);
+
+	[Fact]
+	public void WhenCallingIdCryptAgent_ThenExpectedPathsAreCalled() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKey("/json-signatures/sign");
+
+	[Fact]
+	public async Task WhenCallingIdCryptAgent_ThenBodyIsExpected()
 	{
+		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single().Content!.ReadAsStringAsync();
 
-		var signMessageRequest = new SignMessageRequest
-		{
-			Alias = "alias",
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
-		};
-
-		var response = await _client.PostAsync(
-			"api/signmessage",
-			new StringContent(
-				JsonSerializer.Serialize(signMessageRequest),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
+		content.Should().BeEquivalentTo(@"{""connection_id"":""connection-id"",""document"":{""Message"":""I am the walrus""}}");
 	}
 
 	[Fact]
-	public async Task TestTestTest()
+	public void WhenCallingIdCryptAgent_ThenApiKeyHeadersAreExpected() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single()
+			.Headers.GetValues("X-API-Key")
+			.Should().ContainSingle()
+			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
+
+	[Fact]
+	public async Task ThenReturnOkWithSignMessageResponse()
 	{
-		var signMessageRequest = new SignMessageRequest
+		using var _ = new AssertionScope();
+
+		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+		var actualResponse = await _httpResponse.Content.ReadFromJsonAsync<SignMessageResponse>();
+
+		actualResponse.Should().BeEquivalentTo(new SignMessageResponse
 		{
 			Alias = "alias",
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
-		};
-
-		var response = await _client.PostAsync(
-			"api/signmessage",
-			new StringContent(
-				JsonSerializer.Serialize(signMessageRequest),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
+			PairwiseDidSignature = SignDocument.ExpectedResponse.PairwiseDidSignature,
+			PublicDidSignature = SignDocument.ExpectedResponse.PublicDidSignature
+		});
 	}
 }
