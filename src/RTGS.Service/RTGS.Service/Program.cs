@@ -13,15 +13,12 @@ builder.Services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 	builder.Configuration["AgentApiKey"],
 	new Uri(builder.Configuration["AgentServiceEndpointAddress"])));
 
-builder.Configuration.AddInMemoryCollection(new[]
-{
-	new KeyValuePair<string, string>("BankPartnerConnectionsTableName", "BankPartnerConnections")
-});
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<Tabnle>
 
 var app = builder.Build();
 

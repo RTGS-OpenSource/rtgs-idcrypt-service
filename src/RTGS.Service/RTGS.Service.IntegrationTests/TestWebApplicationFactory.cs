@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using RTGS.Service.IntegrationTests.Fixture;
-using RTGS.Service.Storage;
+using RTGS.Service.IntegrationTests.Fixtures;
 
 namespace RTGS.Service.IntegrationTests;
 
@@ -23,7 +22,10 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
 			var jsonTestConfig = new ConfigurationBuilder()
 				.AddJsonFile("testsettings.json")
 				.AddEnvironmentVariables()
-				.AddConfiguration(_testFixture.Config)
+				.AddInMemoryCollection(new[]
+				{
+					new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _testFixture.BankPartnerConnectionsTableName)
+				})
 				.Build();
 
 			config.AddConfiguration(jsonTestConfig);

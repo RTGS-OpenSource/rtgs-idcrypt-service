@@ -9,11 +9,11 @@ using Xunit;
 
 namespace RTGS.Service.IntegrationTests.Controllers.SignMessageController;
 
-public class GivenMatchingBankPartnerConnectionExists : IClassFixture<TestFixture>
+public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<TestFixture>
 {
 	private readonly HttpClient _client;
 
-	public GivenMatchingBankPartnerConnectionExists(TestFixture testFixture)
+	public GivenNoMatchingBankPartnerConnectionExists(TestFixture testFixture)
 	{
 		var application = new TestWebApplicationFactory(testFixture);
 
@@ -23,7 +23,7 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<TestFixtur
 	[Fact]
 	public async Task TestTest()
 	{
-
+	
 		var signMessageRequest = new SignMessageRequest
 		{
 			Alias = "alias",
