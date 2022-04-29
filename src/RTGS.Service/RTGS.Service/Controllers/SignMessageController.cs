@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using RTGS.IDCryptSDK.JsonSignatures;
+using RTGS.Service.Config;
 using RTGS.Service.Dtos;
 using RTGS.Service.Models;
 using RTGS.Service.Storage;
@@ -11,27 +13,26 @@ namespace RTGS.Service.Controllers;
 public class SignMessageController : ControllerBase
 {
 	private readonly ILogger<SignMessageController> _logger;
+	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
-	private readonly string _bankPartnerConnectionsTableName;
 
 	public SignMessageController(
-		IConfiguration configuration,
 		ILogger<SignMessageController> logger,
+		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsConfig,
 		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient)
 	{
 		_logger = logger;
+		_bankPartnerConnectionsConfig = bankPartnerConnectionsConfig.Value;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
-
-		_bankPartnerConnectionsTableName = configuration["BankPartnerConnectionsTableName"];
 	}
 
 	[HttpPost]
 	public async Task<IActionResult> Post(SignMessageRequest signMessageRequest)
 	{
-		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
+		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()

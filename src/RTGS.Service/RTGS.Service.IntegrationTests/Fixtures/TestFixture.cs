@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Configuration;
+using RTGS.Service.Models;
 using RTGS.Service.Storage;
 
 namespace RTGS.Service.IntegrationTests.Fixtures;
@@ -25,13 +27,11 @@ public class TestFixture
 			.AddJsonFile("testsettings.json")
 			.Build();
 
-		var _torageTableResolver = new StorageTableResolver(_config);
+		var storageTableResolver = new StorageTableResolver(_config);
 
-		_bankPartnerConnectionsTable = _torageTableResolver.GetTable(BankPartnerConnectionsTableName);
+		_bankPartnerConnectionsTable = storageTableResolver.GetTable(BankPartnerConnectionsTableName);
 	}
 
-	public void InsertBankPartnerConnection()
-	{
-		
-	}
+	public async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
+		await _bankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
 }

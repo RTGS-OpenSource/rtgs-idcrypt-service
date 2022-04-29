@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using Azure.Data.Tables;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
+using RTGS.Service.Config;
 using RTGS.Service.Controllers;
 using RTGS.Service.Dtos;
 using RTGS.Service.Models;
@@ -89,8 +91,14 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 		var logger = new FakeLogger<SignMessageController>();
 
+		var options = Options.Create(new BankPartnerConnectionsConfig
+		{
+			BankPartnerConnectionsTableName = "bankPartnerConnections"
+		});
+
 		_controller = new SignMessageController(
 			logger,
+			options,
 			storageTableResolver.Object,
 			_jsonSignaturesClientMock.Object);
 	}

@@ -1,5 +1,6 @@
 using RTGS.IDCryptSDK;
 using RTGS.IDCryptSDK.Extensions;
+using RTGS.Service.Config;
 using RTGS.Service.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<Tabnle>
+builder.Services.Configure<BankPartnerConnectionsConfig>(builder.Configuration);
 
 var app = builder.Build();
 

@@ -7,8 +7,10 @@ using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCryptSDK.JsonSignatures;
+using RTGS.Service.Config;
 using RTGS.Service.Controllers;
 using RTGS.Service.Dtos;
 using RTGS.Service.Models;
@@ -80,8 +82,14 @@ public class GivenMultipleMatchingBankPartnerConnectionsExist : IAsyncLifetime
 
 		_logger = new FakeLogger<SignMessageController>();
 
+		var options = Options.Create(new BankPartnerConnectionsConfig
+		{
+			BankPartnerConnectionsTableName = "bankPartnerConnections"
+		});
+
 		_controller = new SignMessageController(
 			_logger,
+			options,
 			storageTableResolver.Object,
 			_jsonSignaturesClientMock.Object);
 	}
