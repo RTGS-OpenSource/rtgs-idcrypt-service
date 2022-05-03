@@ -1,0 +1,19 @@
+# directories
+**/bin/
+**/obj/
+**/out/
+**/node_modules/
+
+# files
+Dockerfile*
+**/*.trx
+**/*.md
+**/*.ps1
+**/*.cmd
+**/*.sh
+
+# ignore .git and .cache folders
+.git
+.cache
+.idea
+.vs
