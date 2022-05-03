@@ -1,0 +1,89 @@
+name: build-and-deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  DOCKER_HUB_ORGANISATION: rtgsglobal
+
+jobs:
+  
+  build:
+    name: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build & run tests
+        run: docker build src --target build
+  publish-to-docker-dev:
+    name: publish-to-docker-dev
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: build
+    env:
+      DOCKER_HUB_REPO: bank-simulator-dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}
+      - name: Docker Login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2
+        with:
+          context: src
+          push: true
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:${{ github.run_number }}
+  trigger-devops-pipeline:
+    name: trigger-devops-pipeline
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs: publish-to-docker-dev
+    steps:
+      - name: Azure Pipelines Action
+        # The following does need to be 1.2 (or later) otherwise the azure-pipeline-variables are not passed to the pipeline.
+        uses: Azure/pipelines@v1.2
+        with:
+          azure-devops-project-url: ${{ secrets.AZURE_DEVOPS_PROJECT_URL }}
+          azure-pipeline-name: ${{ secrets.AZURE_DEVOPS_SIMULATOR_DEPLOYMENT_PIPELINE_V2 }}
+          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+          azure-pipeline-variables: '{"SimulatorVersion": "${{ github.run_number }}"}'
+  publish-to-docker-release:
+    name: publish-to-docker-release
+    if: github.event_name == 'release'
+    needs: build
+    env:
+      DOCKER_HUB_REPO: bank-simulator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}
+      - name: Docker Login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.9.0
+        with:
+          context: src
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          target: final
