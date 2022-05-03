@@ -12,7 +12,6 @@ using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
-using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using Xunit;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController;
@@ -27,14 +26,9 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	{
 		_testFixture = testFixture;
 
-		_testFixture.IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
-			.Create()
-			.WithOkResponse(SignDocument.HttpRequestResponseContext)
-			.Build();
+		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
-		var application = new TestWebApplicationFactory(testFixture);
-
-		_client = application.CreateClient();
+		_client = testFixture.CreateClient();
 	}
 
 	public async Task InitializeAsync()

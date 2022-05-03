@@ -1,15 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
+	public SingleMatchingBankPartnerConnectionFixture()
+	{
+		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
+			.Create()
+			.WithOkResponse(SignDocument.HttpRequestResponseContext)
+			.Build();
+	}
+
 	public List<BankPartnerConnection> BankPartnerConnections = new()
 	{
-		new() {
+		new() 
+		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
 			ConnectionId = "connection-id",

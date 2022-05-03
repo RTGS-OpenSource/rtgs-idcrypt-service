@@ -40,6 +40,9 @@ public class StatusCodeHttpHandler : DelegatingHandler
 		return Task.FromResult(response);
 	}
 
+	public void Reset() =>
+		Requests.Clear();
+
 	public sealed class Builder
 	{
 		private Dictionary<string, MockHttpResponse> Responses { get; } = new();
