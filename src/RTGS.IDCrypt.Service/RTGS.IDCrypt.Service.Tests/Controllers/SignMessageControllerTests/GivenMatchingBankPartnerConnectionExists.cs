@@ -30,7 +30,6 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
-			Alias = "alias",
 			Message = "message",
 			RtgsGlobalId = "rtgs-global-id"
 		};

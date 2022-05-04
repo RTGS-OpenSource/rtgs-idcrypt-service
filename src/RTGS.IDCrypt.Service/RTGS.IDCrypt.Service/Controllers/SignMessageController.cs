@@ -37,15 +37,13 @@ public class SignMessageController : ControllerBase
 		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
 			.Where(bankPartnerConnection =>
-				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId &&
-				bankPartnerConnection.RowKey == signMessageRequest.Alias)
+				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId)
 			.ToList();
 
 		if (!bankPartnerConnections.Any())
 		{
 			_logger.LogError(
-				"No bank partner connection found for alias {Alias} and RTGS Global ID {RtgsGlobalId}",
-				signMessageRequest.Alias,
+				"No bank partner connection found for RTGS Global ID {RtgsGlobalId}",
 				signMessageRequest.RtgsGlobalId);
 
 			return NotFound();

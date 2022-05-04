@@ -13,7 +13,6 @@ public class ThrowingFixture : WebApplicationFactory<Program>
 {
 	public static SignMessageRequest SignMessageRequest => new()
 	{
-		Alias = "alias",
 		RtgsGlobalId = "rtgs-global-id",
 		Message = @"{ ""Message"": ""I am the walrus"" }"
 	};

@@ -1,5 +1,5 @@
 {
-	"AzureWebJobsStorage": "UseDevelopmentStorage=true",
+	"StorageConnection": "UseDevelopmentStorage=true",
 	"AgentApiAddress": "http://localhost",
 	"AgentApiKey": "AgentApiKey",
 	"AgentServiceEndpointAddress": "http://localhost"

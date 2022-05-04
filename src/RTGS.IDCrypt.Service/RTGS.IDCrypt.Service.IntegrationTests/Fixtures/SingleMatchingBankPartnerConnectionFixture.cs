@@ -24,7 +24,6 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
 			ConnectionId = "connection-id",
-			RtgsGlobalId = "rtgs-global-id",
 			Alias = "alias"
 		},
 		new()
@@ -32,14 +31,12 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 			PartitionKey = "rtgs-global-id-1",
 			RowKey = "alias",
 			ConnectionId = "connection-id-1",
-			RtgsGlobalId = "rtgs-global-id",
 			Alias = "alias"
 		}
 	};
 
 	public static SignMessageRequest SignMessageRequest => new()
 	{
-		Alias = "alias",
 		RtgsGlobalId = "rtgs-global-id",
 		Message = @"{ ""Message"": ""I am the walrus"" }"
 	};

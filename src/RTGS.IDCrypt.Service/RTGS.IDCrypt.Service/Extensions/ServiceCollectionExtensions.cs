@@ -36,6 +36,8 @@ public static class ServiceCollectionExtensions
 
 		services.AddApplicationInsightsTelemetry();
 
+		services.AddHealthChecks();
+
 		services.AddControllers();
 	}
 }

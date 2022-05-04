@@ -17,7 +17,6 @@ public class NoMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 
 	public static SignMessageRequest SignMessageRequest => new()
 	{
-		Alias = "alias",
 		RtgsGlobalId = "rtgs-global-id",
 		Message = @"{ ""Message"": ""I am the walrus"" }"
 	};

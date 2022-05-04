@@ -30,7 +30,6 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
-			Alias = "alias",
 			Message = "message",
 			RtgsGlobalId = "rtgs-global-id"
 		};
@@ -111,6 +110,6 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	public void WhenPostingSignMessageRequest_ThenLog() =>
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				$"No bank partner connection found for alias {_signMessageRequest.Alias} and RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
+				$"No bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
 			});
 }

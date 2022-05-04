@@ -51,6 +51,8 @@ app.UseExceptionHandler(errorApp =>
 	});
 });
 
+app.MapHealthChecks("/healthz");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
