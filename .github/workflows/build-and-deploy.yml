@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run Azurite Table Storage
-        run: docker run --name azurite -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite-table --tableHost 0.0.0.0 --tablePort 10002
+        run: docker run --name azurite -d -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite-table --tableHost 0.0.0.0 --tablePort 10002
       - name: Build & run tests
         run: docker build src/RTGS.IDCrypt.Service --target build --network=host
       - name: Remove Azurite Table Storage
