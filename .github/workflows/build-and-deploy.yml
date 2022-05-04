@@ -9,6 +9,9 @@ on:
     types: [published]
   workflow_dispatch:
 
+env:
+  DOCKER_HUB_ORGANISATION: rtgsglobal
+
 jobs:
   build:
     name: build-image
@@ -21,3 +24,28 @@ jobs:
         run: docker build src/RTGS.IDCrypt.Service --target build --network=host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
+  publish-to-docker-dev:
+    name: publish-to-docker-dev
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: build
+    env:
+      DOCKER_HUB_REPO: rtgs-idcrypt-service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}
+      - name: Docker Login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2
+        with:
+          context: src/RTGS.IDCrypt.Service
+          push: true
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:${{ github.run_number }}
