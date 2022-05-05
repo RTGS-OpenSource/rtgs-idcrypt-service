@@ -27,16 +27,16 @@ spec:
           - name: single-request-reopen
       containers:
         - name: rtgs-idcrypt-service
-          image: #{DockerRegistryUrl}#/#{repository}#:#{tag}#
+          image: #{PublicDockerRegistryUrl}#/#{repository}#:#{tag}#
           env:
             - name: StorageConnection
-              value: #{{BankStorageConnection#{bankName}#}}#
+              value: #{{BankStorageConnection#{bank}#}}#
             - name: AgentApiAddress
-              value: https://#{bankName}#-#{environment}#-idcrypt.internal.rtgs.global
+              value: https://#{bank}#-#{environment}#-idcrypt.internal.rtgs.global
             - name: AgentApiKey
-              value: #{{IdCryptAgentAdminApiKey#{bankName}#}}#
+              value: #{{IdCryptAgentAdminApiKey#{bank_upper}#}}#
             - name: AgentServiceEndpointAddress
-              value: https://#{bankName}#-#{environment}#-idcrypt.rtgs.global
+              value: https://#{bank}#-#{environment}#-idcrypt.rtgs.global
           livenessProbe:
             httpGet:
               path: /healthz
