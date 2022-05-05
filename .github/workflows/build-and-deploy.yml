@@ -51,5 +51,6 @@ jobs:
           context: src/RTGS.IDCrypt.Service
           push: true
           tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:${{ github.run_number }}
+          network: host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
