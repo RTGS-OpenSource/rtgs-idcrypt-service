@@ -30,16 +30,32 @@ public class ConnectionController : ControllerBase
 		const bool multiUse = false;
 		const bool usePublicDid = false;
 
-		await _connectionsClient.CreateInvitationAsync(
+		var createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
 			alias,
 			autoAccept,
 			multiUse,
 			usePublicDid,
 			cancellationToken);
 
-		await _walletClient.GetPublicDidAsync(cancellationToken);
+		var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
 
-		var response = new CreateConnectionInvitationResponse();
+		var response = new CreateConnectionInvitationResponse
+		{
+			ConnectionId = createInvitationResponse.ConnectionId,
+			Alias = alias,
+			AgentPublicDid = publicDid,
+			InvitationUrl = createInvitationResponse.InvitationUrl,
+			Invitation = new ConnectionInvitation
+			{
+				Did = createInvitationResponse.Invitation.Did,
+				Id = createInvitationResponse.Invitation.Id,
+				ImageUrl = createInvitationResponse.Invitation.ImageUrl,
+				Label = createInvitationResponse.Invitation.Label,
+				RecipientKeys = createInvitationResponse.Invitation.RecipientKeys,
+				ServiceEndpoint = createInvitationResponse.Invitation.ServiceEndpoint,
+				Type = createInvitationResponse.Invitation.Type
+			}
+		};
 
 		return Ok(response);
 	}

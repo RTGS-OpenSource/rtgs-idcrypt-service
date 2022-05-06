@@ -93,6 +93,8 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
 		{
 			ConnectionId = "connection-id",
+			Alias = "alias",
+			AgentPublicDid = "public-did",
 			Invitation = new Contracts.Connection.ConnectionInvitation
 			{
 				Id = "id",

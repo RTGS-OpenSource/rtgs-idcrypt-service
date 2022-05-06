@@ -11,6 +11,16 @@ public record CreateConnectionInvitationResponse
 	public string ConnectionId { get; init; }
 
 	/// <summary>
+	/// Connection alias.
+	/// </summary>
+	public string Alias { get; init; }
+
+	/// <summary>
+	///  Public DID of the agent which created this invitation.
+	/// </summary>
+	public string AgentPublicDid { get; init; }
+
+	/// <summary>
 	/// Invitation URL.
 	/// </summary>
 	public string InvitationUrl { get; init; }
