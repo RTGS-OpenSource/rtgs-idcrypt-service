@@ -118,7 +118,8 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 		var signMessageResponse = new SignMessageResponse
 		{
 			PairwiseDidSignature = "pairwise-did-signature",
-			PublicDidSignature = "public-did-signature"
+			PublicDidSignature = "public-did-signature",
+			Alias = "alias"
 		};
 
 		_response.Should().BeOfType<OkObjectResult>()
