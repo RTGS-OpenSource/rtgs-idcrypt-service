@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using Xunit;
@@ -39,7 +40,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 
 	[Fact]
 	public void ThenIdCryptAgentIsNotCalled() =>
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(SignDocument.Path);
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(CreateInvitation.Path);
 
 	[Fact]
 	public void ThenNotFoundResponseReceived() =>

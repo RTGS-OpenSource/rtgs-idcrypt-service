@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
@@ -11,7 +12,7 @@ public class NoMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
-			.WithOkResponse(SignDocument.HttpRequestResponseContext)
+			.WithOkResponse(CreateInvitation.HttpRequestResponseContext)
 			.Build();
 	}
 

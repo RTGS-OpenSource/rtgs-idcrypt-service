@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using Xunit;
@@ -46,7 +47,7 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 
 	[Fact]
 	public void WhenCallingIdCryptAgent_ThenBaseAddressIsExpected() =>
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single()
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].Single()
 			.RequestUri!.GetLeftPart(UriPartial.Authority)
 			.Should().Be(_testFixture.Configuration["AgentApiAddress"]);
 
@@ -57,14 +58,14 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	[Fact]
 	public async Task WhenCallingIdCryptAgent_ThenBodyIsExpected()
 	{
-		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single().Content!.ReadAsStringAsync();
+		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].Single().Content!.ReadAsStringAsync();
 
 		content.Should().BeEquivalentTo(@"{""connection_id"":""connection-id"",""document"":{""Message"":""I am the walrus""}}");
 	}
 
 	[Fact]
 	public void WhenCallingIdCryptAgent_ThenApiKeyHeadersAreExpected() =>
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single()
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].Single()
 			.Headers.GetValues("X-API-Key")
 			.Should().ContainSingle()
 			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);

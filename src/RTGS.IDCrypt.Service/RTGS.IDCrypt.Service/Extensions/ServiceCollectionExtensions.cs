@@ -1,6 +1,7 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK;
 using RTGS.IDCryptSDK.Extensions;
@@ -26,6 +27,7 @@ public static class ServiceCollectionExtensions
 		});
 
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
+		services.AddSingleton<IAliasProvider, AliasProvider>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),

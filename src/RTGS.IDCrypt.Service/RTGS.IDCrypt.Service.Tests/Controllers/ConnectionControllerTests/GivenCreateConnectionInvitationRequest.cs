@@ -18,19 +18,19 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 	private readonly Mock<IConnectionsClient> _connectionsClientMock;
 	private readonly CreateInvitationResponse _createInvitationResponse;
 	private readonly Mock<IWalletClient> _walletClientMock;
-	private readonly Mock<IAliasProvider> _mockGuidProvider;
+	private readonly Mock<IAliasProvider> _mockAliasProvider;
 	private readonly ConnectionController _connectionController;
-	
+
+	const string Alias = "alias";
+	const string PublicDid = "public-did";
+
 	private IActionResult _response;
 
 	public GivenCreateConnectionInvitationRequest()
 	{
-		const string alias = "alias";
 		const bool autoAccept = true;
 		const bool multiUse = false;
 		const bool usePublicDid = false;
-
-		const string publicDid = "public-did";
 
 		_connectionsClientMock = new Mock<IConnectionsClient>();
 
@@ -52,7 +52,7 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 
 		_connectionsClientMock
 			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
-				alias,
+				Alias,
 				autoAccept,
 				multiUse,
 				usePublicDid,
@@ -62,23 +62,21 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 
 		_walletClientMock = new Mock<IWalletClient>();
 
-
 		_walletClientMock
 			.Setup(walletClient => walletClient.GetPublicDidAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(publicDid)
+			.ReturnsAsync(PublicDid)
 			.Verifiable();
 
-		_mockGuidProvider = new Mock<IAliasProvider>();
+		_mockAliasProvider = new Mock<IAliasProvider>();
 
-
-		_mockGuidProvider
+		_mockAliasProvider
 			.Setup(provider => provider.Provide())
-			.Returns(alias);
+			.Returns(Alias);
 
 		_connectionController = new ConnectionController(
-			_connectionsClientMock.Object, 
-			_walletClientMock.Object, 
-			_mockGuidProvider.Object);
+			_connectionsClientMock.Object,
+			_walletClientMock.Object,
+			_mockAliasProvider.Object);
 	}
 
 	public async Task InitializeAsync() =>
@@ -92,19 +90,16 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 	{
 		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
 		{
-			ConnectionId = "connection-id",
-			Alias = "alias",
-			AgentPublicDid = "public-did",
+			ConnectionId = _createInvitationResponse.ConnectionId,
+			Alias = Alias,
+			AgentPublicDid = PublicDid,
 			Invitation = new Contracts.Connection.ConnectionInvitation
 			{
-				Id = "id",
-				Type = "type",
-				Label = "label",
-				RecipientKeys = new[]
-				{
-					"recipient-key-1"
-				},
-				ServiceEndpoint = "service-endpoint"
+				Id = _createInvitationResponse.Invitation.Id,
+				Type = _createInvitationResponse.Invitation.Type,
+				Label = _createInvitationResponse.Invitation.Label,
+				RecipientKeys = _createInvitationResponse.Invitation.RecipientKeys,
+				ServiceEndpoint = _createInvitationResponse.Invitation.ServiceEndpoint
 			}
 		};
 
