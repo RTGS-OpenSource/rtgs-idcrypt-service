@@ -1,5 +1,5 @@
-﻿using RTGS.IDCryptSDK.JsonSignatures.Models;
-using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
+﻿using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
+using RTGS.IDCryptSDK.JsonSignatures.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 

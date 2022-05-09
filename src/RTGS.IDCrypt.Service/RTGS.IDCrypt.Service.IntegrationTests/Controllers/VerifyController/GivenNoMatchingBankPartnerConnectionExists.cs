@@ -5,12 +5,12 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
+using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController;
 
 public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
@@ -27,15 +27,16 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 
 	public async Task InitializeAsync()
 	{
-
-		var request = new SignMessageRequest()
+		var request = new VerifyPrivateSignatureRequest()
 		{
-			RtgsGlobalId = "rtgs-global-id",
-			Message = @"{ ""Message"": ""I am the walrus"" }"
+			RtgsGlobalId = "rtgs-global-id-2",
+			Alias = "alias",
+			Message = @"{ ""Message"": ""I am the walrus"" }",
+			PrivateSignature = "private-signature"
 		};
 
 		_httpResponse = await _client.PostAsync(
-			"api/signmessage",
+			"api/verify",
 			new StringContent(
 				JsonSerializer.Serialize(request),
 				Encoding.UTF8,
@@ -46,8 +47,11 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 		Task.CompletedTask;
 
 	[Fact]
-	public void ThenIdCryptAgentIsNotCalled() =>
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(SignDocument.Path);
+	public void ThenIdCryptAgentIsNotCalled()
+	{
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.ConnectionsPath);
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.VerifyPrivateSignaturePath);
+	}
 
 	[Fact]
 	public void ThenNotFoundResponseReceived() =>

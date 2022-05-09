@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCryptSDK.JsonSignatures;
 
 namespace RTGS.IDCrypt.Service.Controllers;
 

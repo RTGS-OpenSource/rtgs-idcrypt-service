@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
@@ -14,12 +14,14 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(SignDocument.HttpRequestResponseContext)
+			.WithOkResponse(VerifyPrivateSignature.ConnectionsHttpRequestResponseContext)
+			.WithOkResponse(VerifyPrivateSignature.VerifyHttpRequestResponseContext)
 			.Build();
 	}
 
-	public List<BankPartnerConnection> BankPartnerConnections = new()
+	private List<BankPartnerConnection> _bankPartnerConnections = new()
 	{
-		new() 
+		new()
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
@@ -35,15 +37,9 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 		}
 	};
 
-	public static SignMessageRequest SignMessageRequest => new()
+	protected override async Task Seed()
 	{
-		RtgsGlobalId = "rtgs-global-id",
-		Message = @"{ ""Message"": ""I am the walrus"" }"
-	};
-
-	public override async Task Seed()
-	{
-		foreach (var connection in BankPartnerConnections)
+		foreach (var connection in _bankPartnerConnections)
 		{
 			await InsertBankPartnerConnectionAsync(connection);
 		}

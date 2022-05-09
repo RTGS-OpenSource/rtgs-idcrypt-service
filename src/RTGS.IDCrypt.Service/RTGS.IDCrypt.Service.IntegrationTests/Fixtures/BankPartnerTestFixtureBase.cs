@@ -24,7 +24,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
-	public string BankPartnerConnectionsTableName { get; private set; }
+	private string BankPartnerConnectionsTableName { get; set; }
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; set; }
 
 	private void LoadConfig()
@@ -48,10 +48,10 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 		_bankPartnerConnectionsTable = storageTableResolver.GetTable(BankPartnerConnectionsTableName);
 	}
 
-	public async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
+	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
 		await _bankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
 
-	public abstract Task Seed();
+	protected abstract Task Seed();
 
 	protected override IHost CreateHost(IHostBuilder builder)
 	{

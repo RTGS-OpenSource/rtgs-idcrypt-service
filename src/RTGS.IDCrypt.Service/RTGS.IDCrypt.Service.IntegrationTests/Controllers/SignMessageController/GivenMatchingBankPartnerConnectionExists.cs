@@ -12,10 +12,12 @@ using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+using VerifyXunit;
 using Xunit;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController;
 
+[UsesVerify]
 public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
@@ -33,10 +35,16 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 
 	public async Task InitializeAsync()
 	{
+		var request = new SignMessageRequest()
+		{
+			RtgsGlobalId = "rtgs-global-id",
+			Message = @"{ ""Message"": ""I am the walrus"" }"
+		};
+
 		_httpResponse = await _client.PostAsync(
 			"api/signmessage",
 			new StringContent(
-				JsonSerializer.Serialize(SingleMatchingBankPartnerConnectionFixture.SignMessageRequest),
+				JsonSerializer.Serialize(request),
 				Encoding.UTF8,
 				MediaTypeNames.Application.Json));
 	}
@@ -59,7 +67,7 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	{
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single().Content!.ReadAsStringAsync();
 
-		content.Should().BeEquivalentTo(@"{""connection_id"":""connection-id"",""document"":{""Message"":""I am the walrus""}}");
+		await Verifier.Verify(content);
 	}
 
 	[Fact]

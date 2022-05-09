@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
@@ -15,12 +14,6 @@ public class NoMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 			.Build();
 	}
 
-	public static SignMessageRequest SignMessageRequest => new()
-	{
-		RtgsGlobalId = "rtgs-global-id",
-		Message = @"{ ""Message"": ""I am the walrus"" }"
-	};
-
-	public override Task Seed() =>
+	protected override Task Seed() =>
 		Task.CompletedTask;
 }
