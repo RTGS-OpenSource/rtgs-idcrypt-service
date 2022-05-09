@@ -2,7 +2,7 @@
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCryptSDK.Connections.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController.TestData;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 
 public class VerifyPrivateSignature
 {

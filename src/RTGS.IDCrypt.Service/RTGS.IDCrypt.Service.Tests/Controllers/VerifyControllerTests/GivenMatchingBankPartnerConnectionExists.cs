@@ -80,7 +80,7 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.PrivateSignature(_verifyPrivateSignatureRequest);
+		_response = await _controller.Post(_verifyPrivateSignatureRequest);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

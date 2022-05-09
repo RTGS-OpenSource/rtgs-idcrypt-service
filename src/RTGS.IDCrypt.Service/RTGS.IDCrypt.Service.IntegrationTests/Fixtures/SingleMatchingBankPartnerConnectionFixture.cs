@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 

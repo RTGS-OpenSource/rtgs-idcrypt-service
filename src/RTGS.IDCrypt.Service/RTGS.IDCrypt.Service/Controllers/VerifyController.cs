@@ -30,7 +30,7 @@ public class VerifyController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> PrivateSignature(
+	public async Task<IActionResult> Post(
 		VerifyPrivateSignatureRequest verifyPrivateSignatureRequest,
 		CancellationToken cancellationToken = default)
 	{
@@ -56,11 +56,23 @@ public class VerifyController : ControllerBase
 
 		var bankPartnerConnection = bankPartnerConnections.Single();
 
-		var verified = await _jsonSignaturesClient.VerifyPrivateSignatureAsync(
-			verifyPrivateSignatureRequest.Message,
-			verifyPrivateSignatureRequest.PrivateSignature,
-			bankPartnerConnection.RowKey,
-			cancellationToken);
+		bool verified;
+		try
+		{
+			verified = await _jsonSignaturesClient.VerifyPrivateSignatureAsync(
+				verifyPrivateSignatureRequest.Message,
+				verifyPrivateSignatureRequest.PrivateSignature,
+				bankPartnerConnection.RowKey,
+				cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending VerifyPrivateSignature request to ID Crypt Cloud Agent");
+
+			throw;
+		}
 
 		var verifyPrivateSignatureResponse = new VerifyPrivateSignatureResponse
 		{

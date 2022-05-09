@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using VerifyXunit;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
 [UsesVerify]
-public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
+public class AndMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly SingleMatchingBankPartnerConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenMatchingBankPartnerConnectionExists(SingleMatchingBankPartnerConnectionFixture testFixture)
+	public AndMatchingBankPartnerConnectionExists(SingleMatchingBankPartnerConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
@@ -31,7 +31,7 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 
 	public async Task InitializeAsync()
 	{
-		var request = new VerifyPrivateSignatureRequest()
+		var request = new VerifyPrivateSignatureRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
 			Alias = "alias",

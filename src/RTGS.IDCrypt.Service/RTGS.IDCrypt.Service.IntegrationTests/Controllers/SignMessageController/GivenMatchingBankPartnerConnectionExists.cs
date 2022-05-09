@@ -9,12 +9,10 @@ using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
-using VerifyXunit;
 using Xunit;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController;
 
-[UsesVerify]
 public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
@@ -58,8 +56,7 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	public async Task WhenCallingIdCryptAgent_ThenBodyIsExpected()
 	{
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single().Content!.ReadAsStringAsync();
-
-		await Verifier.Verify(content);
+		content.Should().BeEquivalentTo(@"{""connection_id"":""connection-id"",""document"":{""Message"":""I am the walrus""}}");
 	}
 
 	[Fact]

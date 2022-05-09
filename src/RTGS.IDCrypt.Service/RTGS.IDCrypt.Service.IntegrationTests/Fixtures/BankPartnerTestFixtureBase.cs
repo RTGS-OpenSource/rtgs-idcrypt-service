@@ -16,7 +16,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 {
 	private TableClient _bankPartnerConnectionsTable;
 
-	public BankPartnerTestFixtureBase()
+	protected BankPartnerTestFixtureBase()
 	{
 		LoadConfig();
 		CreateTable();
@@ -24,28 +24,26 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
-	private string BankPartnerConnectionsTableName { get; set; }
-	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; set; }
+	private string _bankPartnerConnectionsTableName;
+	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; protected init; }
 
-	private void LoadConfig()
-	{
+	private void LoadConfig() =>
 		Configuration = new ConfigurationBuilder()
 			.AddJsonFile("testsettings.json")
 			.AddEnvironmentVariables()
 			.AddInMemoryCollection(new[]
 			{
-				new KeyValuePair<string, string>("BankPartnerConnectionsTableName", BankPartnerConnectionsTableName)
+				new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName)
 			})
 			.Build();
-	}
 
 	private void CreateTable()
 	{
-		BankPartnerConnectionsTableName = $"bankPartnerConnections{Guid.NewGuid():N}";
+		_bankPartnerConnectionsTableName = $"bankPartnerConnections{Guid.NewGuid():N}";
 
 		var storageTableResolver = new StorageTableResolver(Configuration);
 
-		_bankPartnerConnectionsTable = storageTableResolver.GetTable(BankPartnerConnectionsTableName);
+		_bankPartnerConnectionsTable = storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
 	}
 
 	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
@@ -66,7 +64,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 				.AddEnvironmentVariables()
 				.AddInMemoryCollection(new[]
 				{
-					new KeyValuePair<string, string>("BankPartnerConnectionsTableName", BankPartnerConnectionsTableName)
+					new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName)
 				})
 				.Build();
 

@@ -5,19 +5,19 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
-public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingBankPartnerConnectionFixture>, IAsyncLifetime
+public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly NoMatchingBankPartnerConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenNoMatchingBankPartnerConnectionExists(NoMatchingBankPartnerConnectionFixture testFixture)
+	public AndNoMatchingBankPartnerConnectionExists(NoMatchingBankPartnerConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
