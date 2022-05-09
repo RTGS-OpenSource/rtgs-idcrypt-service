@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.Tests.TestData;
@@ -37,4 +38,7 @@ public static class TestBankPartnerConnections
 			Timestamp = DateTime.Parse("2022-04-04")
 		}
 	};
+
+	public static string GetConnectionId(string rtgsGlobalId) =>
+		Connections.First(connection => connection.PartitionKey == rtgsGlobalId).ConnectionId;
 }

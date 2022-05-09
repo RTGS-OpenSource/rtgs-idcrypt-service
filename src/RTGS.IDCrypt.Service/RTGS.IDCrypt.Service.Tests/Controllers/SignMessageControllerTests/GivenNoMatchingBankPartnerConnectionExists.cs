@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCrypt.Service.Tests.TestData;
+using RTGS.IDCryptSDK.JsonSignatures;
 using Xunit;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests;
@@ -34,48 +35,22 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 			RtgsGlobalId = "rtgs-global-id"
 		};
 
-		var nonMatchingBankPartnerConnection1 = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id-1",
-			RowKey = "alias-1",
-			ConnectionId = "connection-id-1"
-		};
-
-		var nonMatchingBankPartnerConnection2 = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id-2",
-			RowKey = "alias-2",
-			ConnectionId = "connection-id-2"
-		};
-
-		var nonMatchingBankPartnerConnection3 = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id-3",
-			RowKey = "alias-3",
-			ConnectionId = "connection-id-3"
-		};
-
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
-		var storageTableResolver = new Mock<IStorageTableResolver>();
-		var tableClient = new Mock<TableClient>();
-		var bankPartnerConnections = new Mock<Azure.Pageable<BankPartnerConnection>>();
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+		var tableClientMock = new Mock<TableClient>();
+		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
-		bankPartnerConnections.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			new List<BankPartnerConnection>
-			{
-				nonMatchingBankPartnerConnection1,
-				nonMatchingBankPartnerConnection2,
-				nonMatchingBankPartnerConnection3
-			}
+		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
+			TestBankPartnerConnections.Connections
 			.GetEnumerator());
 
-		tableClient.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 			tableClient.Query<BankPartnerConnection>(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnections.Object);
+			.Returns(bankPartnerConnectionsMock.Object);
 
-		storageTableResolver
+		storageTableResolverMock
 			.Setup(storageTableResolver => storageTableResolver.GetTable("bankPartnerConnections"))
-			.Returns(tableClient.Object);
+			.Returns(tableClientMock.Object);
 
 		_logger = new FakeLogger<SignMessageController>();
 
@@ -87,7 +62,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 		_controller = new SignMessageController(
 			_logger,
 			options,
-			storageTableResolver.Object,
+			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object);
 	}
 
