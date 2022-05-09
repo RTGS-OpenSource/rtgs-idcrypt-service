@@ -7,18 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCryptSDK.JsonSignatures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
 
-public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 {
 	private readonly FakeLogger<SignMessageController> _logger;
 	private readonly SignMessageController _controller;
@@ -26,7 +26,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
-	public GivenNoMatchingBankPartnerConnectionExists()
+	public AndNoMatchingBankPartnerConnectionExists()
 	{
 		_signMessageRequest = new SignMessageRequest
 		{

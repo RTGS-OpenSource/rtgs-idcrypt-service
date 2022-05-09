@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -14,13 +13,13 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
-			.WithOkResponse(CreateInvitation.HttpRequestResponseContext)
+			.WithOkResponse(SignDocument.HttpRequestResponseContext)
 			.Build();
 	}
 
 	public List<BankPartnerConnection> BankPartnerConnections = new()
 	{
-		new() 
+		new()
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",

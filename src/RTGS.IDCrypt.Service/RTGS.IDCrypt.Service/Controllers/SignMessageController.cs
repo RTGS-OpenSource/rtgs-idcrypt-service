@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCryptSDK.JsonSignatures;
+using RTGS.IDCryptSDK.JsonSignatures.Models;
 
 namespace RTGS.IDCrypt.Service.Controllers;
 
@@ -51,7 +52,22 @@ public class SignMessageController : ControllerBase
 
 		var bankPartnerConnection = bankPartnerConnections.First();
 
-		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, bankPartnerConnection.ConnectionId);
+		SignDocumentResponse signDocumentResponse;
+
+		try
+		{
+			signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(
+				signMessageRequest.Message,
+				bankPartnerConnection.ConnectionId);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending SignJsonDocument request to ID Crypt Cloud Agent");
+
+			throw;
+		}
 
 		var signMessageResponse = new SignMessageResponse
 		{
