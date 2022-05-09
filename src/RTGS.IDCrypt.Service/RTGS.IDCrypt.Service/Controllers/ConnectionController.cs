@@ -2,7 +2,9 @@
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCryptSDK.Connections;
+using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
+using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
 
 namespace RTGS.IDCrypt.Service.Controllers;
 
@@ -10,12 +12,18 @@ namespace RTGS.IDCrypt.Service.Controllers;
 [ApiController]
 public class ConnectionController : ControllerBase
 {
+	private readonly ILogger<ConnectionController> _logger;
 	private readonly IConnectionsClient _connectionsClient;
 	private readonly IWalletClient _walletClient;
 	private readonly IAliasProvider _aliasProvider;
 
-	public ConnectionController(IConnectionsClient connectionsClient, IWalletClient walletClient, IAliasProvider aliasProvider)
+	public ConnectionController(
+		ILogger<ConnectionController> logger,
+		IConnectionsClient connectionsClient,
+		IWalletClient walletClient,
+		IAliasProvider aliasProvider)
 	{
+		_logger = logger;
 		_connectionsClient = connectionsClient;
 		_walletClient = walletClient;
 		_aliasProvider = aliasProvider;
@@ -30,14 +38,41 @@ public class ConnectionController : ControllerBase
 		const bool multiUse = false;
 		const bool usePublicDid = false;
 
-		var createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
+		CreateInvitationResponse createInvitationResponse;
+
+		try
+		{
+			createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
 			alias,
 			autoAccept,
 			multiUse,
 			usePublicDid,
 			cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending CreateInvitation request with alias {Alias} to ID Crypt Cloud Agent",
+				alias);
 
-		var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+			throw;
+		}
+
+		string publicDid;
+
+		try
+		{
+			publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
+
+			throw;
+		}
 
 		var response = new CreateConnectionInvitationResponse
 		{

@@ -1,32 +1,32 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
+using FluentAssertions.Execution;
+using Microsoft.Extensions.Logging;
 using Moq;
-using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationRequest;
 
-public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
+public class AndIdCryptGetPublicDidApiUnavailable
 {
+	private readonly FakeLogger<ConnectionController> _logger;
 	private readonly Mock<IConnectionsClient> _connectionsClientMock;
 	private readonly CreateInvitationResponse _createInvitationResponse;
 	private readonly Mock<IWalletClient> _walletClientMock;
 	private readonly Mock<IAliasProvider> _mockAliasProvider;
 	private readonly ConnectionController _connectionController;
+	private const string Alias = "alias";
 
-	const string Alias = "alias";
-	const string PublicDid = "public-did";
-
-	private IActionResult _response;
-
-	public GivenCreateConnectionInvitationRequest()
+	public AndIdCryptGetPublicDidApiUnavailable()
 	{
 		const bool autoAccept = true;
 		const bool multiUse = false;
@@ -37,7 +37,7 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 		_createInvitationResponse = new CreateInvitationResponse
 		{
 			ConnectionId = "connection-id",
-			Invitation = new IDCryptSDK.Connections.Models.ConnectionInvitation
+			Invitation = new ConnectionInvitation
 			{
 				Id = "id",
 				Type = "type",
@@ -64,8 +64,7 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 
 		_walletClientMock
 			.Setup(walletClient => walletClient.GetPublicDidAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(PublicDid)
-			.Verifiable();
+			.ThrowsAsync(new Exception());
 
 		_mockAliasProvider = new Mock<IAliasProvider>();
 
@@ -73,45 +72,28 @@ public class GivenCreateConnectionInvitationRequest : IAsyncLifetime
 			.Setup(provider => provider.Provide())
 			.Returns(Alias);
 
+		_logger = new FakeLogger<ConnectionController>();
+
 		_connectionController = new ConnectionController(
+			_logger,
 			_connectionsClientMock.Object,
 			_walletClientMock.Object,
 			_mockAliasProvider.Object);
 	}
 
-	public async Task InitializeAsync() =>
-		_response = await _connectionController.Post(default);
-
-	public Task DisposeAsync() =>
-		Task.CompletedTask;
-
 	[Fact]
-	public void WhenPosting_ThenReturnOkResponseWithExpected()
+	public async Task WhenPosting_ThenLog()
 	{
-		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
-		{
-			ConnectionId = _createInvitationResponse.ConnectionId,
-			Alias = Alias,
-			AgentPublicDid = PublicDid,
-			Invitation = new Contracts.Connection.ConnectionInvitation
+		using var _ = new AssertionScope();
+
+		await FluentActions
+			.Awaiting(() => _connectionController.Post(default))
+			.Should()
+			.ThrowAsync<Exception>();
+
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				Id = _createInvitationResponse.Invitation.Id,
-				Type = _createInvitationResponse.Invitation.Type,
-				Label = _createInvitationResponse.Invitation.Label,
-				RecipientKeys = _createInvitationResponse.Invitation.RecipientKeys,
-				ServiceEndpoint = _createInvitationResponse.Invitation.ServiceEndpoint
-			}
-		};
-
-		_response.Should().BeOfType<OkObjectResult>()
-			.Which.Value.Should().BeEquivalentTo(createConnectionInvitationResponse);
+				"Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent"
+			});
 	}
-
-	[Fact]
-	public void WhenPosting_ThenCallCreateInvitationAsyncWithExpected() =>
-		_connectionsClientMock.Verify();
-
-	[Fact]
-	public void WhenPosting_ThenCallGetPublicDidAsyncWithExpected() =>
-		_walletClientMock.Verify();
 }
