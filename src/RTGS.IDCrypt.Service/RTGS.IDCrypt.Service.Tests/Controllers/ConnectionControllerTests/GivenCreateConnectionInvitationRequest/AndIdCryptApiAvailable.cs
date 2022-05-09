@@ -14,7 +14,7 @@ using Xunit;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationRequest;
 
-public class AndIdCryptApiIsAvailable : IAsyncLifetime
+public class AndIdCryptApiAvailable : IAsyncLifetime
 {
 	private readonly FakeLogger<ConnectionController> _logger;
 	private readonly Mock<IConnectionsClient> _connectionsClientMock;
@@ -27,7 +27,7 @@ public class AndIdCryptApiIsAvailable : IAsyncLifetime
 
 	private IActionResult _response;
 
-	public AndIdCryptApiIsAvailable()
+	public AndIdCryptApiAvailable()
 	{
 		const bool autoAccept = true;
 		const bool multiUse = false;

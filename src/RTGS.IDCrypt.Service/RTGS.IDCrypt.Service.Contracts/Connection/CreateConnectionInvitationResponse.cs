@@ -1,7 +1,7 @@
 ﻿namespace RTGS.IDCrypt.Service.Contracts.Connection;
 
 /// <summary>
-/// Model of the response from /connections/create-invitation.
+/// Model of the response from /connections.
 /// </summary>
 public record CreateConnectionInvitationResponse
 {
@@ -16,7 +16,7 @@ public record CreateConnectionInvitationResponse
 	public string Alias { get; init; }
 
 	/// <summary>
-	///  Public DID of the agent which created this invitation.
+	/// Public DID of the agent which created this invitation.
 	/// </summary>
 	public string AgentPublicDid { get; init; }
 

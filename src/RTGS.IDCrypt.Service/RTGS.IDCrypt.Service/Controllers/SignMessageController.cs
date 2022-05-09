@@ -31,12 +31,14 @@ public class SignMessageController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> Post(SignMessageRequest signMessageRequest)
+	public async Task<IActionResult> Post(
+		SignMessageRequest signMessageRequest,
+		CancellationToken cancellationToken)
 	{
 		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>()
+			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId)
 			.ToList();
@@ -58,13 +60,14 @@ public class SignMessageController : ControllerBase
 		{
 			signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(
 				signMessageRequest.Message,
-				bankPartnerConnection.ConnectionId);
+				bankPartnerConnection.ConnectionId,
+				cancellationToken);
 		}
 		catch (Exception ex)
 		{
 			_logger.LogError(
 				ex,
-				"Error occurred when sending SignJsonDocument request to ID Crypt Cloud Agent");
+				"Error occurred when signing JSON document");
 
 			throw;
 		}

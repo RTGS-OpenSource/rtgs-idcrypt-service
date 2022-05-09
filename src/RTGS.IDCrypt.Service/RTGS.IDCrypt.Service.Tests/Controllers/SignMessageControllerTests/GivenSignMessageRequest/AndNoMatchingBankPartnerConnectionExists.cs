@@ -92,7 +92,7 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.Post(_signMessageRequest);
+		_response = await _controller.Post(_signMessageRequest, default);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

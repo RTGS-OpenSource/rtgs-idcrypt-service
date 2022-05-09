@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Azure.Data.Tables;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -16,7 +15,6 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
-using RTGS.IDCryptSDK.JsonSignatures.Models;
 using Xunit;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
@@ -25,9 +23,7 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 {
 	private readonly SignMessageController _signMessageController;
 	private readonly SignMessageRequest _signMessageRequest;
-	private readonly SignDocumentResponse _signDocumentResponse;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
-	private readonly IActionResult _response;
 	private readonly FakeLogger<SignMessageController> _logger;
 
 	public AndIdCryptSignJsonDocumentApiUnavailable()
@@ -97,13 +93,13 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _signMessageController.Post(_signMessageRequest))
+			.Awaiting(() => _signMessageController.Post(_signMessageRequest, default))
 			.Should()
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				"Error occurred when sending SignJsonDocument request to ID Crypt Cloud Agent"
+				"Error occurred when signing JSON document"
 			});
 	}
 }

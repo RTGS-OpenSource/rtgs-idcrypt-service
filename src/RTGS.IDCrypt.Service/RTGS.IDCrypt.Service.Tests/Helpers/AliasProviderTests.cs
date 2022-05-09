@@ -9,10 +9,10 @@ public class AliasProviderTests
 	[Fact]
 	public void Provide_ProvidesNewGuid()
 	{
-		var guidProvider = new AliasProvider();
+		var aliasProvider = new AliasProvider();
 
-		var guid = guidProvider.Provide();
+		var alias = aliasProvider.Provide();
 
-		Guid.Parse(guid);
+		Guid.Parse(alias);
 	}
 }
