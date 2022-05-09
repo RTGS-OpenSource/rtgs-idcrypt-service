@@ -1,10 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
@@ -35,12 +34,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 			PrivateSignature = "private-signature"
 		};
 
-		_httpResponse = await _client.PostAsync(
-			"api/verify",
-			new StringContent(
-				JsonSerializer.Serialize(request),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
+		_httpResponse = await _client.PostAsJsonAsync("api/verify", request);
 	}
 
 	public Task DisposeAsync() =>
@@ -49,6 +43,8 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 	[Fact]
 	public void ThenIdCryptAgentIsNotCalled()
 	{
+		using var _ = new AssertionScope();
+
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.ConnectionsPath);
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.VerifyPrivateSignaturePath);
 	}

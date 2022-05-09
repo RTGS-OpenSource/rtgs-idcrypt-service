@@ -3,9 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -42,12 +39,7 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 			PrivateSignature = "private-signature"
 		};
 
-		_httpResponse = await _client.PostAsync(
-			"api/verify",
-			new StringContent(
-				JsonSerializer.Serialize(request),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
+		_httpResponse = await _client.PostAsJsonAsync("api/verify", request);
 	}
 
 	public Task DisposeAsync() =>
@@ -56,6 +48,8 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	[Fact]
 	public void WhenCallingIdCryptAgent_ThenBaseAddressIsExpected()
 	{
+		using var _ = new AssertionScope();
+
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.ConnectionsPath].Single()
 			.RequestUri!.GetLeftPart(UriPartial.Authority)
 			.Should().Be(_testFixture.Configuration["AgentApiAddress"]);
@@ -68,6 +62,8 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	[Fact]
 	public void WhenCallingIdCryptAgent_ThenExpectedPathsAreCalled()
 	{
+		using var _ = new AssertionScope();
+
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKey(VerifyPrivateSignature.ConnectionsPath);
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKey(VerifyPrivateSignature.VerifyPrivateSignaturePath);
 	}
@@ -85,6 +81,8 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	[Fact]
 	public void WhenCallingIdCryptAgent_ThenApiKeyHeadersAreExpected()
 	{
+		using var _ = new AssertionScope();
+
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.ConnectionsPath].Single()
 			.Headers.GetValues("X-API-Key")
 			.Should().ContainSingle()

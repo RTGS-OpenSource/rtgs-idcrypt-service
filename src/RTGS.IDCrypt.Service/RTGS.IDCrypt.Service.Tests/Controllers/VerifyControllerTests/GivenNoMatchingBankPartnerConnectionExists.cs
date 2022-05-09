@@ -95,14 +95,4 @@ public class GivenNoMatchingBankPartnerConnectionExists
 			$"and Alias {alias}"
 		});
 	}
-
-	[Fact]
-	public void WhenPostingVerifyPrivateSignatureRequest_ThenDoNotCallVerifyPrivateSignatureAsync() =>
-		_jsonSignaturesClientMock.Verify(client =>
-			client.VerifyPrivateSignatureAsync(
-				It.IsAny<string>(),
-				It.IsAny<string>(),
-				It.IsAny<string>(),
-				It.IsAny<CancellationToken>()),
-			Times.Never);
 }

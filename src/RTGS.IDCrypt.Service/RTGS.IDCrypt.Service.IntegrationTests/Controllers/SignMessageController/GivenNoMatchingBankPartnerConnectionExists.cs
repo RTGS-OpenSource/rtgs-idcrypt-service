@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
@@ -34,12 +32,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 			Message = @"{ ""Message"": ""I am the walrus"" }"
 		};
 
-		_httpResponse = await _client.PostAsync(
-			"api/signmessage",
-			new StringContent(
-				JsonSerializer.Serialize(request),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
+		_httpResponse = await _client.PostAsJsonAsync("api/signmessage", request);
 	}
 
 	public Task DisposeAsync() =>

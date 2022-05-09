@@ -35,7 +35,6 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 			Alias = "alias-1"
 		};
 
-		// TODO: RBEN - rename variables (add Mock suffix) in other test
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 		var tableClientMock = new Mock<TableClient>();
