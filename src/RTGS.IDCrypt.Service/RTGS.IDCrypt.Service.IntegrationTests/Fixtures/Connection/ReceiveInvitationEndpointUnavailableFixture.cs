@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
+﻿using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
@@ -17,7 +16,7 @@ public class ReceiveInvitationEndpointUnavailableFixture : TestFixtureBase
 	}
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; private set; }
-	
+
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
 			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler)

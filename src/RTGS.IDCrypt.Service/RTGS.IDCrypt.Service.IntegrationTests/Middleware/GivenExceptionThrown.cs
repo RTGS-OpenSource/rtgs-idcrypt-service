@@ -1,12 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
-using Xunit;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Middleware;
 

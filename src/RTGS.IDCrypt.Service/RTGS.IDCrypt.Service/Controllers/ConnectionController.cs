@@ -95,7 +95,7 @@ public class ConnectionController : ControllerBase
 
 	[HttpPost("Accept")]
 	public async Task<IActionResult> Accept(
-		AcceptConnectionInvitationRequest request, 
+		AcceptConnectionInvitationRequest request,
 		CancellationToken cancellationToken)
 	{
 		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest

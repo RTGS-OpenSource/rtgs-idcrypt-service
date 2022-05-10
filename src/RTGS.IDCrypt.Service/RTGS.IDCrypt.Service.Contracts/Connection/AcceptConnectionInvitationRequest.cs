@@ -1,6 +1,5 @@
 ﻿namespace RTGS.IDCrypt.Service.Contracts.Connection;
 
-
 /// <summary>
 /// Model of the invitation to accept.
 /// </summary>
