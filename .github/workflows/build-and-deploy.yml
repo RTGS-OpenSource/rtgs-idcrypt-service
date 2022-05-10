@@ -11,6 +11,7 @@ on:
 
 env:
   DOCKER_HUB_ORGANISATION: rtgsglobal
+  SOLUTION_FOLDER: src/RTGS.IDCrypt.Service
 
 jobs:
   build:
@@ -18,10 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: dotnet Tool Manifest
+        run: dotnet new tool-manifest
+      - name: Install dotnet format
+        run: dotnet tool install dotnet-format
+      - name: dotnet Format
+        run: dotnet format ${{env.SOLUTION_FOLDER}} --verify-no-changes
       - name: Run Azurite Table Storage
         run: docker run --name azurite -d -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite-table --tableHost 0.0.0.0 --tablePort 10002
       - name: Build & run tests
-        run: docker build src/RTGS.IDCrypt.Service --target build --network=host
+        run: docker build ${{env.SOLUTION_FOLDER}} --target build --network=host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
   publish-to-docker:
@@ -48,7 +55,7 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v2
         with:
-          context: src/RTGS.IDCrypt.Service
+          context: ${{env.SOLUTION_FOLDER}}
           push: true
           tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:${{ github.run_number }}
           network: host
@@ -92,7 +99,7 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v2
         with:
-          context: src/RTGS.IDCrypt.Service
+          context: ${{env.SOLUTION_FOLDER}}
           push: true
           tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:${{ github.run_number }}
           network: host
