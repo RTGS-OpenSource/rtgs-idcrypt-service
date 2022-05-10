@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Diagnostics;
 using System.Net.Mime;
 using System.Text.Json;
+using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Diagnostics;
 using RTGS.IDCrypt.Service.Extensions;
 using Serilog;
 using Serilog.Events;
-using Microsoft.ApplicationInsights;
 
 TelemetryClient telemetryClient = null;
 
