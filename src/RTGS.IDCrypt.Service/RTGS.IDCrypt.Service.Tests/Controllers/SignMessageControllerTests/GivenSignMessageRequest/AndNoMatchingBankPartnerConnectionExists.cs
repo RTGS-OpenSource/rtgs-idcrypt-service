@@ -4,41 +4,34 @@ using System.Threading.Tasks;
 using Azure.Data.Tables;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCryptSDK.JsonSignatures;
-using RTGS.IDCryptSDK.JsonSignatures.Models;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCryptSDK.JsonSignatures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
 
-public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 {
+	private readonly FakeLogger<SignMessageController> _logger;
 	private readonly SignMessageController _controller;
 	private readonly SignMessageRequest _signMessageRequest;
-	private readonly SignDocumentResponse _signDocumentResponse;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
-	public GivenMatchingBankPartnerConnectionExists()
+	public AndNoMatchingBankPartnerConnectionExists()
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
 			Message = "message",
 			RtgsGlobalId = "rtgs-global-id"
-		};
-
-		var matchingBankPartnerConnection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
-			ConnectionId = "connection-id"
 		};
 
 		var nonMatchingBankPartnerConnection1 = new BankPartnerConnection
@@ -55,10 +48,11 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 			ConnectionId = "connection-id-2"
 		};
 
-		_signDocumentResponse = new SignDocumentResponse
+		var nonMatchingBankPartnerConnection3 = new BankPartnerConnection
 		{
-			PairwiseDidSignature = "pairwise-did-signature",
-			PublicDidSignature = "public-did-signature"
+			PartitionKey = "rtgs-global-id-3",
+			RowKey = "alias-3",
+			ConnectionId = "connection-id-3"
 		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
@@ -66,17 +60,12 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 		var tableClient = new Mock<TableClient>();
 		var bankPartnerConnections = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
-		_jsonSignaturesClientMock
-			.Setup(client => client.SignJsonDocumentAsync(_signMessageRequest.Message, matchingBankPartnerConnection.ConnectionId, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(_signDocumentResponse)
-			.Verifiable();
-
 		bankPartnerConnections.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
 			new List<BankPartnerConnection>
 			{
-				matchingBankPartnerConnection,
 				nonMatchingBankPartnerConnection1,
-				nonMatchingBankPartnerConnection2
+				nonMatchingBankPartnerConnection2,
+				nonMatchingBankPartnerConnection3
 			}
 			.GetEnumerator());
 
@@ -88,7 +77,7 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 			.Setup(storageTableResolver => storageTableResolver.GetTable("bankPartnerConnections"))
 			.Returns(tableClient.Object);
 
-		var logger = new FakeLogger<SignMessageController>();
+		_logger = new FakeLogger<SignMessageController>();
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
@@ -96,32 +85,31 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 		});
 
 		_controller = new SignMessageController(
-			logger,
+			_logger,
 			options,
 			storageTableResolver.Object,
 			_jsonSignaturesClientMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.Post(_signMessageRequest);
+		_response = await _controller.Post(_signMessageRequest, default);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
 
 	[Fact]
-	public void WhenPostingSignMessageRequest_ThenCallSignMessageWithExpected() =>
-		_jsonSignaturesClientMock.Verify();
+	public void WhenPostingSignMessageRequest_ThenDoNotCallSignMessage() =>
+		_jsonSignaturesClientMock.Verify(client =>
+			client.SignJsonDocumentAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 
 	[Fact]
-	public void WhenPostingSignMessageRequest_ThenReturnOkResponseWithExpectedSignatures()
-	{
-		var signMessageResponse = new SignMessageResponse
-		{
-			PairwiseDidSignature = "pairwise-did-signature",
-			PublicDidSignature = "public-did-signature"
-		};
+	public void WhenPostingSignMessageRequest_ThenReturnNotFoundResponse() =>
+		_response.Should().BeOfType<NotFoundResult>();
 
-		_response.Should().BeOfType<OkObjectResult>()
-			.Which.Value.Should().BeEquivalentTo(signMessageResponse);
-	}
+	[Fact]
+	public void WhenPostingSignMessageRequest_ThenLog() =>
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
+			{
+				$"No bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
+			});
 }

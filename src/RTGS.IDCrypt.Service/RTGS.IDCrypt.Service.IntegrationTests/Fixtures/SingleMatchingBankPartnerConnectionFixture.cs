@@ -19,7 +19,7 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 
 	public List<BankPartnerConnection> BankPartnerConnections = new()
 	{
-		new() 
+		new()
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
