@@ -16,16 +16,16 @@ using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
-public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 {
 	private readonly VerifyController _controller;
 	private readonly VerifyPrivateSignatureRequest _verifyPrivateSignatureRequest;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
-	public GivenMatchingBankPartnerConnectionExists()
+	public AndMatchingBankPartnerConnectionExists()
 	{
 		_verifyPrivateSignatureRequest = new VerifyPrivateSignatureRequest
 		{
