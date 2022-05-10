@@ -11,6 +11,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -77,14 +78,16 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
+			BankPartnerConnectionsTableName = "bankPartnerConnections",
+			GracePeriod = TimeSpan.FromMinutes(5)
 		});
 
 		_signMessageController = new SignMessageController(
 			_logger,
 			options,
 			storageTableResolver.Object,
-			_jsonSignaturesClientMock.Object);
+			_jsonSignaturesClientMock.Object,
+			new BankPartnerConnectionResolver(options));
 	}
 
 	[Fact]

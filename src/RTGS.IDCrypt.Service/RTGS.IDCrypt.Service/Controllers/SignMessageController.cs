@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK.JsonSignatures;
@@ -17,17 +18,20 @@ public class SignMessageController : ControllerBase
 	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
+	private readonly IBankPartnerConnectionResolver _bankPartnerConnectionResolver;
 
 	public SignMessageController(
 		ILogger<SignMessageController> logger,
 		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsConfig,
 		IStorageTableResolver storageTableResolver,
-		IJsonSignaturesClient jsonSignaturesClient)
+		IJsonSignaturesClient jsonSignaturesClient,
+		IBankPartnerConnectionResolver bankPartnerConnectionResolver)
 	{
 		_logger = logger;
 		_bankPartnerConnectionsConfig = bankPartnerConnectionsConfig.Value;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
+		_bankPartnerConnectionResolver = bankPartnerConnectionResolver;
 	}
 
 	[HttpPost]
@@ -43,7 +47,9 @@ public class SignMessageController : ControllerBase
 				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId)
 			.ToList();
 
-		if (!bankPartnerConnections.Any())
+		var bankPartnerConnection = _bankPartnerConnectionResolver.Resolve(bankPartnerConnections);
+
+		if (bankPartnerConnection is null)
 		{
 			_logger.LogError(
 				"No bank partner connection found for RTGS Global ID {RtgsGlobalId}",
@@ -51,8 +57,6 @@ public class SignMessageController : ControllerBase
 
 			return NotFound();
 		}
-
-		var bankPartnerConnection = bankPartnerConnections.First();
 
 		SignDocumentResponse signDocumentResponse;
 
