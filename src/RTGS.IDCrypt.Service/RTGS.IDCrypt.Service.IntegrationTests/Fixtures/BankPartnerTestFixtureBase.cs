@@ -15,6 +15,7 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
 {
 	private TableClient _bankPartnerConnectionsTable;
+	private string _bankPartnerConnectionsTableName;
 
 	protected BankPartnerTestFixtureBase()
 	{
@@ -24,7 +25,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
-	private string _bankPartnerConnectionsTableName;
+
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; protected init; }
 
 	private void LoadConfig() =>
