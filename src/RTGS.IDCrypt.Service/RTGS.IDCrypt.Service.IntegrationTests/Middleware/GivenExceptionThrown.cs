@@ -1,9 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -22,15 +20,8 @@ public class GivenExceptionThrown : IClassFixture<ThrowingFixture>, IAsyncLifeti
 		_client = testFixture.CreateClient();
 	}
 
-	public async Task InitializeAsync()
-	{
-		_httpResponse = await _client.PostAsync(
-			"api/signmessage",
-			new StringContent(
-				JsonSerializer.Serialize(ThrowingFixture.SignMessageRequest),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
-	}
+	public async Task InitializeAsync() =>
+		_httpResponse = await _client.PostAsJsonAsync("api/signmessage", ThrowingFixture.SignMessageRequest);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

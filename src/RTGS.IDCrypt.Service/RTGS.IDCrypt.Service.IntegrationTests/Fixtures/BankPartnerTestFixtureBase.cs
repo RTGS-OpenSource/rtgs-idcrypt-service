@@ -15,8 +15,9 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
 {
 	private TableClient _bankPartnerConnectionsTable;
+	private string _bankPartnerConnectionsTableName;
 
-	public BankPartnerTestFixtureBase()
+	protected BankPartnerTestFixtureBase()
 	{
 		LoadConfig();
 		CreateTable();
@@ -24,34 +25,32 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
-	public string BankPartnerConnectionsTableName { get; private set; }
-	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; set; }
 
-	private void LoadConfig()
-	{
+	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; protected init; }
+
+	private void LoadConfig() =>
 		Configuration = new ConfigurationBuilder()
 			.AddJsonFile("testsettings.json")
 			.AddEnvironmentVariables()
 			.AddInMemoryCollection(new[]
 			{
-				new KeyValuePair<string, string>("BankPartnerConnectionsTableName", BankPartnerConnectionsTableName)
+				new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName)
 			})
 			.Build();
-	}
 
 	private void CreateTable()
 	{
-		BankPartnerConnectionsTableName = $"bankPartnerConnections{Guid.NewGuid():N}";
+		_bankPartnerConnectionsTableName = $"bankPartnerConnections{Guid.NewGuid():N}";
 
 		var storageTableResolver = new StorageTableResolver(Configuration);
 
-		_bankPartnerConnectionsTable = storageTableResolver.GetTable(BankPartnerConnectionsTableName);
+		_bankPartnerConnectionsTable = storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
 	}
 
-	public async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
+	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
 		await _bankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
 
-	public abstract Task Seed();
+	protected abstract Task Seed();
 
 	protected override IHost CreateHost(IHostBuilder builder)
 	{
@@ -66,7 +65,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 				.AddEnvironmentVariables()
 				.AddInMemoryCollection(new[]
 				{
-					new KeyValuePair<string, string>("BankPartnerConnectionsTableName", BankPartnerConnectionsTableName)
+					new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName)
 				})
 				.Build();
 

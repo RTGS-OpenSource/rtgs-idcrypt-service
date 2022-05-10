@@ -76,7 +76,7 @@ public class SignMessageController : ControllerBase
 		{
 			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
 			PublicDidSignature = signDocumentResponse.PublicDidSignature,
-			Alias = bankPartnerConnection.Alias
+			Alias = bankPartnerConnection.RowKey
 		};
 
 		return Ok(signMessageResponse);
