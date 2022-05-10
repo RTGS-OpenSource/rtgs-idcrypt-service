@@ -30,7 +30,7 @@ public class BankPartnerConnectionResolver : IBankPartnerConnectionResolver
 	}
 
 	private BankPartnerConnection SelectConnection(
-		List<BankPartnerConnection> bankPartnerConnections)
+		IReadOnlyCollection<BankPartnerConnection> bankPartnerConnections)
 	{
 		var connectionsPastOrAtGracePeriod = bankPartnerConnections.Where(connection =>
 				connection.Timestamp <= DateTimeOffsetServer.Now.Subtract(_bankPartnerConnectionsConfig.GracePeriod))
