@@ -67,9 +67,7 @@ public class ConnectionController : ControllerBase
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(
-				ex,
-				"Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
+			_logger.LogError(ex, "Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
 
 			throw;
 		}
