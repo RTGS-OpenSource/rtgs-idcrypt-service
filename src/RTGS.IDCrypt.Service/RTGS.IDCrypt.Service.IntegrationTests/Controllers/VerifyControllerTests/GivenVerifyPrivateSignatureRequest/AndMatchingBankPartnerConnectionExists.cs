@@ -9,12 +9,10 @@ using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
-using VerifyXunit;
 using Xunit;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
-[UsesVerify]
 public class AndMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
@@ -60,8 +58,9 @@ public class AndMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchi
 		var requests = _testFixture.IdCryptStatusCodeHttpHandler.Requests;
 
 		var content = await requests[VerifyPrivateSignature.Path].Single().Content!.ReadAsStringAsync();
-
-		await Verifier.Verify(content);
+		content.Should().BeEquivalentTo(
+			@"{""connection_id"":""connection-id"",""document"":" +
+			@"{""Message"":""I am the walrus""},""signature"":""private-signature""}");
 	}
 
 	[Fact]
