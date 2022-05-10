@@ -42,8 +42,6 @@ public class GivenExceptionThrown : IClassFixture<ThrowingFixture>, IAsyncLifeti
 
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
-		_httpResponse.Content.Headers.ContentType.Should().Be(MediaTypeHeaderValue.Parse("application/json"));
-
 		var content = await _httpResponse.Content.ReadAsStringAsync();
 
 		content.Should().Be("{\"error\":\"testing middleware with controller\"}");

@@ -12,15 +12,15 @@ using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.Tes
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationRequest;
 
-public class GivenAgentIsAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
+public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenAgentIsAvailable(ConnectionInvitationFixture testFixture)
+	public GivenAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
 		_testFixture = testFixture;
 

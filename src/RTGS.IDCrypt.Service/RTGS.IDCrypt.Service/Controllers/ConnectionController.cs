@@ -94,4 +94,33 @@ public class ConnectionController : ControllerBase
 
 		return Ok(response);
 	}
+
+	[HttpPost("Accept")]
+	public async Task<IActionResult> Accept(
+		AcceptConnectionInvitationRequest request, 
+		CancellationToken cancellationToken)
+	{
+		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
+		{
+			Alias = request.Alias,
+			Id = request.Id,
+			Label = request.Label,
+			RecipientKeys = request.RecipientKeys,
+			ServiceEndpoint = request.ServiceEndpoint,
+			Type = request.Type
+		};
+
+		try
+		{
+			await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when accepting invitation");
+
+			throw;
+		}
+
+		return Accepted();
+	}
 }
