@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RTGS.IDCrypt.Service.Contracts\RTGS.IDCrypt.Service.Contracts.csproj" />
+    <ProjectReference Include="..\RTGS.IDCrypt.Service.Tests\RTGS.IDCrypt.Service.Tests.csproj" />
     <ProjectReference Include="..\RTGS.IDCrypt.Service\RTGS.IDCrypt.Service.csproj" />
   </ItemGroup>
 

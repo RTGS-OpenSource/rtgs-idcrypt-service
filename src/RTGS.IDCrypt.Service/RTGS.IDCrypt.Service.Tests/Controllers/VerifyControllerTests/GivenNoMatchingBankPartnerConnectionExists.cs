@@ -3,12 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Data.Tables;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
@@ -17,24 +18,16 @@ using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests;
 
-public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class GivenNoMatchingBankPartnerConnectionExists
 {
-	private readonly FakeLogger<SignMessageController> _logger;
-	private readonly SignMessageController _controller;
-	private readonly SignMessageRequest _signMessageRequest;
+	private readonly FakeLogger<VerifyController> _logger;
+	private readonly VerifyController _controller;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
-	private IActionResult _response;
 
-	public AndNoMatchingBankPartnerConnectionExists()
+	public GivenNoMatchingBankPartnerConnectionExists()
 	{
-		_signMessageRequest = new SignMessageRequest
-		{
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
-		};
-
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 		var tableClientMock = new Mock<TableClient>();
@@ -45,46 +38,61 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 			.GetEnumerator());
 
 		tableClientMock.Setup(tableClient =>
-			tableClient.Query<BankPartnerConnection>(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+			tableClient.Query<BankPartnerConnection>(
+				It.IsAny<string>(),
+				It.IsAny<int?>(),
+				It.IsAny<IEnumerable<string>>(),
+				It.IsAny<CancellationToken>()))
 			.Returns(bankPartnerConnectionsMock.Object);
 
 		storageTableResolverMock
 			.Setup(storageTableResolver => storageTableResolver.GetTable("bankPartnerConnections"))
 			.Returns(tableClientMock.Object);
 
-		_logger = new FakeLogger<SignMessageController>();
+		_logger = new FakeLogger<VerifyController>();
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_controller = new SignMessageController(
+		_controller = new VerifyController(
 			_logger,
 			options,
 			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object);
 	}
 
-	public async Task InitializeAsync() =>
-		_response = await _controller.Post(_signMessageRequest, default);
+	[Theory]
+	[InlineData("rtgs-global-id-1", "alias-3")]
+	[InlineData("rtgs-global-id-2", "alias-1")]
+	[InlineData("rtgs-global-id-3", "alias-5")]
+	public async Task ThenMessageIsNotVerified(string rtgsGlobalId, string alias)
+	{
+		var response = await _controller.Post(new VerifyPrivateSignatureRequest
+		{
+			RtgsGlobalId = rtgsGlobalId,
+			Message = "message",
+			PrivateSignature = "signature",
+			Alias = alias
+		});
 
-	public Task DisposeAsync() =>
-		Task.CompletedTask;
+		using var _ = new AssertionScope();
 
-	[Fact]
-	public void WhenPostingSignMessageRequest_ThenDoNotCallSignMessage() =>
 		_jsonSignaturesClientMock.Verify(client =>
-			client.SignJsonDocumentAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+				client.VerifyPrivateSignatureAsync(
+					It.IsAny<string>(),
+					It.IsAny<string>(),
+					It.IsAny<string>(),
+					It.IsAny<CancellationToken>()),
+			Times.Never);
 
-	[Fact]
-	public void WhenPostingSignMessageRequest_ThenReturnNotFoundResponse() =>
-		_response.Should().BeOfType<NotFoundResult>();
+		response.Should().BeOfType<NotFoundResult>();
 
-	[Fact]
-	public void WhenPostingSignMessageRequest_ThenLog() =>
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-			{
-				$"No bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
-			});
+		{
+			$"No bank partner connection found for RTGS Global ID {rtgsGlobalId} " +
+			$"and Alias {alias}"
+		});
+	}
 }

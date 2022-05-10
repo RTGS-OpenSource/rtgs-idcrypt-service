@@ -1,10 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
+using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using Xunit;
@@ -26,12 +25,14 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 
 	public async Task InitializeAsync()
 	{
-		_httpResponse = await _client.PostAsync(
-			"api/signmessage",
-			new StringContent(
-				JsonSerializer.Serialize(NoMatchingBankPartnerConnectionFixture.SignMessageRequest),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
+
+		var request = new SignMessageRequest()
+		{
+			RtgsGlobalId = "rtgs-global-id",
+			Message = @"{ ""Message"": ""I am the walrus"" }"
+		};
+
+		_httpResponse = await _client.PostAsJsonAsync("api/signmessage", request);
 	}
 
 	public Task DisposeAsync() =>

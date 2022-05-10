@@ -3,9 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -33,12 +30,13 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 
 	public async Task InitializeAsync()
 	{
-		_httpResponse = await _client.PostAsync(
-			"api/signmessage",
-			new StringContent(
-				JsonSerializer.Serialize(SingleMatchingBankPartnerConnectionFixture.SignMessageRequest),
-				Encoding.UTF8,
-				MediaTypeNames.Application.Json));
+		var request = new SignMessageRequest()
+		{
+			RtgsGlobalId = "rtgs-global-id",
+			Message = @"{ ""Message"": ""I am the walrus"" }"
+		};
+
+		_httpResponse = await _client.PostAsJsonAsync("api/signmessage", request);
 	}
 
 	public Task DisposeAsync() =>
@@ -58,7 +56,6 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	public async Task WhenCallingIdCryptAgent_ThenBodyIsExpected()
 	{
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single().Content!.ReadAsStringAsync();
-
 		content.Should().BeEquivalentTo(@"{""connection_id"":""connection-id"",""document"":{""Message"":""I am the walrus""}}");
 	}
 

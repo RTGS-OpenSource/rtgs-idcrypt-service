@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -11,15 +11,7 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
-	public SingleMatchingBankPartnerConnectionFixture()
-	{
-		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
-			.Create()
-			.WithOkResponse(SignDocument.HttpRequestResponseContext)
-			.Build();
-	}
-
-	public static List<BankPartnerConnection> BankPartnerConnections => new()
+	private readonly List<BankPartnerConnection> _bankPartnerConnections = new()
 	{
 		new()
 		{
@@ -37,17 +29,20 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 		}
 	};
 
-	public static SignMessageRequest SignMessageRequest => new()
+	public SingleMatchingBankPartnerConnectionFixture()
 	{
-		RtgsGlobalId = "rtgs-global-id",
-		Message = @"{ ""Message"": ""I am the walrus"" }"
-	};
+		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
+			.Create()
+			.WithOkResponse(SignDocument.HttpRequestResponseContext)
+			.WithOkResponse(VerifyPrivateSignature.HttpRequestResponseContext)
+			.Build();
+	}
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; set; }
 
-	public override async Task Seed()
+	protected override async Task Seed()
 	{
-		foreach (var connection in BankPartnerConnections)
+		foreach (var connection in _bankPartnerConnections)
 		{
 			await InsertBankPartnerConnectionAsync(connection);
 		}
