@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRtgsDependencies(builder.Configuration);
 
-DateTimeOffsetServer.Init(()=> DateTimeOffset.Now);
+DateTimeOffsetServer.Init(() => DateTimeOffset.Now);
 
 builder.Host.UseSerilog((_, provider, config) =>
 {
