@@ -17,9 +17,9 @@ using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
 
-public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 {
 	private readonly FakeLogger<SignMessageController> _logger;
 	private readonly SignMessageController _controller;
@@ -27,7 +27,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
-	public GivenNoMatchingBankPartnerConnectionExists()
+	public AndNoMatchingBankPartnerConnectionExists()
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
@@ -67,7 +67,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.Post(_signMessageRequest);
+		_response = await _controller.Post(_signMessageRequest, default);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

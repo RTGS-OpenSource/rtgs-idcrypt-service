@@ -17,16 +17,16 @@ using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
 
-public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 {
 	private readonly SignMessageController _controller;
 	private readonly SignMessageRequest _signMessageRequest;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
-	public GivenMatchingBankPartnerConnectionExists()
+	public AndMatchingBankPartnerConnectionExists()
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
@@ -80,7 +80,7 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.Post(_signMessageRequest);
+		_response = await _controller.Post(_signMessageRequest, default);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

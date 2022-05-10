@@ -5,6 +5,7 @@ using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK.JsonSignatures;
+using RTGS.IDCryptSDK.JsonSignatures.Models;
 
 namespace RTGS.IDCrypt.Service.Controllers;
 
@@ -30,12 +31,14 @@ public class SignMessageController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<IActionResult> Post(SignMessageRequest signMessageRequest)
+	public async Task<IActionResult> Post(
+		SignMessageRequest signMessageRequest,
+		CancellationToken cancellationToken)
 	{
 		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>()
+			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId)
 			.ToList();
@@ -51,7 +54,23 @@ public class SignMessageController : ControllerBase
 
 		var bankPartnerConnection = bankPartnerConnections.First();
 
-		var signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(signMessageRequest.Message, bankPartnerConnection.ConnectionId);
+		SignDocumentResponse signDocumentResponse;
+
+		try
+		{
+			signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(
+				signMessageRequest.Message,
+				bankPartnerConnection.ConnectionId,
+				cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when signing JSON document");
+
+			throw;
+		}
 
 		var signMessageResponse = new SignMessageResponse
 		{
