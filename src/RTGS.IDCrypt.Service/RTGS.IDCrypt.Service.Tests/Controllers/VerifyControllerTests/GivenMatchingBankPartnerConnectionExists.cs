@@ -41,10 +41,10 @@ public class GivenMatchingBankPartnerConnectionExists : IAsyncLifetime
 		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		_jsonSignaturesClientMock
-			.Setup(client => client.VerifyPrivateSignatureAsync(
+			.Setup(client => client.VerifyJsonDocumentPrivateSignatureAsync(
 				_verifyPrivateSignatureRequest.Message,
 				_verifyPrivateSignatureRequest.PrivateSignature,
-				_verifyPrivateSignatureRequest.Alias,
+				"connection-id-1",
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(true)
 			.Verifiable();

@@ -46,53 +46,30 @@ public class AndMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchi
 		Task.CompletedTask;
 
 	[Fact]
-	public void WhenCallingIdCryptAgent_ThenBaseAddressIsExpected()
-	{
-		using var _ = new AssertionScope();
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.ConnectionsPath].Single()
+	public void WhenCallingIdCryptAgent_ThenBaseAddressIsExpected() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.Path].Single()
 			.RequestUri!.GetLeftPart(UriPartial.Authority)
 			.Should().Be(_testFixture.Configuration["AgentApiAddress"]);
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.VerifyPrivateSignaturePath].Single()
-			.RequestUri!.GetLeftPart(UriPartial.Authority)
-			.Should().Be(_testFixture.Configuration["AgentApiAddress"]);
-	}
 
 	[Fact]
-	public void WhenCallingIdCryptAgent_ThenExpectedPathsAreCalled()
-	{
-		using var _ = new AssertionScope();
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKey(VerifyPrivateSignature.ConnectionsPath);
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKey(VerifyPrivateSignature.VerifyPrivateSignaturePath);
-	}
+	public void WhenCallingIdCryptAgent_ThenExpectedPathsAreCalled() => _testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKey(VerifyPrivateSignature.Path);
 
 	[Fact]
 	public async Task WhenCallingIdCryptAgent_ThenBodyIsExpected()
 	{
 		var requests = _testFixture.IdCryptStatusCodeHttpHandler.Requests;
 
-		var content = await requests[VerifyPrivateSignature.VerifyPrivateSignaturePath].Single().Content!.ReadAsStringAsync();
+		var content = await requests[VerifyPrivateSignature.Path].Single().Content!.ReadAsStringAsync();
 
 		await Verifier.Verify(content);
 	}
 
 	[Fact]
-	public void WhenCallingIdCryptAgent_ThenApiKeyHeadersAreExpected()
-	{
-		using var _ = new AssertionScope();
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.ConnectionsPath].Single()
+	public void WhenCallingIdCryptAgent_ThenApiKeyHeadersAreExpected() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.Path].Single()
 			.Headers.GetValues("X-API-Key")
 			.Should().ContainSingle()
 			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests[VerifyPrivateSignature.VerifyPrivateSignaturePath].Single()
-			.Headers.GetValues("X-API-Key")
-			.Should().ContainSingle()
-			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
-	}
 
 	[Fact]
 	public async Task ThenReturnOkWithSignMessageResponse()

@@ -42,7 +42,7 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 		var bankPartnerConnections = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		jsonSignaturesClientMock
-			.Setup(client => client.VerifyPrivateSignatureAsync(
+			.Setup(client => client.VerifyJsonDocumentPrivateSignatureAsync(
 				It.IsAny<string>(),
 				It.IsAny<string>(),
 				It.IsAny<string>(),

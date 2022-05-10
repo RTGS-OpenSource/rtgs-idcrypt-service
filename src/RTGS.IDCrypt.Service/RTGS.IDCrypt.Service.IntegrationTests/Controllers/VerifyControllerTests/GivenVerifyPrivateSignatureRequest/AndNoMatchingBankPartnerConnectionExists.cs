@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
@@ -41,13 +40,8 @@ public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatching
 		Task.CompletedTask;
 
 	[Fact]
-	public void ThenIdCryptAgentIsNotCalled()
-	{
-		using var _ = new AssertionScope();
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.ConnectionsPath);
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.VerifyPrivateSignaturePath);
-	}
+	public void ThenIdCryptAgentIsNotCalled() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.Path);
 
 	[Fact]
 	public void ThenNotFoundResponseReceived() =>

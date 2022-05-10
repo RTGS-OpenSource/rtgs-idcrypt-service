@@ -14,8 +14,7 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(SignDocument.HttpRequestResponseContext)
-			.WithOkResponse(VerifyPrivateSignature.ConnectionsHttpRequestResponseContext)
-			.WithOkResponse(VerifyPrivateSignature.VerifyHttpRequestResponseContext)
+			.WithOkResponse(VerifyPrivateSignature.HttpRequestResponseContext)
 			.Build();
 	}
 
