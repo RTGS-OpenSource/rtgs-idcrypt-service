@@ -1,1 +1,0 @@
-﻿{"connection_id":"connection-id","document":{"Message":"I am the walrus"}}
