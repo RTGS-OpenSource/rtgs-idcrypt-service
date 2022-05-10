@@ -34,7 +34,7 @@ public static class TestBankPartnerConnections
 		{
 			PartitionKey = "rtgs-global-id-2",
 			RowKey = "alias-4",
-			ConnectionId = "connection-id-3",
+			ConnectionId = "connection-id-4",
 			Timestamp = DateTime.Parse("2022-04-04")
 		}
 	};
