@@ -9,11 +9,11 @@ public static class ServiceCollectionExtensions
 		this IServiceCollection services,
 		StatusCodeHttpHandler statusCodeHttpHandler)
 	{
-			services
-				.AddSingleton(statusCodeHttpHandler)
-				.AddHttpClient("AgentHttpClient")
-				.AddHttpMessageHandler<StatusCodeHttpHandler>();
-	
+		services
+			.AddSingleton(statusCodeHttpHandler)
+			.AddHttpClient("AgentHttpClient")
+			.AddHttpMessageHandler<StatusCodeHttpHandler>();
+
 		return services;
 	}
 }
