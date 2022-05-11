@@ -16,6 +16,9 @@
 # Mono auto generated files
 mono_crash.*
 
+# Mac OS
+src/.DS_Store
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -348,3 +351,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
