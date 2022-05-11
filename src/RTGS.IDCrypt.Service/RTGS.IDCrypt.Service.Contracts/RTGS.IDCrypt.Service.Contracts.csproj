@@ -3,6 +3,27 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Authors>RTGS Global Limited</Authors>
+    <Company>RTGS Global Limited</Company>
+    <Product>RTGS Global ID Crypt Service Contracts</Product>
+    <Copyright>RTGS Global Limited</Copyright>
+    <Description>Contracts used by the RTGS.global ID Crypt service.</Description>
+    <RepositoryUrl>https://github.com/RTGS-OpenSource/rtgs-service</RepositoryUrl>
+    <PackageIcon>rtgs_global_logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../../rtgs_global_logo.png" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
 </Project>
