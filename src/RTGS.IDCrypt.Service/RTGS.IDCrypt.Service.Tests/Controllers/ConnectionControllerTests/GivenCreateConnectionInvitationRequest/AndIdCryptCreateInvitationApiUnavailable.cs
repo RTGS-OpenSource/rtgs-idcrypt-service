@@ -11,17 +11,15 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 public class AndIdCryptCreateInvitationApiUnavailable
 {
 	private readonly FakeLogger<ConnectionController> _logger;
-	private readonly Mock<IConnectionsClient> _connectionsClientMock;
 	private readonly Mock<IWalletClient> _walletClientMock;
-	private readonly Mock<IAliasProvider> _mockAliasProvider;
 	private readonly ConnectionController _connectionController;
 	private const string Alias = "alias";
 
 	public AndIdCryptCreateInvitationApiUnavailable()
 	{
-		_connectionsClientMock = new Mock<IConnectionsClient>();
+		var connectionsClientMock = new Mock<IConnectionsClient>();
 
-		_connectionsClientMock
+		connectionsClientMock
 			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
 				It.IsAny<string>(),
 				It.IsAny<bool>(),
@@ -32,9 +30,9 @@ public class AndIdCryptCreateInvitationApiUnavailable
 
 		_walletClientMock = new Mock<IWalletClient>();
 
-		_mockAliasProvider = new Mock<IAliasProvider>();
+		var mockAliasProvider = new Mock<IAliasProvider>();
 
-		_mockAliasProvider
+		mockAliasProvider
 			.Setup(provider => provider.Provide())
 			.Returns(Alias);
 
@@ -42,9 +40,9 @@ public class AndIdCryptCreateInvitationApiUnavailable
 
 		_connectionController = new ConnectionController(
 			_logger,
-			_connectionsClientMock.Object,
+			connectionsClientMock.Object,
 			_walletClientMock.Object,
-			_mockAliasProvider.Object);
+			mockAliasProvider.Object);
 	}
 
 	[Fact]

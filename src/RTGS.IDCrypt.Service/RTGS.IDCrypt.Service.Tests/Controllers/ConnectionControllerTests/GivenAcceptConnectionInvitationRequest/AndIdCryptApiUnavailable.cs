@@ -13,14 +13,13 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 public class AndIdCryptApiUnavailable
 {
 	private readonly FakeLogger<ConnectionController> _logger;
-	private readonly Mock<IConnectionsClient> _connectionsClientMock;
 	private readonly ConnectionController _connectionController;
 
 	public AndIdCryptApiUnavailable()
 	{
-		_connectionsClientMock = new Mock<IConnectionsClient>();
+		var connectionsClientMock = new Mock<IConnectionsClient>();
 
-		_connectionsClientMock
+		connectionsClientMock
 			.Setup(connectionsClient => connectionsClient.ReceiveAndAcceptInvitationAsync(
 				It.IsAny<ReceiveAndAcceptInvitationRequest>(),
 				It.IsAny<CancellationToken>()))
@@ -30,7 +29,7 @@ public class AndIdCryptApiUnavailable
 
 		_connectionController = new ConnectionController(
 			_logger,
-			_connectionsClientMock.Object,
+			connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
 			Mock.Of<IAliasProvider>());
 	}
