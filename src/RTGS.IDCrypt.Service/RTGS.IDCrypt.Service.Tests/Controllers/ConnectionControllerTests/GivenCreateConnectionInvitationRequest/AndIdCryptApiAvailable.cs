@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
@@ -10,17 +7,14 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
-using Xunit;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationRequest;
 
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
-	private readonly FakeLogger<ConnectionController> _logger;
 	private readonly Mock<IConnectionsClient> _connectionsClientMock;
 	private readonly CreateInvitationResponse _createInvitationResponse;
 	private readonly Mock<IWalletClient> _walletClientMock;
-	private readonly Mock<IAliasProvider> _mockAliasProvider;
 	private readonly ConnectionController _connectionController;
 	private const string Alias = "alias";
 	private const string PublicDid = "public-did";
@@ -68,19 +62,19 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.ReturnsAsync(PublicDid)
 			.Verifiable();
 
-		_mockAliasProvider = new Mock<IAliasProvider>();
+		var mockAliasProvider = new Mock<IAliasProvider>();
 
-		_mockAliasProvider
+		mockAliasProvider
 			.Setup(provider => provider.Provide())
 			.Returns(Alias);
 
-		_logger = new FakeLogger<ConnectionController>();
+		var logger = new FakeLogger<ConnectionController>();
 
 		_connectionController = new ConnectionController(
-			_logger,
+			logger,
 			_connectionsClientMock.Object,
 			_walletClientMock.Object,
-			_mockAliasProvider.Object);
+			mockAliasProvider.Object);
 	}
 
 	public async Task InitializeAsync() =>

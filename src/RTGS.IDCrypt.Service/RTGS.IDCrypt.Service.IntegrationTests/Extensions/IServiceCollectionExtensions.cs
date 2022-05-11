@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
+﻿using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 
-public static class ServiceCollectionExtensions
+public static class IServiceCollectionExtensions
 {
 	public static IServiceCollection AddTestIdCryptHttpClient(
 		this IServiceCollection services,

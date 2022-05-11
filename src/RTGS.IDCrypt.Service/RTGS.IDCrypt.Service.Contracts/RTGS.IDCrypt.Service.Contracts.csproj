@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
     <Authors>RTGS Global Limited</Authors>
     <Company>RTGS Global Limited</Company>
     <Product>RTGS Global ID Crypt Service Contracts</Product>

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Execution;
 using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
-using Xunit;
+using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 

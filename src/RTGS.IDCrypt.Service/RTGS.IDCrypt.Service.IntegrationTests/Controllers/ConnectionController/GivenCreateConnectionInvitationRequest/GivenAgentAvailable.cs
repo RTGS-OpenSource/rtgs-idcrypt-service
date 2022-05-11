@@ -1,26 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Execution;
 using Microsoft.AspNetCore.WebUtilities;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
-using Xunit;
+using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationRequest;
 
-public class GivenAgentIsAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
+public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenAgentIsAvailable(ConnectionInvitationFixture testFixture)
+	public GivenAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
 		_testFixture = testFixture;
 
