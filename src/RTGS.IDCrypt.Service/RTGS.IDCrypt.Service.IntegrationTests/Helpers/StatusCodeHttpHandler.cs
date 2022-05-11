@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 

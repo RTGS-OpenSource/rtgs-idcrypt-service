@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Azure.Data.Tables;
-using FluentAssertions;
-using FluentAssertions.Execution;
+﻿using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -16,7 +10,6 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
-using Xunit;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
 
@@ -24,7 +17,6 @@ public class AndIdCryptAgentUnavailable
 {
 	private readonly SignMessageController _signMessageController;
 	private readonly SignMessageRequest _signMessageRequest;
-	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private readonly FakeLogger<SignMessageController> _logger;
 
 	public AndIdCryptAgentUnavailable()
@@ -47,12 +39,12 @@ public class AndIdCryptAgentUnavailable
 			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1))
 		};
 
-		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
+		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 		var tableClientMock = new Mock<TableClient>();
 		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
-		_jsonSignaturesClientMock
+		jsonSignaturesClientMock
 			.Setup(client => client.SignJsonDocumentAsync(
 				It.IsAny<string>(),
 				It.IsAny<string>(),
@@ -91,7 +83,7 @@ public class AndIdCryptAgentUnavailable
 			_logger,
 			options,
 			storageTableResolverMock.Object,
-			_jsonSignaturesClientMock.Object,
+			jsonSignaturesClientMock.Object,
 			dateTimeProviderMock.Object);
 	}
 

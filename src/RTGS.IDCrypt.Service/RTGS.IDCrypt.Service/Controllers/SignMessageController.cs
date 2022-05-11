@@ -71,9 +71,7 @@ public class SignMessageController : ControllerBase
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(
-				ex,
-				"Error occurred when signing JSON document");
+			_logger.LogError(ex, "Error occurred when signing JSON document");
 
 			throw;
 		}

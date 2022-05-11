@@ -38,7 +38,7 @@ public class VerifyController : ControllerBase
 			_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>()
+			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == verifyPrivateSignatureRequest.RtgsGlobalId
 				&& bankPartnerConnection.RowKey == verifyPrivateSignatureRequest.Alias)

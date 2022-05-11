@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Moq;
+﻿using Moq;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
@@ -10,7 +6,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
 
 public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {

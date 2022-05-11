@@ -1,4 +1,5 @@
 ﻿using Azure.Data.Tables;
+using Microsoft.Extensions.Configuration;
 
 namespace RTGS.IDCrypt.Service.Storage;
 

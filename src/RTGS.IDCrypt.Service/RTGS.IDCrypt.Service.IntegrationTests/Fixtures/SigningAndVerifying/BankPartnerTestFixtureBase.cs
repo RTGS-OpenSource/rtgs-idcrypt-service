@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Azure.Data.Tables;
+﻿using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
 
 public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
 {

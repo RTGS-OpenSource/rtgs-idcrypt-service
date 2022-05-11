@@ -1,6 +1,4 @@
-﻿using System;
-using RTGS.IDCrypt.Service.Helpers;
-using Xunit;
+﻿using RTGS.IDCrypt.Service.Helpers;
 
 namespace RTGS.IDCrypt.Service.Tests.Helpers;
 
