@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
+using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -20,7 +21,10 @@ public class GivenNoMatchingConnection
 		{
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		};
-		var sut = new BankPartnerConnectionResolver(Options.Create(bankPartnerConnectionsConfig));
+
+		var sut = new BankPartnerConnectionResolver(
+			Options.Create(bankPartnerConnectionsConfig),
+			Mock.Of<IDateTimeOffsetProvider>());
 
 		var connection = sut.Resolve(bankPartnerConnections);
 

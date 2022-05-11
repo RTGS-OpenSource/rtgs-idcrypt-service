@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Diagnostics;
 using RTGS.IDCrypt.Service.Extensions;
-using RTGS.IDCrypt.Service.Helpers;
 using Serilog;
 using Serilog.Events;
 
@@ -15,8 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRtgsDependencies(builder.Configuration);
-
-DateTimeOffsetServer.Init(() => DateTimeOffset.Now);
 
 builder.Host.UseSerilog((_, provider, config) =>
 {

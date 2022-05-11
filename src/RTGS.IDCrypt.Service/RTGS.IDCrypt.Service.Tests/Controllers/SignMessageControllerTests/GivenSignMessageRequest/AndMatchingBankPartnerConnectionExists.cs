@@ -31,8 +31,6 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	public AndMatchingBankPartnerConnectionExists()
 	{
-		DateTimeOffsetServer.Init(() => new DateTimeOffset(2022, 1, 1, 0, 0, 0, new TimeSpan()));
-
 		_signMessageRequest = new SignMessageRequest
 		{
 			Message = "message",

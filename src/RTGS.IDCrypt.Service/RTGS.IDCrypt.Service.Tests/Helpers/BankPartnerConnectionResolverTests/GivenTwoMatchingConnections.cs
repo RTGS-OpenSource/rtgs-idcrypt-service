@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
+using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -13,16 +14,18 @@ public class GivenMultipleMatchingConnections
 {
 	private readonly TimeSpan _minimumConnectionAge = TimeSpan.FromMinutes(5);
 	private readonly BankPartnerConnectionResolver _sut;
+	private readonly Mock<IDateTimeOffsetProvider> _dateTimeOffsetProviderMock = new();
 
 	public GivenMultipleMatchingConnections()
 	{
-		DateTimeOffsetServer.Init(() => new DateTimeOffset(2022, 1, 1, 0, 0, 0, new TimeSpan()));
+		_dateTimeOffsetProviderMock.SetupGet(provider => provider.Now)
+			.Returns(new DateTimeOffset(2022, 1, 1, 0, 0, 0, new TimeSpan()));
 
 		var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 		{
 			MinimumConnectionAge = _minimumConnectionAge
 		};
-		_sut = new BankPartnerConnectionResolver(Options.Create(bankPartnerConnectionsConfig));
+		_sut = new BankPartnerConnectionResolver(Options.Create(bankPartnerConnectionsConfig), _dateTimeOffsetProviderMock.Object);
 	}
 
 	[Fact]
@@ -35,14 +38,14 @@ public class GivenMultipleMatchingConnections
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge)
+				Timestamp = _dateTimeOffsetProviderMock.Object.Now.Subtract(_minimumConnectionAge)
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge.Add(TimeSpan.FromMinutes(1)))
+				Timestamp = _dateTimeOffsetProviderMock.Object.Now.Subtract(_minimumConnectionAge.Add(TimeSpan.FromMinutes(1)))
 			}
 		};
 
@@ -61,21 +64,21 @@ public class GivenMultipleMatchingConnections
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(1))
+				Timestamp = _dateTimeOffsetProviderMock.Object.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(1))
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge)
+				Timestamp = _dateTimeOffsetProviderMock.Object.Now.Subtract(_minimumConnectionAge)
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-3",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge.Add(TimeSpan.FromMinutes(1)))
+				Timestamp = _dateTimeOffsetProviderMock.Object.Now.Subtract(_minimumConnectionAge.Add(TimeSpan.FromMinutes(1)))
 			}
 		};
 
@@ -94,14 +97,14 @@ public class GivenMultipleMatchingConnections
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(2))
+				Timestamp = _dateTimeOffsetProviderMock.Object.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(2))
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(1))
+				Timestamp = _dateTimeOffsetProviderMock.Object.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(1))
 			}
 		};
 

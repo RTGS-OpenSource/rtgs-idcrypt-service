@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
+using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using Xunit;
@@ -17,7 +18,7 @@ public class GivenBankPartnerConnectionsIsNull
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		};
 
-		var sut = new BankPartnerConnectionResolver(Options.Create(bankPartnerConnectionsConfig));
+		var sut = new BankPartnerConnectionResolver(Options.Create(bankPartnerConnectionsConfig), Mock.Of<IDateTimeOffsetProvider>());
 
 		FluentActions.Invoking(() => sut.Resolve(null))
 			.Should()

@@ -6,11 +6,14 @@ namespace RTGS.IDCrypt.Service.Helpers;
 
 public class BankPartnerConnectionResolver : IBankPartnerConnectionResolver
 {
+	private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
 	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
 
 	public BankPartnerConnectionResolver(
-		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsConfig)
+		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsConfig,
+		IDateTimeOffsetProvider dateTimeOffsetProvider)
 	{
+		_dateTimeOffsetProvider = dateTimeOffsetProvider;
 		_bankPartnerConnectionsConfig = bankPartnerConnectionsConfig.Value;
 	}
 
@@ -32,7 +35,7 @@ public class BankPartnerConnectionResolver : IBankPartnerConnectionResolver
 	private BankPartnerConnection SelectConnection(IReadOnlyCollection<BankPartnerConnection> bankPartnerConnections)
 	{
 		var connectionsPastOrAtMinimumConnectionAge = bankPartnerConnections.Where(connection =>
-				connection.Timestamp <= DateTimeOffsetServer.Now.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge))
+				connection.Timestamp <= _dateTimeOffsetProvider.Now.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge))
 			.ToList();
 
 		if (connectionsPastOrAtMinimumConnectionAge.Any())

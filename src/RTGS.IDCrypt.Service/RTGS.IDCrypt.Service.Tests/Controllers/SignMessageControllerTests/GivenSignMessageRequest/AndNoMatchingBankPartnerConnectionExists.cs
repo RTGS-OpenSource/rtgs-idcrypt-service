@@ -72,7 +72,7 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 			options,
 			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object,
-			new BankPartnerConnectionResolver(options));
+			bankPartnerConnectionResolverMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
