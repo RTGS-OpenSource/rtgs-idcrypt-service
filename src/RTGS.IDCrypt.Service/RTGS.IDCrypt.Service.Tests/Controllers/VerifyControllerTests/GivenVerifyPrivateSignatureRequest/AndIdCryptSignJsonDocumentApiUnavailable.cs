@@ -11,7 +11,7 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
 public class AndIdCryptSignJsonDocumentApiUnavailable
 {
@@ -30,9 +30,9 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
-		var storageTableResolver = new Mock<IStorageTableResolver>();
-		var tableClient = new Mock<TableClient>();
-		var bankPartnerConnections = new Mock<Azure.Pageable<BankPartnerConnection>>();
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+		var tableClientMock = new Mock<TableClient>();
+		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		jsonSignaturesClientMock
 			.Setup(client => client.VerifyJsonDocumentPrivateSignatureAsync(
@@ -42,24 +42,24 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		bankPartnerConnections.Setup(
+		bankPartnerConnectionsMock.Setup(
 			bankPartnerConnections =>
 				bankPartnerConnections.GetEnumerator()).Returns(
 				TestBankPartnerConnections.Connections
 				.GetEnumerator());
 
-		tableClient.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 				tableClient.Query<BankPartnerConnection>(
 					It.IsAny<string>(),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnections.Object);
+			.Returns(bankPartnerConnectionsMock.Object);
 
-		storageTableResolver
+		storageTableResolverMock
 			.Setup(storageTableResolver =>
 				storageTableResolver.GetTable("bankPartnerConnections"))
-			.Returns(tableClient.Object);
+			.Returns(tableClientMock.Object);
 
 		_logger = new FakeLogger<VerifyController>();
 
@@ -71,7 +71,7 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 		_verifyController = new VerifyController(
 			_logger,
 			options,
-			storageTableResolver.Object,
+			storageTableResolverMock.Object,
 			jsonSignaturesClientMock.Object);
 	}
 

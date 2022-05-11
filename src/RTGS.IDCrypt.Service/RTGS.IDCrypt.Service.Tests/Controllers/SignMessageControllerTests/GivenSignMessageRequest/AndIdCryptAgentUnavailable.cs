@@ -12,14 +12,14 @@ using RTGS.IDCryptSDK.JsonSignatures;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
 
-public class AndIdCryptSignJsonDocumentApiUnavailable
+public class AndIdCryptAgentUnavailable
 {
 	private readonly SignMessageController _signMessageController;
 	private readonly SignMessageRequest _signMessageRequest;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private readonly FakeLogger<SignMessageController> _logger;
 
-	public AndIdCryptSignJsonDocumentApiUnavailable()
+	public AndIdCryptAgentUnavailable()
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
