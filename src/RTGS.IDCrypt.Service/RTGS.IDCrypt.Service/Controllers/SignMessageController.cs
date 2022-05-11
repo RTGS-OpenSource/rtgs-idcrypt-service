@@ -44,12 +44,12 @@ public class SignMessageController : ControllerBase
 		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>(cancellationToken: cancellationToken).ToList();
+			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
+			.Where(bankPartnerConnection =>
+				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
+				&& bankPartnerConnection.CreatedAt <= dateThreshold).ToList();
 
 		var bankPartnerConnection = bankPartnerConnections
-		.Where(bankPartnerConnection =>
-			bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
-			&& bankPartnerConnection.CreatedAt <= dateThreshold)
 		.OrderByDescending(connection => connection.CreatedAt)
 		.FirstOrDefault();
 
