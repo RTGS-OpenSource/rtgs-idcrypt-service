@@ -14,7 +14,6 @@ public class NoMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
-
 	protected override Task Seed() =>
 		Task.CompletedTask;
 
