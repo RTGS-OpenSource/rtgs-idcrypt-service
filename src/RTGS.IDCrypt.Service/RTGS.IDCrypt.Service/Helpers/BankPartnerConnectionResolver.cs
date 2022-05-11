@@ -29,8 +29,7 @@ public class BankPartnerConnectionResolver : IBankPartnerConnectionResolver
 		}
 	}
 
-	private BankPartnerConnection SelectConnection(
-		IReadOnlyCollection<BankPartnerConnection> bankPartnerConnections)
+	private BankPartnerConnection SelectConnection(IReadOnlyCollection<BankPartnerConnection> bankPartnerConnections)
 	{
 		var connectionsPastOrAtMinimumConnectionAge = bankPartnerConnections.Where(connection =>
 				connection.Timestamp <= DateTimeOffsetServer.Now.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge))
