@@ -29,8 +29,7 @@ public static class ServiceCollectionExtensions
 
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
-		services.AddSingleton<IDateTimeOffsetProvider, DateTimeOffsetProvider>();
-		services.AddSingleton<IBankPartnerConnectionResolver, BankPartnerConnectionResolver>();
+		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),

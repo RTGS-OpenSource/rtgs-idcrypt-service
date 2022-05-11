@@ -14,21 +14,21 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
 using Xunit;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.SignMessageControllerTests.GivenSignMessageRequest;
 
-public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 {
 	private readonly SignMessageController _controller;
 	private readonly SignMessageRequest _signMessageRequest;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
+	private readonly BankPartnerConnection _validConnection;
 
-	public AndMatchingBankPartnerConnectionExists()
+	public AndMultipleMatchingBankPartnerConnectionExists()
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
@@ -42,6 +42,41 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 			PublicDidSignature = "public-did-signature"
 		};
 
+		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
+		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
+
+		var tooOldConnection = new BankPartnerConnection
+		{
+			PartitionKey = _signMessageRequest.RtgsGlobalId,
+			RowKey = "alias-1",
+			ConnectionId = "connection-1",
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(3))
+		};
+
+		var tooNewConnection = new BankPartnerConnection
+		{
+			PartitionKey = _signMessageRequest.RtgsGlobalId,
+			RowKey = "alias-2",
+			ConnectionId = "connection-2",
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(3))
+		};
+
+		_validConnection = new BankPartnerConnection
+		{
+			PartitionKey = _signMessageRequest.RtgsGlobalId,
+			RowKey = "alias-3",
+			ConnectionId = "connection-3",
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1))
+		};
+
+		var matchingBankPartnerConnections = new List<BankPartnerConnection>
+		{
+			tooOldConnection,
+			tooNewConnection,
+			_validConnection
+		};
+
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 		var tableClientMock = new Mock<TableClient>();
@@ -50,13 +85,13 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 		_jsonSignaturesClientMock
 			.Setup(client => client.SignJsonDocumentAsync(
 				_signMessageRequest.Message,
-				TestBankPartnerConnections.GetConnectionId(_signMessageRequest.RtgsGlobalId),
+				_validConnection.ConnectionId,
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(signDocumentResponse)
 			.Verifiable();
 
 		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			TestBankPartnerConnections.Connections
+			matchingBankPartnerConnections
 			.GetEnumerator());
 
 		tableClientMock.Setup(tableClient =>
@@ -74,10 +109,6 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 			BankPartnerConnectionsTableName = "bankPartnerConnections",
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
-
-		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
-		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
-		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
 
 		_controller = new SignMessageController(
 			logger,
@@ -104,7 +135,7 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 		{
 			PairwiseDidSignature = "pairwise-did-signature",
 			PublicDidSignature = "public-did-signature",
-			Alias = "alias-2"
+			Alias = _validConnection.RowKey
 		};
 
 		_response.Should().BeOfType<OkObjectResult>()

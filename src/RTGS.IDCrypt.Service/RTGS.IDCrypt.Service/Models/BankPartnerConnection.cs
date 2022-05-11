@@ -11,4 +11,5 @@ public class BankPartnerConnection : ITableEntity
 	public string ConnectionId { get; set; }
 	public DateTimeOffset? Timestamp { get; set; }
 	public ETag ETag { get; set; }
+	public DateTime CreatedAt { get; set; }
 }

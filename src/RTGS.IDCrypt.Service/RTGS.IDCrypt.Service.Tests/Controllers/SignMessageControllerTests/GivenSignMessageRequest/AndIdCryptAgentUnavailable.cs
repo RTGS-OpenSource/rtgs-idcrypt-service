@@ -35,11 +35,16 @@ public class AndIdCryptAgentUnavailable
 			RtgsGlobalId = "rtgs-global-id"
 		};
 
+		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
+		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
+
 		var matchingBankPartnerConnection = new BankPartnerConnection
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
-			ConnectionId = "connection-id"
+			ConnectionId = "connection-id",
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1))
 		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
@@ -82,17 +87,12 @@ public class AndIdCryptAgentUnavailable
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
 
-		var bankPartnerConnectionResolverMock = new Mock<IBankPartnerConnectionResolver>();
-		bankPartnerConnectionResolverMock.Setup(
-				resolver => resolver.Resolve(It.IsAny<List<BankPartnerConnection>>()))
-			.Returns(matchingBankPartnerConnection);
-
 		_signMessageController = new SignMessageController(
 			_logger,
 			options,
 			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object,
-			bankPartnerConnectionResolverMock.Object);
+			dateTimeProviderMock.Object);
 	}
 
 	[Fact]

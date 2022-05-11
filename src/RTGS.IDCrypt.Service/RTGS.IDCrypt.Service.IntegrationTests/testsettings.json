@@ -3,5 +3,5 @@
 	"AgentApiAddress": "http://localhost",
 	"AgentApiKey": "AgentApiKey",
 	"AgentServiceEndpointAddress": "http://localhost",
-	"MinimumConnectionAge": "00:00:05" 
+	"MinimumConnectionAge": "00:05:00" 
 }

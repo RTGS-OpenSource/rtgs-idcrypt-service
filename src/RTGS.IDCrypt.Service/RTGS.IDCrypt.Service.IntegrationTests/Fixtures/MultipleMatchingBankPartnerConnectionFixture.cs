@@ -12,14 +12,14 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
-public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
+public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
 	private readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new();
 
 	private readonly DateTime _referenceDate =
 		DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
-	public SingleMatchingBankPartnerConnectionFixture()
+	public MultipleMatchingBankPartnerConnectionFixture()
 	{
 		_dateTimeProviderMock.SetupGet(provider => provider.UtcNow)
 			.Returns(_referenceDate);
@@ -35,24 +35,39 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 
 	protected override async Task Seed()
 	{
+		var tooOldConnection = new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias-1",
+			ConnectionId = "connection-1",
+			Alias = "alias-1",
+			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3))
+		};
+
+		var tooNewConnection = new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias-2",
+			ConnectionId = "connection-2",
+			Alias = "alias-2",
+			CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3))
+		};
+
+		ValidConnection = new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias-3",
+			ConnectionId = "connection-3",
+			Alias = "alias-3",
+			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1))
+		};
+
+
 		var bankPartnerConnections = new List<BankPartnerConnection>
 		{
-			new()
-			{
-				PartitionKey = "rtgs-global-id",
-				RowKey = "alias",
-				ConnectionId = "connection-id",
-				Alias = "alias",
-				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5))
-			},
-			new()
-			{
-				PartitionKey = "rtgs-global-id-1",
-				RowKey = "alias",
-				ConnectionId = "connection-id-1",
-				Alias = "alias",
-				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5))
-			}
+			tooOldConnection,
+			tooNewConnection,
+			ValidConnection
 		};
 
 		foreach (var connection in bankPartnerConnections)
@@ -60,6 +75,9 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 			await InsertBankPartnerConnectionAsync(connection);
 		}
 	}
+
+	public BankPartnerConnection ValidConnection { get; set; }
+
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
 			services

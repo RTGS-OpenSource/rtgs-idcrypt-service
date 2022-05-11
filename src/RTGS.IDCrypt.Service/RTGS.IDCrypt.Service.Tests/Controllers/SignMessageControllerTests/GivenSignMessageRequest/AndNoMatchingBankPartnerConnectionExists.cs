@@ -62,17 +62,16 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
 
-		var bankPartnerConnectionResolverMock = new Mock<IBankPartnerConnectionResolver>();
-		bankPartnerConnectionResolverMock.Setup(
-				resolver => resolver.Resolve(It.IsAny<List<BankPartnerConnection>>()))
-			.Returns((BankPartnerConnection)null);
+		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
+		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
 
 		_controller = new SignMessageController(
 			_logger,
 			options,
 			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object,
-			bankPartnerConnectionResolverMock.Object);
+			dateTimeProviderMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
@@ -88,12 +87,12 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	[Fact]
 	public void WhenPostingSignMessageRequest_ThenReturnNotFoundResponse() =>
-		_response.Should().BeOfType<NotFoundResult>();
+		_response.Should().BeOfType<NotFoundObjectResult>();
 
 	[Fact]
 	public void WhenPostingSignMessageRequest_ThenLog() =>
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				$"No bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
+				$"No activated bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}."
 			});
 }
