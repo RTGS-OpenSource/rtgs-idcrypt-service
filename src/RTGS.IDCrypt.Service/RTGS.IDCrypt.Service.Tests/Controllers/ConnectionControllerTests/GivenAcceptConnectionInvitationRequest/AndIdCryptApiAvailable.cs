@@ -12,7 +12,6 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
-	private readonly FakeLogger<ConnectionController> _logger;
 	private readonly Mock<IConnectionsClient> _connectionsClientMock;
 	private readonly ConnectionController _connectionController;
 
@@ -52,10 +51,10 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.ReturnsAsync(connectionResponse)
 			.Verifiable();
 
-		_logger = new FakeLogger<ConnectionController>();
+		var logger = new FakeLogger<ConnectionController>();
 
 		_connectionController = new ConnectionController(
-			_logger,
+			logger,
 			_connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
 			Mock.Of<IAliasProvider>());

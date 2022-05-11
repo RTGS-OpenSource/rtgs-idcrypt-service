@@ -4,7 +4,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
 
 public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
@@ -35,7 +35,7 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 			.Build();
 	}
 
-	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; set; }
+	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
 	protected override async Task Seed()
 	{

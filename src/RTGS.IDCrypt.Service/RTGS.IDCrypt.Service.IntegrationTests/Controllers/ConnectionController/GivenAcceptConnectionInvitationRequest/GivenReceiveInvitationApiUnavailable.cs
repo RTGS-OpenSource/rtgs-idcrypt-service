@@ -2,22 +2,19 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.Contracts.Connection;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenAcceptConnectionInvitationRequest;
 
 public class GivenReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly ReceiveInvitationEndpointUnavailableFixture _testFixture;
 
 	private HttpResponseMessage _httpResponse;
 
 	public GivenReceiveInvitationApiUnavailable(ReceiveInvitationEndpointUnavailableFixture testFixture)
 	{
-		_testFixture = testFixture;
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
+		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
 		_client = testFixture.CreateClient();
 	}

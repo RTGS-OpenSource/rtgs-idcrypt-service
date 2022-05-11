@@ -1,7 +1,10 @@
 using System.Net.Mime;
 using System.Text.Json;
 using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using RTGS.IDCrypt.Service.Extensions;
 using Serilog;
 using Serilog.Events;

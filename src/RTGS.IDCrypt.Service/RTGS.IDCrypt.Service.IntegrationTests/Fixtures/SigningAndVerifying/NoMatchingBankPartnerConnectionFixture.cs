@@ -1,19 +1,18 @@
 ﻿using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
 
 public class NoMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
 	public NoMatchingBankPartnerConnectionFixture()
-		: base()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.Build();
 	}
 
-	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; set; }
+	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
 
 	protected override Task Seed() =>

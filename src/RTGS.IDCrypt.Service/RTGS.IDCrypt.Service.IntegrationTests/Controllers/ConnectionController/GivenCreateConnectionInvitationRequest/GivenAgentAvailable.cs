@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationRequest;
 

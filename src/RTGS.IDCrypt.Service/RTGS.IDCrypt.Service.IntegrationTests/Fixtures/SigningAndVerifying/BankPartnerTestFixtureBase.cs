@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
 
 public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
 {
