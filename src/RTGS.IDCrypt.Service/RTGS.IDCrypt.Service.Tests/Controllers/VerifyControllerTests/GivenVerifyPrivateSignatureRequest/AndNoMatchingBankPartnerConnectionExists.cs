@@ -18,15 +18,15 @@ using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
 using Xunit;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
-public class GivenNoMatchingBankPartnerConnectionExists
+public class AndNoMatchingBankPartnerConnectionExists
 {
 	private readonly FakeLogger<VerifyController> _logger;
 	private readonly VerifyController _controller;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 
-	public GivenNoMatchingBankPartnerConnectionExists()
+	public AndNoMatchingBankPartnerConnectionExists()
 	{
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
