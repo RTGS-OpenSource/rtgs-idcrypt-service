@@ -11,10 +11,12 @@ on:
 
 env:
   DOCKER_HUB_ORGANISATION: rtgsglobal
-  SOLUTION_FOLDER: src/RTGS.IDCrypt.Service
+  SOLUTION_FOLDER: src/RTGS.IDCrypt.Service/
+  CONTRACTS_FOLDER: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service.Contracts/
+  NUGET_URL: https://api.nuget.org/v3/index.json
 
 jobs:
-  build:
+  build-and-test:
     name: build-image
     runs-on: ubuntu-latest
     steps:
@@ -31,10 +33,11 @@ jobs:
         run: docker build ${{env.SOLUTION_FOLDER}} --target build --network=host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
+
   publish-to-docker:
     name: publish-to-docker
     if: ${{ github.ref == 'refs/heads/main' }}
-    needs: build
+    needs: build-and-test
     env:
       DOCKER_HUB_REPO: idcrypt-service-dev
     runs-on: ubuntu-latest
@@ -61,6 +64,7 @@ jobs:
           network: host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
+
   trigger-devops-pipeline:
     name: trigger-devops-pipeline
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -75,10 +79,11 @@ jobs:
           azure-pipeline-name: ${{ secrets.AZURE_DEVOPS_IDCRYPT_SERVICE_DEPLOYMENT_PIPELINE }}
           azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
           azure-pipeline-variables: '{"IdCryptServiceVersion": "${{ github.run_number }}"}'
+
   publish-to-docker-release:
     name: publish-to-docker-release
     if: github.event_name == 'release'
-    needs: build
+    needs: build-and-test
     env:
       DOCKER_HUB_REPO: idcrypt-service
     runs-on: ubuntu-latest
@@ -105,3 +110,20 @@ jobs:
           network: host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
+        
+  publish-to-nuget:
+    if: github.event_name == 'release'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: dotnet build and publish
+        run: |
+          dotnet build --configuration Release ${{env.SOLUTION_FOLDER}}
+          dotnet pack -c Release ${{env.CONTRACTS_FOLDER}}RTGS.IDCrypt.Service.Contracts.csproj
+      - name: 'dotnet publish'
+        run: |
+          dotnet nuget push ${{env.CONTRACTS_FOLDER}}bin/Release/*.nupkg -k ${{ secrets.NUGET_TOKEN }} -s ${{env.NUGET_URL}}
