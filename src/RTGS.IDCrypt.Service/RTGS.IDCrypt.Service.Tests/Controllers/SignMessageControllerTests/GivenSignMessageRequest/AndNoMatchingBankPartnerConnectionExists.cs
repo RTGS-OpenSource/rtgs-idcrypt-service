@@ -59,8 +59,13 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections",
-			GracePeriod = TimeSpan.FromMinutes(5)
+			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
+
+		var bankPartnerConnectionResolverMock = new Mock<IBankPartnerConnectionResolver>();
+		bankPartnerConnectionResolverMock.Setup(
+				resolver => resolver.Resolve(It.IsAny<List<BankPartnerConnection>>()))
+			.Returns((BankPartnerConnection)null);
 
 		_controller = new SignMessageController(
 			_logger,

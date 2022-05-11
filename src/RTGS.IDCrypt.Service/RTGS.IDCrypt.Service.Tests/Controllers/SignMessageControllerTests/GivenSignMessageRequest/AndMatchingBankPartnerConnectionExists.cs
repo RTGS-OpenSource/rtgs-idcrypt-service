@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Data.Tables;
@@ -74,15 +75,20 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections",
-			GracePeriod = TimeSpan.FromMinutes(5)
+			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
+
+		var bankPartnerConnectionResolverMock = new Mock<IBankPartnerConnectionResolver>();
+		bankPartnerConnectionResolverMock.Setup(
+				resolver => resolver.Resolve(It.IsAny<List<BankPartnerConnection>>()))
+			.Returns(TestBankPartnerConnections.Connections.First());
 
 		_controller = new SignMessageController(
 			logger,
 			options,
 			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object,
-			new BankPartnerConnectionResolver(options));
+			bankPartnerConnectionResolverMock.Object);
 	}
 
 	public async Task InitializeAsync() =>

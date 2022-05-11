@@ -43,9 +43,9 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
-		var storageTableResolver = new Mock<IStorageTableResolver>();
-		var tableClient = new Mock<TableClient>();
-		var bankPartnerConnections = new Mock<Azure.Pageable<BankPartnerConnection>>();
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+		var tableClientMock = new Mock<TableClient>();
+		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		_jsonSignaturesClientMock
 			.Setup(client => client.SignJsonDocumentAsync(
@@ -54,40 +54,45 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		bankPartnerConnections.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
+		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
 			new List<BankPartnerConnection>
 			{
 				matchingBankPartnerConnection,
 			}
 			.GetEnumerator());
 
-		tableClient.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 			tableClient.Query<BankPartnerConnection>(
 				It.IsAny<string>(),
 				It.IsAny<int?>(),
 				It.IsAny<IEnumerable<string>>(),
 				It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnections.Object);
+			.Returns(bankPartnerConnectionsMock.Object);
 
-		storageTableResolver
+		storageTableResolverMock
 			.Setup(storageTableResolver =>
 				storageTableResolver.GetTable("bankPartnerConnections"))
-			.Returns(tableClient.Object);
+			.Returns(tableClientMock.Object);
 
 		_logger = new FakeLogger<SignMessageController>();
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections",
-			GracePeriod = TimeSpan.FromMinutes(5)
+			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
+
+		var bankPartnerConnectionResolverMock = new Mock<IBankPartnerConnectionResolver>();
+		bankPartnerConnectionResolverMock.Setup(
+				resolver => resolver.Resolve(It.IsAny<List<BankPartnerConnection>>()))
+			.Returns(matchingBankPartnerConnection);
 
 		_signMessageController = new SignMessageController(
 			_logger,
 			options,
-			storageTableResolver.Object,
+			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object,
-			new BankPartnerConnectionResolver(options));
+			bankPartnerConnectionResolverMock.Object);
 	}
 
 	[Fact]

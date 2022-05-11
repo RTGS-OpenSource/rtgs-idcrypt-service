@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
 			var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 			{
 				BankPartnerConnectionsTableName = "bankPartnerConnections",
-				GracePeriod = TimeSpan.FromMinutes(5)
+				MinimumConnectionAge = TimeSpan.FromMinutes(5)
 			};
 
 			config.Bind(bankPartnerConnectionsConfig);

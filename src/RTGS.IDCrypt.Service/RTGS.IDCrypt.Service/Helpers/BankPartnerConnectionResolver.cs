@@ -32,13 +32,13 @@ public class BankPartnerConnectionResolver : IBankPartnerConnectionResolver
 	private BankPartnerConnection SelectConnection(
 		IReadOnlyCollection<BankPartnerConnection> bankPartnerConnections)
 	{
-		var connectionsPastOrAtGracePeriod = bankPartnerConnections.Where(connection =>
-				connection.Timestamp <= DateTimeOffsetServer.Now.Subtract(_bankPartnerConnectionsConfig.GracePeriod))
+		var connectionsPastOrAtMinimumConnectionAge = bankPartnerConnections.Where(connection =>
+				connection.Timestamp <= DateTimeOffsetServer.Now.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge))
 			.ToList();
 
-		if (connectionsPastOrAtGracePeriod.Any())
+		if (connectionsPastOrAtMinimumConnectionAge.Any())
 		{
-			return connectionsPastOrAtGracePeriod
+			return connectionsPastOrAtMinimumConnectionAge
 				.OrderByDescending(connection => connection.Timestamp)
 				.First();
 		}

@@ -34,8 +34,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 			.AddEnvironmentVariables()
 			.AddInMemoryCollection(new[]
 			{
-				new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName),
-				new KeyValuePair<string, string>("GracePeriod", TimeSpan.FromMinutes(5).ToString())
+				new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName)
 			})
 			.Build();
 

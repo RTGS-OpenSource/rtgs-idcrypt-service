@@ -11,7 +11,7 @@ namespace RTGS.IDCrypt.Service.Tests.Helpers.BankPartnerConnectionResolverTests;
 
 public class GivenMultipleMatchingConnections
 {
-	private readonly TimeSpan _gracePeriod = TimeSpan.FromMinutes(5);
+	private readonly TimeSpan _minimumConnectionAge = TimeSpan.FromMinutes(5);
 	private readonly BankPartnerConnectionResolver _sut;
 
 	public GivenMultipleMatchingConnections()
@@ -20,13 +20,13 @@ public class GivenMultipleMatchingConnections
 
 		var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 		{
-			GracePeriod = TimeSpan.FromMinutes(5)
+			MinimumConnectionAge = _minimumConnectionAge
 		};
 		_sut = new BankPartnerConnectionResolver(Options.Create(bankPartnerConnectionsConfig));
 	}
 
 	[Fact]
-	public void WhenAllAreOlderThanGracePeriod_AndResolveIsCalled_ThenShouldReturnLatestBankPartnerConnection()
+	public void WhenAllAreOlderThanMinimumConnectionAge_AndResolveIsCalled_ThenShouldReturnLatestBankPartnerConnection()
 	{
 		var bankPartnerConnections = new List<BankPartnerConnection>
 		{
@@ -35,14 +35,14 @@ public class GivenMultipleMatchingConnections
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_gracePeriod)
+				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge)
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_gracePeriod.Add(TimeSpan.FromMinutes(1)))
+				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge.Add(TimeSpan.FromMinutes(1)))
 			}
 		};
 
@@ -52,7 +52,7 @@ public class GivenMultipleMatchingConnections
 	}
 
 	[Fact]
-	public void WhenOneIsYoungerThanGracePeriod_AndResolveIsCalled_ThenShouldReturnLatestBankPartnerConnectionOlderThanGracePeriod()
+	public void WhenOneIsYoungerThanMinimumConnectionAge_AndResolveIsCalled_ThenShouldReturnLatestBankPartnerConnectionOlderThanMinimumConnectionAge()
 	{
 		var bankPartnerConnections = new List<BankPartnerConnection>
 		{
@@ -61,21 +61,21 @@ public class GivenMultipleMatchingConnections
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_gracePeriod).Add(TimeSpan.FromMinutes(1))
+				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(1))
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_gracePeriod)
+				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge)
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-3",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_gracePeriod.Add(TimeSpan.FromMinutes(1)))
+				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge.Add(TimeSpan.FromMinutes(1)))
 			}
 		};
 
@@ -85,7 +85,7 @@ public class GivenMultipleMatchingConnections
 	}
 
 	[Fact]
-	public void WhenAllAreYoungerThanGracePeriod_AndResolveIsCalled_ThenShouldReturnOldestBankPartnerConnection()
+	public void WhenAllAreYoungerThanMinimumConnectionAge_AndResolveIsCalled_ThenShouldReturnOldestBankPartnerConnection()
 	{
 		var bankPartnerConnections = new List<BankPartnerConnection>
 		{
@@ -94,14 +94,14 @@ public class GivenMultipleMatchingConnections
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_gracePeriod).Add(TimeSpan.FromMinutes(2))
+				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(2))
 			},
 			new BankPartnerConnection
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Timestamp = DateTimeOffsetServer.Now.Subtract(_gracePeriod).Add(TimeSpan.FromMinutes(1))
+				Timestamp = DateTimeOffsetServer.Now.Subtract(_minimumConnectionAge).Add(TimeSpan.FromMinutes(1))
 			}
 		};
 

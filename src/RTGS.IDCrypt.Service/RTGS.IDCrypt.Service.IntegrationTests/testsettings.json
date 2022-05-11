@@ -2,5 +2,6 @@
 	"StorageConnection": "UseDevelopmentStorage=true",
 	"AgentApiAddress": "http://localhost",
 	"AgentApiKey": "AgentApiKey",
-	"AgentServiceEndpointAddress": "http://localhost"
+	"AgentServiceEndpointAddress": "http://localhost",
+	"MinimumConnectionAge": "00:00:05" 
 }

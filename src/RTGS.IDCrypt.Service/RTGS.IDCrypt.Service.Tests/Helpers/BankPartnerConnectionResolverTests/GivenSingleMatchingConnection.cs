@@ -28,7 +28,7 @@ public class GivenSingleMatchingConnection
 
 		var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 		{
-			GracePeriod = TimeSpan.FromMinutes(5)
+			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		};
 		var sut = new BankPartnerConnectionResolver(Options.Create(bankPartnerConnectionsConfig));
 
