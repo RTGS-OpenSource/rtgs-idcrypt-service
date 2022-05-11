@@ -50,8 +50,8 @@ public class SignMessageController : ControllerBase
 				&& bankPartnerConnection.CreatedAt <= dateThreshold).ToList();
 
 		var bankPartnerConnection = bankPartnerConnections
-		.OrderByDescending(connection => connection.CreatedAt)
-		.FirstOrDefault();
+			.OrderByDescending(connection => connection.CreatedAt)
+			.FirstOrDefault();
 
 		if (bankPartnerConnection is null)
 		{
