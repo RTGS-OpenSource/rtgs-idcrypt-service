@@ -59,7 +59,6 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1))
 		};
 
-
 		var bankPartnerConnections = new List<BankPartnerConnection>
 		{
 			tooOldConnection,

@@ -25,13 +25,13 @@ public class SignMessageController : ControllerBase
 		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsConfig,
 		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient,
-		IDateTimeProvider dateTimeOffsetProvider)
+		IDateTimeProvider dateTimeProvider)
 	{
 		_logger = logger;
 		_bankPartnerConnectionsConfig = bankPartnerConnectionsConfig.Value;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
-		_dateTimeProvider = dateTimeOffsetProvider;
+		_dateTimeProvider = dateTimeProvider;
 	}
 
 	[HttpPost]
@@ -43,13 +43,15 @@ public class SignMessageController : ControllerBase
 
 		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge);
 
-		var bankPartnerConnection = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-			.Where(bankPartnerConnection =>
-				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
-				&& bankPartnerConnection.CreatedAt <= dateThreshold)
-			.OrderByDescending(connection => connection.CreatedAt)
-			.FirstOrDefault();
+		var bankPartnerConnections = bankPartnerConnectionsTable
+			.Query<BankPartnerConnection>(cancellationToken: cancellationToken).ToList();
+
+		var bankPartnerConnection = bankPartnerConnections
+		.Where(bankPartnerConnection =>
+			bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
+			&& bankPartnerConnection.CreatedAt <= dateThreshold)
+		.OrderByDescending(connection => connection.CreatedAt)
+		.FirstOrDefault();
 
 		if (bankPartnerConnection is null)
 		{
