@@ -16,7 +16,6 @@ public class AndIdCryptAgentUnavailable
 {
 	private readonly SignMessageController _signMessageController;
 	private readonly SignMessageRequest _signMessageRequest;
-	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private readonly FakeLogger<SignMessageController> _logger;
 
 	public AndIdCryptAgentUnavailable()
@@ -34,12 +33,12 @@ public class AndIdCryptAgentUnavailable
 			ConnectionId = "connection-id"
 		};
 
-		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
+		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolver = new Mock<IStorageTableResolver>();
 		var tableClient = new Mock<TableClient>();
 		var bankPartnerConnections = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
-		_jsonSignaturesClientMock
+		jsonSignaturesClientMock
 			.Setup(client => client.SignJsonDocumentAsync(
 				It.IsAny<string>(),
 				It.IsAny<string>(),
@@ -77,7 +76,7 @@ public class AndIdCryptAgentUnavailable
 			_logger,
 			options,
 			storageTableResolver.Object,
-			_jsonSignaturesClientMock.Object);
+			jsonSignaturesClientMock.Object);
 	}
 
 	[Fact]

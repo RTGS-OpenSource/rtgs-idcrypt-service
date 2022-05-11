@@ -12,10 +12,6 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 public class AndIdCryptGetPublicDidApiUnavailable
 {
 	private readonly FakeLogger<ConnectionController> _logger;
-	private readonly Mock<IConnectionsClient> _connectionsClientMock;
-	private readonly CreateInvitationResponse _createInvitationResponse;
-	private readonly Mock<IWalletClient> _walletClientMock;
-	private readonly Mock<IAliasProvider> _mockAliasProvider;
 	private readonly ConnectionController _connectionController;
 	private const string Alias = "alias";
 
@@ -25,9 +21,9 @@ public class AndIdCryptGetPublicDidApiUnavailable
 		const bool multiUse = false;
 		const bool usePublicDid = false;
 
-		_connectionsClientMock = new Mock<IConnectionsClient>();
+		var connectionsClientMock = new Mock<IConnectionsClient>();
 
-		_createInvitationResponse = new CreateInvitationResponse
+		var createInvitationResponse = new CreateInvitationResponse
 		{
 			ConnectionId = "connection-id",
 			Invitation = new ConnectionInvitation
@@ -43,25 +39,25 @@ public class AndIdCryptGetPublicDidApiUnavailable
 			}
 		};
 
-		_connectionsClientMock
+		connectionsClientMock
 			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
 				Alias,
 				autoAccept,
 				multiUse,
 				usePublicDid,
 				It.IsAny<CancellationToken>()))
-			.ReturnsAsync(_createInvitationResponse)
+			.ReturnsAsync(createInvitationResponse)
 			.Verifiable();
 
-		_walletClientMock = new Mock<IWalletClient>();
+		var walletClientMock = new Mock<IWalletClient>();
 
-		_walletClientMock
+		walletClientMock
 			.Setup(walletClient => walletClient.GetPublicDidAsync(It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		_mockAliasProvider = new Mock<IAliasProvider>();
+		var mockAliasProvider = new Mock<IAliasProvider>();
 
-		_mockAliasProvider
+		mockAliasProvider
 			.Setup(provider => provider.Provide())
 			.Returns(Alias);
 
@@ -69,9 +65,9 @@ public class AndIdCryptGetPublicDidApiUnavailable
 
 		_connectionController = new ConnectionController(
 			_logger,
-			_connectionsClientMock.Object,
-			_walletClientMock.Object,
-			_mockAliasProvider.Object);
+			connectionsClientMock.Object,
+			walletClientMock.Object,
+			mockAliasProvider.Object);
 	}
 
 	[Fact]
