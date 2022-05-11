@@ -7,7 +7,7 @@
     <Product>RTGS Global ID Crypt Service Contracts</Product>
     <Copyright>RTGS Global Limited</Copyright>
     <Description>Contracts used by the RTGS.global ID Crypt service.</Description>
-    <RepositoryUrl>https://github.com/RTGS-OpenSource/rtgs-service</RepositoryUrl>
+    <RepositoryUrl>https://github.com/RTGS-OpenSource/rtgs-idcrypt-service</RepositoryUrl>
     <PackageIcon>rtgs_global_logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
