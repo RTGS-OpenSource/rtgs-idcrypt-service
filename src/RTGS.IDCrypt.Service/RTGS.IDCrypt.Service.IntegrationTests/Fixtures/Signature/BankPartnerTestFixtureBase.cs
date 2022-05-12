@@ -15,7 +15,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	{
 		LoadConfig();
 		CreateTable();
-		Seed();
+		Task.Run(async () => await Seed()).Wait();
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
