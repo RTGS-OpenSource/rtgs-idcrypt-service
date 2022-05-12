@@ -108,7 +108,7 @@ public class VerifyController : ControllerBase
 		{
 			verified = await _jsonSignaturesClient.VerifyJsonDocumentPublicSignatureAsync(
 				verifyPublicSignatureRequest.Message,
-				verifyPublicSignatureRequest.PublicSignature, publicDid, cancellationToken: cancellationToken);
+				verifyPublicSignatureRequest.PublicSignature, publicDid, cancellationToken);
 		}
 		catch (Exception ex)
 		{
