@@ -86,10 +86,10 @@ public class VerifyController : ControllerBase
 		return Ok(verifyPrivateSignatureResponse);
 	}
 
+	[HttpPost("public")]
 	public async Task<IActionResult> VerifyPublicSignature(VerifyPublicSignatureRequest verifyPublicSignatureRequest, CancellationToken cancellationToken)
 	{
 		string publicDid;
-
 		try
 		{
 			publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
@@ -118,7 +118,6 @@ public class VerifyController : ControllerBase
 
 			throw;
 		}
-
 
 		return Ok(new VerifyPublicSignatureResponse { Verified = verified });
 	}
