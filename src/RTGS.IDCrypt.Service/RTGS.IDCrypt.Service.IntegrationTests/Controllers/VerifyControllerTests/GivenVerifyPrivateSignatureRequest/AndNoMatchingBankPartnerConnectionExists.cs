@@ -22,13 +22,11 @@ public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatching
 
 	public async Task InitializeAsync()
 	{
-		var request = new VerifyPrivateSignatureRequest()
-		{
-			RtgsGlobalId = "rtgs-global-id-2",
-			Alias = "alias",
-			Message = @"{ ""Message"": ""I am the walrus"" }",
-			PrivateSignature = "private-signature"
-		};
+		var request = new VerifyPrivateSignatureRequest(
+			"rtgs-global-id-2",
+			@"{ ""Message"": ""I am the walrus"" }",
+			"private-signature",
+			"alias");
 
 		_httpResponse = await _client.PostAsJsonAsync("api/verify", request);
 	}

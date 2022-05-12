@@ -21,11 +21,7 @@ public class AndIdCryptAgentUnavailable
 
 	public AndIdCryptAgentUnavailable()
 	{
-		_signMessageRequest = new SignMessageRequest
-		{
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
-		};
+		_signMessageRequest = new SignMessageRequest("rtgs-global-id", "message");
 
 		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
 		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
@@ -52,7 +48,7 @@ public class AndIdCryptAgentUnavailable
 			.ThrowsAsync(new Exception());
 
 		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			new List<BankPartnerConnection>
+				new List<BankPartnerConnection>
 			{
 				matchingBankPartnerConnection,
 			}

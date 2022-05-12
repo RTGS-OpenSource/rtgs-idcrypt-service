@@ -3,14 +3,6 @@
 /// <summary>
 ///  Model of the sign message request.
 /// </summary>
-public record SignMessageRequest
-{
-	/// <summary>
-	/// The RTGS Global identifier.
-	/// </summary>
-	public string RtgsGlobalId { get; init; }
-	/// <summary>
-	/// The JSON document to be signed.
-	/// </summary>
-	public string Message { get; init; }
-}
+/// <param name="RtgsGlobalId">The RTGS Global identifier.</param>
+/// <param name="Message">The JSON document to be signed.</param>
+public record SignMessageRequest(string RtgsGlobalId, string Message);

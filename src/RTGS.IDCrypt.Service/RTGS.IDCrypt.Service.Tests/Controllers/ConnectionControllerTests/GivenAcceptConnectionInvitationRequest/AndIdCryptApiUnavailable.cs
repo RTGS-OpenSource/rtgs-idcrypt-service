@@ -39,14 +39,13 @@ public class AndIdCryptApiUnavailable
 	{
 		using var _ = new AssertionScope();
 
-		var request = new AcceptConnectionInvitationRequest
-		{
-			Alias = "alias",
-			Id = "id",
-			Label = "label",
-			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
-		};
+		var request = new AcceptConnectionInvitationRequest(
+			"id",
+			"type",
+			"alias",
+			"label",
+			new[] { "recipient-key" },
+			"service-endpoint");
 
 		await FluentActions
 			.Awaiting(() => _connectionController.Accept(request, default))

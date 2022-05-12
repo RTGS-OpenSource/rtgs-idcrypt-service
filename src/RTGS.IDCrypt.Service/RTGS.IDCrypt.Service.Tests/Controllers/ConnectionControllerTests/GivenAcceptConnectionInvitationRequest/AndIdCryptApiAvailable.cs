@@ -30,8 +30,9 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		var expectedRequest = new ReceiveAndAcceptInvitationRequest
 		{
-			Alias = "alias",
 			Id = "id",
+			Type = "type",
+			Alias = "alias",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
 			ServiceEndpoint = "service-endpoint"
@@ -62,14 +63,13 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	public async Task InitializeAsync()
 	{
-		var request = new AcceptConnectionInvitationRequest
-		{
-			Alias = "alias",
-			Id = "id",
-			Label = "label",
-			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
-		};
+		var request = new AcceptConnectionInvitationRequest(
+			"id",
+			"type",
+			"alias",
+			"label",
+			new[] { "recipient-key" },
+			"service-endpoint");
 
 		_response = await _connectionController.Accept(request, default);
 	}

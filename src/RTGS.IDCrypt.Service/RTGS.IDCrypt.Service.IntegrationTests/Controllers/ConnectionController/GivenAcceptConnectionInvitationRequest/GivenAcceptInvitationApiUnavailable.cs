@@ -21,14 +21,13 @@ public class GivenAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitatio
 
 	public async Task InitializeAsync()
 	{
-		var request = new AcceptConnectionInvitationRequest
-		{
-			Alias = "alias",
-			Id = "id",
-			Label = "label",
-			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
-		};
+		var request = new AcceptConnectionInvitationRequest(
+			"id",
+			"type",
+			"alias",
+			"label",
+			new[] { "recipient-key" },
+			"service-endpoint");
 
 		_httpResponse = await _client.PostAsJsonAsync("api/connection/accept", request);
 	}

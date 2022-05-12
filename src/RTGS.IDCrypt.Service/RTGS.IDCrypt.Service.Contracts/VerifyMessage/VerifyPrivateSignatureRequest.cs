@@ -3,22 +3,12 @@
 /// <summary>
 /// Represents the data required to verify a signature.
 /// </summary>
-public record VerifyPrivateSignatureRequest
-{
-	/// <summary>
-	/// The RTGS.global Id of the connection with which to sign the document.
-	/// </summary>
-	public string RtgsGlobalId { get; init; }
-	/// <summary>
-	/// The message to verify.
-	/// </summary>
-	public string Message { get; init; }
-	/// <summary>
-	/// The private signature of the signed message.
-	/// </summary>
-	public string PrivateSignature { get; init; }
-	/// <summary>
-	/// The alias of the connection with which to sign the message.
-	/// </summary>
-	public string Alias { get; init; }
-}
+/// <param name="RtgsGlobalId">The RTGS.global Id of the connection with which to sign the document.</param>
+/// <param name="Message">The message to verify.</param>
+/// <param name="PrivateSignature">The private signature of the signed message.</param>
+/// <param name="Alias">The alias of the connection with which to sign the message.</param>
+public record VerifyPrivateSignatureRequest(
+	string RtgsGlobalId,
+	string Message,
+	string PrivateSignature,
+	string Alias);
