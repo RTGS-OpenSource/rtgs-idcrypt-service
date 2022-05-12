@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK.JsonSignatures;
@@ -17,17 +18,20 @@ public class SignMessageController : ControllerBase
 	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
+	private readonly IDateTimeProvider _dateTimeProvider;
 
 	public SignMessageController(
 		ILogger<SignMessageController> logger,
 		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsConfig,
 		IStorageTableResolver storageTableResolver,
-		IJsonSignaturesClient jsonSignaturesClient)
+		IJsonSignaturesClient jsonSignaturesClient,
+		IDateTimeProvider dateTimeProvider)
 	{
 		_logger = logger;
 		_bankPartnerConnectionsConfig = bankPartnerConnectionsConfig.Value;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
+		_dateTimeProvider = dateTimeProvider;
 	}
 
 	[HttpPost]
@@ -37,22 +41,26 @@ public class SignMessageController : ControllerBase
 	{
 		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
 
+		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge);
+
 		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
 			.Where(bankPartnerConnection =>
-				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId)
-			.ToList();
+				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
+				&& bankPartnerConnection.CreatedAt <= dateThreshold).ToList();
 
-		if (!bankPartnerConnections.Any())
+		var bankPartnerConnection = bankPartnerConnections
+			.OrderByDescending(connection => connection.CreatedAt)
+			.FirstOrDefault();
+
+		if (bankPartnerConnection is null)
 		{
 			_logger.LogError(
-				"No bank partner connection found for RTGS Global ID {RtgsGlobalId}",
+				"No activated bank partner connection found for RTGS Global ID {RtgsGlobalId}.",
 				signMessageRequest.RtgsGlobalId);
 
-			return NotFound();
+			return NotFound(new { Error = "No activated bank partner connection found, please try again in a few minutes." });
 		}
-
-		var bankPartnerConnection = bankPartnerConnections.First();
 
 		SignDocumentResponse signDocumentResponse;
 

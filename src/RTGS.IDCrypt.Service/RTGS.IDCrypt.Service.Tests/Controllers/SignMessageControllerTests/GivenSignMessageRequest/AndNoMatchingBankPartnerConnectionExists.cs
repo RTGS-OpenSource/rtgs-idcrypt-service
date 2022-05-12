@@ -6,6 +6,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -51,14 +52,20 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
+			BankPartnerConnectionsTableName = "bankPartnerConnections",
+			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
+
+		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
+		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
 
 		_controller = new SignMessageController(
 			_logger,
 			options,
 			storageTableResolverMock.Object,
-			_jsonSignaturesClientMock.Object);
+			_jsonSignaturesClientMock.Object,
+			dateTimeProviderMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
@@ -74,12 +81,12 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	[Fact]
 	public void WhenPostingSignMessageRequest_ThenReturnNotFoundResponse() =>
-		_response.Should().BeOfType<NotFoundResult>();
+		_response.Should().BeOfType<NotFoundObjectResult>();
 
 	[Fact]
 	public void WhenPostingSignMessageRequest_ThenLog() =>
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				$"No bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
+				$"No activated bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}."
 			});
 }

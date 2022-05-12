@@ -20,7 +20,8 @@ public static class ServiceCollectionExtensions
 		{
 			var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 			{
-				BankPartnerConnectionsTableName = "bankPartnerConnections"
+				BankPartnerConnectionsTableName = "bankPartnerConnections",
+				MinimumConnectionAge = TimeSpan.FromMinutes(5)
 			};
 
 			config.Bind(bankPartnerConnectionsConfig);
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
 
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
+		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),
