@@ -21,7 +21,11 @@ public class AndIdCryptAgentUnavailable
 
 	public AndIdCryptAgentUnavailable()
 	{
-		_signMessageRequest = new SignMessageRequest("rtgs-global-id", "message");
+		_signMessageRequest = new SignMessageRequest
+		{
+			RtgsGlobalId = "rtgs-global-id",
+			Message = "message"
+		};
 
 		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
 		var dateTimeProviderMock = new Mock<IDateTimeProvider>();

@@ -63,11 +63,13 @@ public class AndNoMatchingBankPartnerConnectionExists
 	[InlineData("rtgs-global-id-3", "alias-5")]
 	public async Task ThenMessageIsNotVerified(string rtgsGlobalId, string alias)
 	{
-		var response = await _controller.Post(new VerifyPrivateSignatureRequest(
-			rtgsGlobalId,
-			"message",
-			"signature",
-			alias));
+		var response = await _controller.Post(new VerifyPrivateSignatureRequest
+		{
+			RtgsGlobalId = rtgsGlobalId,
+			Message = "message",
+			PrivateSignature = "signature",
+			Alias = alias
+		});
 
 		using var _ = new AssertionScope();
 

@@ -3,16 +3,35 @@
 /// <summary>
 /// Model of the invitation to accept.
 /// </summary>
-/// <param name="Id">Message identifier.</param>
-/// <param name="Type">Message type.</param>
-/// <param name="Alias">Alias for the connection.</param>
-/// <param name="Label">Label for connection invitation.</param>
-/// <param name="RecipientKeys">List of recipient keys.</param>
-/// <param name="ServiceEndpoint">Service endpoint at which to reach this agent.</param>
-public record AcceptConnectionInvitationRequest(
-	string Id,
-	string Type,
-	string Alias,
-	string Label,
-	string[] RecipientKeys,
-	string ServiceEndpoint);
+public class AcceptConnectionInvitationRequest
+{
+	/// <summary>
+	/// Message identifier.
+	/// </summary>
+	public string Id { get; init; }
+
+	/// <summary>
+	/// Message type.
+	/// </summary>
+	public string Type { get; init; }
+
+	/// <summary>
+	/// Alias for the connection.
+	/// </summary>
+	public string Alias { get; init; }
+
+	/// <summary>
+	/// Label for connection invitation.
+	/// </summary>
+	public string Label { get; init; }
+
+	/// <summary>
+	/// List of recipient keys.
+	/// </summary>
+	public string[] RecipientKeys { get; init; }
+
+	/// <summary>
+	/// Service endpoint at which to reach this agent.
+	/// </summary>
+	public string ServiceEndpoint { get; init; }
+}

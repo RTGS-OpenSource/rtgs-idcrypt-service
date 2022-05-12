@@ -25,7 +25,11 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	public AndNoMatchingBankPartnerConnectionExists()
 	{
-		_signMessageRequest = new SignMessageRequest("rtgs-global-id", "message");
+		_signMessageRequest = new SignMessageRequest
+		{
+			RtgsGlobalId = "rtgs-global-id",
+			Message = "message"
+		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();

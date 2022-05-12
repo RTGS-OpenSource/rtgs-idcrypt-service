@@ -24,9 +24,11 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 
 	public async Task InitializeAsync()
 	{
-		var request = new SignMessageRequest(
-			"rtgs-global-id",
-			@"{ ""Message"": ""I am the walrus"" }");
+		var request = new SignMessageRequest
+		{
+			RtgsGlobalId = "rtgs-global-id",
+			Message = @"{ ""Message"": ""I am the walrus"" }"
+		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/signmessage", request);
 	}

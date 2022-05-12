@@ -8,9 +8,11 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public class ThrowingFixture : WebApplicationFactory<Program>
 {
-	public static SignMessageRequest SignMessageRequest => new(
-		"rtgs-global-id",
-		@"{ ""Message"": ""I am the walrus"" }");
+	public static SignMessageRequest SignMessageRequest => new()
+	{
+		RtgsGlobalId = "rtgs-global-id",
+		Message = @"{ ""Message"": ""I am the walrus"" }"
+	};
 
 	protected override IHost CreateHost(IHostBuilder builder)
 	{

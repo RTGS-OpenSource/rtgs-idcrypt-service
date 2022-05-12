@@ -22,11 +22,13 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	public AndMatchingBankPartnerConnectionExists()
 	{
-		_verifyPrivateSignatureRequest = new VerifyPrivateSignatureRequest(
-			"rtgs-global-id-1",
-			"message",
-			"signature",
-			"alias-1");
+		_verifyPrivateSignatureRequest = new VerifyPrivateSignatureRequest
+		{
+			RtgsGlobalId = "rtgs-global-id-1",
+			Message = "message",
+			PrivateSignature = "signature",
+			Alias = "alias-1"
+		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();

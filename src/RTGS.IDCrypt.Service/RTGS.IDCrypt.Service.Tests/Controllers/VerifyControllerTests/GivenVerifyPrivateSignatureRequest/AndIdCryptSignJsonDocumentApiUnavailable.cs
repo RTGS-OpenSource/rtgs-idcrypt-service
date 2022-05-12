@@ -21,11 +21,13 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 
 	public AndIdCryptSignJsonDocumentApiUnavailable()
 	{
-		_request = new VerifyPrivateSignatureRequest(
-			"rtgs-global-id-1",
-			@"{ ""Message"": ""I am the walrus"" }",
-			"private-signature",
-			"alias-1");
+		_request = new VerifyPrivateSignatureRequest
+		{
+			RtgsGlobalId = "rtgs-global-id-1",
+			Message = @"{ ""Message"": ""I am the walrus"" }",
+			PrivateSignature = "private-signature",
+			Alias = "alias-1"
+		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();

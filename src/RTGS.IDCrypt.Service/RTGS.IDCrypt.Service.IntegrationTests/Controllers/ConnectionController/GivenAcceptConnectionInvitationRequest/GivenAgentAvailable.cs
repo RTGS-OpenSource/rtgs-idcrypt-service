@@ -24,13 +24,15 @@ public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, I
 
 	public async Task InitializeAsync()
 	{
-		var request = new AcceptConnectionInvitationRequest(
-			"id",
-			"type",
-			"alias",
-			"label",
-			new[] { "recipient-key" },
-			"service-endpoint");
+		var request = new AcceptConnectionInvitationRequest
+		{
+			Id = "id",
+			Type = "type",
+			Alias = "alias",
+			Label = "label",
+			RecipientKeys = new[] { "recipient-key" },
+			ServiceEndpoint = "service-endpoint"
+		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/connection/accept", request);
 	}
