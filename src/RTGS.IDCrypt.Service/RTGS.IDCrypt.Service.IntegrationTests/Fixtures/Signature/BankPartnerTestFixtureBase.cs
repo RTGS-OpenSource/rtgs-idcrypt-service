@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
 {
@@ -15,7 +15,7 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	{
 		LoadConfig();
 		CreateTable();
-		Seed();
+		Task.Run(async () => await Seed()).Wait();
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
@@ -37,6 +37,12 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 		var storageTableResolver = new StorageTableResolver(Configuration);
 
 		_bankPartnerConnectionsTable = storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		_bankPartnerConnectionsTable.Delete();
+		base.Dispose(disposing);
 	}
 
 	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>

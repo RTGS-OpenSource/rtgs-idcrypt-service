@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
+using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController;
 
@@ -23,7 +23,7 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 	public async Task InitializeAsync()
 	{
 
-		var request = new SignMessageRequest()
+		var request = new SignMessageRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
 			Message = @"{ ""Message"": ""I am the walrus"" }"
@@ -40,6 +40,14 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(SignDocument.Path);
 
 	[Fact]
-	public void ThenNotFoundResponseReceived() =>
+	public async Task ThenNotFoundResponseReceived()
+	{
+		var _ = new AssertionScope();
+
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+		var content = await _httpResponse.Content.ReadAsStringAsync();
+
+		content.Should().Be("{\"error\":\"No activated bank partner connection found, please try again in a few minutes.\"}");
+	}
 }

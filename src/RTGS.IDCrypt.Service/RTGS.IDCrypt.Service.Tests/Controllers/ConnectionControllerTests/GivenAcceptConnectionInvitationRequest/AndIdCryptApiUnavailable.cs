@@ -41,8 +41,9 @@ public class AndIdCryptApiUnavailable
 
 		var request = new AcceptConnectionInvitationRequest
 		{
-			Alias = "alias",
 			Id = "id",
+			Type = "type",
+			Alias = "alias",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
 			ServiceEndpoint = "service-endpoint"

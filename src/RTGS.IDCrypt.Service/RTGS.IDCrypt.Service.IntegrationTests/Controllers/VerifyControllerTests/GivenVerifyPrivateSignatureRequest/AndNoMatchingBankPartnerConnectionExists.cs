@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
+using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
@@ -22,12 +22,12 @@ public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatching
 
 	public async Task InitializeAsync()
 	{
-		var request = new VerifyPrivateSignatureRequest()
+		var request = new VerifyPrivateSignatureRequest
 		{
 			RtgsGlobalId = "rtgs-global-id-2",
-			Alias = "alias",
 			Message = @"{ ""Message"": ""I am the walrus"" }",
-			PrivateSignature = "private-signature"
+			PrivateSignature = "private-signature",
+			Alias = "alias"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/verify", request);
