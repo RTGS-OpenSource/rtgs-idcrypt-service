@@ -52,7 +52,7 @@ public class AndIdCryptAgentUnavailable
 			.ThrowsAsync(new Exception());
 
 		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-				new List<BankPartnerConnection>
+			new List<BankPartnerConnection>
 			{
 				matchingBankPartnerConnection,
 			}
