@@ -3,11 +3,10 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
@@ -72,7 +71,7 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 		}
 	}
 
-	public BankPartnerConnection ValidConnection { get; set; }
+	public BankPartnerConnection ValidConnection { get; private set; }
 
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>

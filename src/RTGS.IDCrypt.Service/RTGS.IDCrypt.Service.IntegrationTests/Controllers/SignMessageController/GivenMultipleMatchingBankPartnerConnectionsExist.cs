@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
+using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController;
 
