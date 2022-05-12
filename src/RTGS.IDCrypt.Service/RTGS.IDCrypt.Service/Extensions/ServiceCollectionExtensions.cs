@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Webhooks;
+using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCryptSDK;
 using RTGS.IDCryptSDK.Extensions;
 
@@ -30,6 +32,9 @@ public static class ServiceCollectionExtensions
 
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
+
+		services.AddSingleton<IdCryptMessageHandlerResolver>();
+		services.AddSingleton<IIdCryptMessageHandler, IdCryptConnectionMessageHandler>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),

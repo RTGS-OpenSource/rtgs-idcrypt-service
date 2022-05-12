@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using RTGS.IDCrypt.Service.Extensions;
+using RTGS.IDCrypt.Service.Webhooks;
 using Serilog;
 using Serilog.Events;
 
@@ -55,9 +56,18 @@ app.MapHealthChecks("/healthz");
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
+
+var idCryptMessageHandlerResolver = app.Services.GetService<IdCryptMessageHandlerResolver>();
+
+app.UseRouting();
+
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+	endpoints.MapPost("/v1/idcrypt/topic/{route}", idCryptMessageHandlerResolver.Resolve);
+});
 
 try
 {
