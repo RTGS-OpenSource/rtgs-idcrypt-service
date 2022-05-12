@@ -3,6 +3,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -74,7 +75,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			logger,
 			_connectionsClientMock.Object,
 			_walletClientMock.Object,
-			mockAliasProvider.Object);
+			mockAliasProvider.Object,
+			Mock.Of<IStorageTableResolver>());
 	}
 
 	public async Task InitializeAsync() =>

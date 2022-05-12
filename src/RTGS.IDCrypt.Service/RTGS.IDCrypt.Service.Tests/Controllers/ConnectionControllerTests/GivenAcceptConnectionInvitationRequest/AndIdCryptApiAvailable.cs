@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Data.Tables;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -16,6 +19,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	private readonly ConnectionController _connectionController;
 
 	private IActionResult _response;
+	private Mock<TableClient> _tableClientMock;
+	private Mock<IStorageTableResolver> _storageTableResolver;
 
 	public AndIdCryptApiAvailable()
 	{
@@ -37,7 +42,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			ServiceEndpoint = "service-endpoint"
 		};
 
-		Func<ReceiveAndAcceptInvitationRequest, bool> matches = request =>
+		Func<ReceiveAndAcceptInvitationRequest, bool> requestMatches = request =>
 		{
 			request.Should().BeEquivalentTo(expectedRequest);
 
@@ -46,9 +51,44 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		_connectionsClientMock
 			.Setup(connectionsClient => connectionsClient.ReceiveAndAcceptInvitationAsync(
-				It.Is<ReceiveAndAcceptInvitationRequest>(x => matches(x)),
+				It.Is<ReceiveAndAcceptInvitationRequest>(request => requestMatches(request)),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(connectionResponse)
+			.Verifiable();
+
+
+		var expectedPendingConnection = new PendingBankPartnerConnection
+		{
+			PartitionKey = connectionResponse.ConnectionId,
+			RowKey = connectionResponse.Alias,
+			ConnectionId = connectionResponse.ConnectionId,
+			Alias = connectionResponse.Alias
+		};
+
+		Func<PendingBankPartnerConnection, bool> connectionMatches = request =>
+		{
+			request.Should().BeEquivalentTo(expectedPendingConnection, options =>
+			{
+				options.Excluding(connection => connection.ETag);
+				options.Excluding(connection => connection.Timestamp);
+
+				return options;
+			});
+
+			return true;
+		};
+
+		_tableClientMock = new Mock<TableClient>();
+		_tableClientMock
+			.Setup(tableClient => tableClient.AddEntityAsync(
+				It.Is<PendingBankPartnerConnection>(connection => connectionMatches(connection)),
+				It.IsAny<CancellationToken>()))
+			.Verifiable();
+
+		_storageTableResolver = new Mock<IStorageTableResolver>();
+		_storageTableResolver
+			.Setup(resolver => resolver.GetTable("PendingBankPartnerConnections"))
+			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
 		var logger = new FakeLogger<ConnectionController>();
@@ -57,7 +97,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			logger,
 			_connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
-			Mock.Of<IAliasProvider>());
+			Mock.Of<IAliasProvider>(),
+			_storageTableResolver.Object);
 	}
 
 	public async Task InitializeAsync()
@@ -84,4 +125,12 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	[Fact]
 	public void WhenPosting_ThenCallReceiveAndAcceptInvitationAsyncWithExpected() =>
 		_connectionsClientMock.Verify();
+
+	[Fact]
+	public void ThenExpectedTableIsResolved() =>
+		_storageTableResolver.Verify();
+
+	[Fact]
+	public void ThenConnectionIsWritten() =>
+		_tableClientMock.Verify();
 }

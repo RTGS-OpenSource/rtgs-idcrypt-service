@@ -3,5 +3,5 @@
 public interface IIdCryptMessageHandler
 {
 	string MessageType { get; }
-	void Handle(string jsonMessage);
+	Task HandleAsync(string jsonMessage);
 }

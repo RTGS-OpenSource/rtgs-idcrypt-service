@@ -47,7 +47,7 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 			}
 		};
 
-		await _resolver.Resolve(defaultHttpContext);
+		await _resolver.ResolveAsync(defaultHttpContext);
 	}
 
 	public Task DisposeAsync() =>
@@ -55,7 +55,7 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 
 	[Fact]
 	public void ThenHandlerIsCalledWithExpected() =>
-		_mockIdCryptMessageHandler.Verify(handler => handler.Handle("the-body"), Times.Once);
+		_mockIdCryptMessageHandler.Verify(handler => handler.HandleAsync("the-body"), Times.Once);
 
 	[Fact]
 	public void ThenLog() =>

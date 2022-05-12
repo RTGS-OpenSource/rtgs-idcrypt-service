@@ -19,7 +19,7 @@ public class IdCryptMessageHandlerResolver
 		_idCryptMessageHandlers = idCryptMessageHandlers;
 	}
 
-	public async Task Resolve(HttpContext context)
+	public async Task ResolveAsync(HttpContext context)
 	{
 		_logger.LogInformation("Handling request...");
 
@@ -33,7 +33,7 @@ public class IdCryptMessageHandlerResolver
 			using var reader = new StreamReader(context.Request.Body);
 			var message = await reader.ReadToEndAsync();
 
-			handler.Handle(message);
+			await handler.HandleAsync(message);
 
 			_logger.LogInformation("Finished handling request");
 		}

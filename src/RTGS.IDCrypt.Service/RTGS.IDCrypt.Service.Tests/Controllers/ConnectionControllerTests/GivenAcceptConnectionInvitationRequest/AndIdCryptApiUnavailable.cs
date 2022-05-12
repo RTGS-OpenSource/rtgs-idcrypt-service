@@ -3,6 +3,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -31,7 +32,8 @@ public class AndIdCryptApiUnavailable
 			_logger,
 			connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
-			Mock.Of<IAliasProvider>());
+			Mock.Of<IAliasProvider>(),
+			Mock.Of<IStorageTableResolver>());
 	}
 
 	[Fact]
@@ -55,7 +57,7 @@ public class AndIdCryptApiUnavailable
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				$"Error occurred when accepting invitation"
+				"Error occurred when accepting invitation"
 			});
 	}
 }

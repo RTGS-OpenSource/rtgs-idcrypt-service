@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
@@ -16,17 +18,20 @@ public class ConnectionController : ControllerBase
 	private readonly IConnectionsClient _connectionsClient;
 	private readonly IWalletClient _walletClient;
 	private readonly IAliasProvider _aliasProvider;
+	private readonly IStorageTableResolver _storageTableResolver;
 
 	public ConnectionController(
 		ILogger<ConnectionController> logger,
 		IConnectionsClient connectionsClient,
 		IWalletClient walletClient,
-		IAliasProvider aliasProvider)
+		IAliasProvider aliasProvider,
+		IStorageTableResolver storageTableResolver)
 	{
 		_logger = logger;
 		_connectionsClient = connectionsClient;
 		_walletClient = walletClient;
 		_aliasProvider = aliasProvider;
+		_storageTableResolver = storageTableResolver;
 	}
 
 	[HttpPost]
@@ -110,7 +115,19 @@ public class ConnectionController : ControllerBase
 
 		try
 		{
-			await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+
+			var pendingConnection = new PendingBankPartnerConnection
+			{
+				PartitionKey = response.ConnectionId,
+				RowKey = response.Alias,
+				ConnectionId = response.ConnectionId,
+				Alias = response.Alias
+			};
+
+			var tableClient = _storageTableResolver.GetTable("PendingBankPartnerConnections");
+
+			await tableClient.AddEntityAsync(pendingConnection);
 		}
 		catch (Exception ex)
 		{
