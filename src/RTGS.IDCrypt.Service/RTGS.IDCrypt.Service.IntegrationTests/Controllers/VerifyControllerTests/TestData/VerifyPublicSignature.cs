@@ -7,7 +7,7 @@ public static class VerifyPublicSignature
 {
 	public const string Path = "/json-signatures/verify/public-did";
 
-	private static VerifyPublicSignatureResponse ExpectedResponse => new()
+	private static VerifyOwnMessageResponse ExpectedResponse => new()
 	{
 		Verified = true
 	};

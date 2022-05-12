@@ -13,13 +13,13 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests.GivenVeri
 
 public class AndIdCryptAgentApiUnavailable
 {
-	private readonly VerifyPublicSignatureRequest _request;
+	private readonly VerifyOwnMessageRequest _request;
 	private readonly VerifyController _verifyController;
 	private readonly FakeLogger<VerifyController> _logger;
 
 	public AndIdCryptAgentApiUnavailable()
 	{
-		_request = new VerifyPublicSignatureRequest
+		_request = new VerifyOwnMessageRequest
 		{
 			Message = @"{ ""Message"": ""I am the walrus"" }",
 			PublicSignature = "public-signature"
@@ -46,7 +46,7 @@ public class AndIdCryptAgentApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _verifyController.VerifyPublicSignature(_request, default))
+			.Awaiting(() => _verifyController.VerifyOwnMessage(_request, default))
 			.Should()
 			.ThrowAsync<Exception>();
 

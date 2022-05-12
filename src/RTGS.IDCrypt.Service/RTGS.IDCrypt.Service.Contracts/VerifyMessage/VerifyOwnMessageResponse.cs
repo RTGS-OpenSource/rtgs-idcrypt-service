@@ -1,9 +1,9 @@
 ﻿namespace RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 
 /// <summary>
-/// Represents the response to a <see cref="VerifyPublicSignatureRequest"/>.
+/// Represents the response to a <see cref="VerifyOwnMessageRequest"/>.
 /// </summary>
-public record VerifyPublicSignatureResponse
+public record VerifyOwnMessageResponse
 {
 	/// <summary>
 	/// True if the signature is verified, otherwise false.

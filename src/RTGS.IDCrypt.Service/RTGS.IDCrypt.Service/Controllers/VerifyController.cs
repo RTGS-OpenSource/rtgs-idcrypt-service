@@ -86,8 +86,8 @@ public class VerifyController : ControllerBase
 		return Ok(verifyPrivateSignatureResponse);
 	}
 
-	[HttpPost("public")]
-	public async Task<IActionResult> VerifyPublicSignature(VerifyPublicSignatureRequest verifyPublicSignatureRequest, CancellationToken cancellationToken)
+	[HttpPost("own")]
+	public async Task<IActionResult> VerifyOwnMessage(VerifyOwnMessageRequest verifyOwnMessageRequest, CancellationToken cancellationToken)
 	{
 		string publicDid;
 		try
@@ -107,8 +107,8 @@ public class VerifyController : ControllerBase
 		try
 		{
 			verified = await _jsonSignaturesClient.VerifyJsonDocumentPublicSignatureAsync(
-				verifyPublicSignatureRequest.Message,
-				verifyPublicSignatureRequest.PublicSignature, publicDid, cancellationToken);
+				verifyOwnMessageRequest.Message,
+				verifyOwnMessageRequest.PublicSignature, publicDid, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -119,6 +119,6 @@ public class VerifyController : ControllerBase
 			throw;
 		}
 
-		return Ok(new VerifyPublicSignatureResponse { Verified = verified });
+		return Ok(new VerifyOwnMessageResponse { Verified = verified });
 	}
 }

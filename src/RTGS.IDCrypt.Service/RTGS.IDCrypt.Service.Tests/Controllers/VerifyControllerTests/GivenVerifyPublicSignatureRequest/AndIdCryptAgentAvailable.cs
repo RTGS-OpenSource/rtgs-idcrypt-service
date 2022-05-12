@@ -14,16 +14,15 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests.GivenVeri
 public class AndIdCryptAgentAvailable : IAsyncLifetime
 {
 	private readonly VerifyController _controller;
-	private readonly VerifyPublicSignatureRequest _verifyPublicSignatureRequest;
+	private readonly VerifyOwnMessageRequest _verifyOwnMessageRequest;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 	private readonly Mock<IWalletClient> _walletClient;
 	private readonly string _publicDid = "public-did-1";
 
-
 	public AndIdCryptAgentAvailable()
 	{
-		_verifyPublicSignatureRequest = new VerifyPublicSignatureRequest
+		_verifyOwnMessageRequest = new VerifyOwnMessageRequest
 		{
 			Message = "message",
 			PublicSignature = "signature",
@@ -34,8 +33,8 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 
 		_jsonSignaturesClientMock
 			.Setup(client => client.VerifyJsonDocumentPublicSignatureAsync(
-				_verifyPublicSignatureRequest.Message,
-				_verifyPublicSignatureRequest.PublicSignature,
+				_verifyOwnMessageRequest.Message,
+				_verifyOwnMessageRequest.PublicSignature,
 				_publicDid,
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(true)
@@ -57,7 +56,7 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.VerifyPublicSignature(_verifyPublicSignatureRequest, default);
+		_response = await _controller.VerifyOwnMessage(_verifyOwnMessageRequest, default);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
@@ -73,7 +72,7 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 	[Fact]
 	public void WhenPostingVerifyPrivateSignatureRequest_ThenReturnOkResponseWithVerifiedTrue()
 	{
-		var verifyPublicSignatureResponse = new VerifyPublicSignatureResponse
+		var verifyPublicSignatureResponse = new VerifyOwnMessageResponse
 		{
 			Verified = true
 		};

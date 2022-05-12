@@ -9,7 +9,6 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTest
 
 public class WhenCallingIdCryptAgent : IClassFixture<VerifyPublicSignatureFixture>, IAsyncLifetime
 {
-
 	private readonly HttpClient _client;
 	private readonly VerifyPublicSignatureFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
@@ -25,13 +24,13 @@ public class WhenCallingIdCryptAgent : IClassFixture<VerifyPublicSignatureFixtur
 
 	public async Task InitializeAsync()
 	{
-		var request = new VerifyPublicSignatureRequest
+		var request = new VerifyOwnMessageRequest
 		{
 			Message = @"{ ""Message"": ""I am the walrus"" }",
 			PublicSignature = "public-signature"
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/verify/public", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/verify/own", request);
 	}
 
 	public Task DisposeAsync() => Task.CompletedTask;
@@ -91,9 +90,9 @@ public class WhenCallingIdCryptAgent : IClassFixture<VerifyPublicSignatureFixtur
 
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-		var actualResponse = await _httpResponse.Content.ReadFromJsonAsync<VerifyPublicSignatureResponse>();
+		var actualResponse = await _httpResponse.Content.ReadFromJsonAsync<VerifyOwnMessageResponse>();
 
-		actualResponse.Should().BeEquivalentTo(new VerifyPublicSignatureResponse
+		actualResponse.Should().BeEquivalentTo(new VerifyOwnMessageResponse
 		{
 			Verified = true
 		});
