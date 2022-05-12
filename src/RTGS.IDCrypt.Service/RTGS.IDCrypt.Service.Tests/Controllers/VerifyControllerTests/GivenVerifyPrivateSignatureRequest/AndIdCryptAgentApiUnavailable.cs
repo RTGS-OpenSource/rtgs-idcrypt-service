@@ -10,16 +10,17 @@ using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
+using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
-public class AndIdCryptSignJsonDocumentApiUnavailable
+public class AndIdCryptAgentApiUnavailable
 {
 	private readonly VerifyPrivateSignatureRequest _request;
 	private readonly VerifyController _verifyController;
 	private readonly FakeLogger<VerifyController> _logger;
 
-	public AndIdCryptSignJsonDocumentApiUnavailable()
+	public AndIdCryptAgentApiUnavailable()
 	{
 		_request = new VerifyPrivateSignatureRequest
 		{
@@ -72,7 +73,8 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 			_logger,
 			options,
 			storageTableResolverMock.Object,
-			jsonSignaturesClientMock.Object);
+			jsonSignaturesClientMock.Object,
+			Mock.Of<IWalletClient>());
 	}
 
 	[Fact]

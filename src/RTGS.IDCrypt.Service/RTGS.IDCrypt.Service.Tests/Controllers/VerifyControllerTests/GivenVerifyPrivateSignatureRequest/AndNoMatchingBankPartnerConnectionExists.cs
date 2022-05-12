@@ -11,6 +11,7 @@ using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
+using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.VerifyControllerTests.GivenVerifyPrivateSignatureRequest;
 
@@ -54,7 +55,8 @@ public class AndNoMatchingBankPartnerConnectionExists
 			_logger,
 			options,
 			storageTableResolverMock.Object,
-			_jsonSignaturesClientMock.Object);
+			_jsonSignaturesClientMock.Object,
+			Mock.Of<IWalletClient>());
 	}
 
 	[Theory]
