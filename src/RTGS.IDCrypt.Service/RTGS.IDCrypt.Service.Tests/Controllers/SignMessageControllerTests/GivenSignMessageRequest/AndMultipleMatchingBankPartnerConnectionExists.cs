@@ -26,8 +26,8 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id-1"
+			RtgsGlobalId = "rtgs-global-id-1",
+			Message = "message"
 		};
 
 		var signDocumentResponse = new SignDocumentResponse

@@ -23,8 +23,8 @@ public class AndIdCryptAgentUnavailable
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
+			RtgsGlobalId = "rtgs-global-id",
+			Message = "message"
 		};
 
 		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);

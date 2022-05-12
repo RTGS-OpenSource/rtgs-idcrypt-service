@@ -26,9 +26,9 @@ public class AndMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchi
 		var request = new VerifyPrivateSignatureRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
-			Alias = "alias",
 			Message = @"{ ""Message"": ""I am the walrus"" }",
-			PrivateSignature = "private-signature"
+			PrivateSignature = "private-signature",
+			Alias = "alias"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/verify", request);

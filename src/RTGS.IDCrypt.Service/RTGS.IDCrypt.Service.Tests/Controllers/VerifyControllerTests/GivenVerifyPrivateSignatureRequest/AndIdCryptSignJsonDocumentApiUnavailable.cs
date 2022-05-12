@@ -24,9 +24,9 @@ public class AndIdCryptSignJsonDocumentApiUnavailable
 		_request = new VerifyPrivateSignatureRequest
 		{
 			RtgsGlobalId = "rtgs-global-id-1",
-			Alias = "alias-1",
 			Message = @"{ ""Message"": ""I am the walrus"" }",
-			PrivateSignature = "private-signature"
+			PrivateSignature = "private-signature",
+			Alias = "alias-1"
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
