@@ -39,6 +39,8 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 		_bankPartnerConnectionsTable = storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
 	}
 
+	public override async ValueTask DisposeAsync() => await _bankPartnerConnectionsTable.DeleteAsync();
+
 	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
 		await _bankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
 
