@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
 {
@@ -24,10 +24,6 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 		Configuration = new ConfigurationBuilder()
 			.AddJsonFile("testsettings.json")
 			.AddEnvironmentVariables()
-			.AddInMemoryCollection(new[]
-			{
-				new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName)
-			})
 			.Build();
 
 	private void CreateTable()

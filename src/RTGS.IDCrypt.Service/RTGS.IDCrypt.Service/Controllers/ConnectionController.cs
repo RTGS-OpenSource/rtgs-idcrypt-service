@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -19,19 +21,22 @@ public class ConnectionController : ControllerBase
 	private readonly IWalletClient _walletClient;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IStorageTableResolver _storageTableResolver;
+	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
 
 	public ConnectionController(
 		ILogger<ConnectionController> logger,
 		IConnectionsClient connectionsClient,
 		IWalletClient walletClient,
 		IAliasProvider aliasProvider,
-		IStorageTableResolver storageTableResolver)
+		IStorageTableResolver storageTableResolver,
+		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsOptions)
 	{
 		_logger = logger;
 		_connectionsClient = connectionsClient;
 		_walletClient = walletClient;
 		_aliasProvider = aliasProvider;
 		_storageTableResolver = storageTableResolver;
+		_bankPartnerConnectionsConfig = bankPartnerConnectionsOptions.Value;
 	}
 
 	[HttpPost]
@@ -125,9 +130,9 @@ public class ConnectionController : ControllerBase
 				Alias = response.Alias
 			};
 
-			var tableClient = _storageTableResolver.GetTable("PendingBankPartnerConnections");
+			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.PendingBankPartnerConnectionsTableName);
 
-			await tableClient.AddEntityAsync(pendingConnection);
+			await tableClient.AddEntityAsync(pendingConnection, cancellationToken);
 		}
 		catch (Exception ex)
 		{

@@ -22,7 +22,8 @@ public static class ServiceCollectionExtensions
 		{
 			var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 			{
-				BankPartnerConnectionsTableName = "bankPartnerConnections"
+				BankPartnerConnectionsTableName = "bankPartnerConnections",
+				PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections"
 			};
 
 			config.Bind(bankPartnerConnectionsConfig);

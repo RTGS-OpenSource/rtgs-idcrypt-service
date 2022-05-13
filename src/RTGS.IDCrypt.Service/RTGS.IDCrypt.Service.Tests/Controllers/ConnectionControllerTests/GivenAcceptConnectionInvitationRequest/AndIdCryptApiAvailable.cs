@@ -1,6 +1,8 @@
 ﻿using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
@@ -87,18 +89,25 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		_storageTableResolver = new Mock<IStorageTableResolver>();
 		_storageTableResolver
-			.Setup(resolver => resolver.GetTable("PendingBankPartnerConnections"))
+			.Setup(resolver => resolver.GetTable("pendingBankPartnerConnections"))
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
 		var logger = new FakeLogger<ConnectionController>();
+
+		var options = Options.Create(new BankPartnerConnectionsConfig
+		{
+			BankPartnerConnectionsTableName = "bankPartnerConnections",
+			PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections"
+		});
 
 		_connectionController = new ConnectionController(
 			logger,
 			_connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
 			Mock.Of<IAliasProvider>(),
-			_storageTableResolver.Object);
+			_storageTableResolver.Object,
+			options);
 	}
 
 	public async Task InitializeAsync()

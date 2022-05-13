@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
@@ -39,12 +41,18 @@ public class AndIdCryptCreateInvitationApiUnavailable
 
 		_logger = new FakeLogger<ConnectionController>();
 
+		var options = Options.Create(new BankPartnerConnectionsConfig
+		{
+			BankPartnerConnectionsTableName = "bankPartnerConnections"
+		});
+
 		_connectionController = new ConnectionController(
 			_logger,
 			connectionsClientMock.Object,
 			_walletClientMock.Object,
 			mockAliasProvider.Object,
-			Mock.Of<IStorageTableResolver>());
+			Mock.Of<IStorageTableResolver>(),
+			options);
 	}
 
 	[Fact]

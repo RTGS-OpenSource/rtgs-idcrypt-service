@@ -10,8 +10,8 @@ public class AcceptInvitation
 	public static ConnectionResponse ExpectedResponse => new()
 	{
 		Accept = "accept",
-		Alias = "alias",
-		ConnectionId = "connection-id",
+		Alias = Alias,
+		ConnectionId = ConnectionId,
 		ConnectionProtocol = "connection-protocol",
 		CreatedAt = "created-at",
 		InvitationKey = "invitation-key",
@@ -50,4 +50,8 @@ public class AcceptInvitation
 
 	public static HttpRequestResponseContext HttpRequestResponseContext =>
 		new(Path, SerialisedResponse);
+
+	public static string ConnectionId { get; set; } = "connection-id";
+
+	public static string Alias { get; set; } = "alias";
 }

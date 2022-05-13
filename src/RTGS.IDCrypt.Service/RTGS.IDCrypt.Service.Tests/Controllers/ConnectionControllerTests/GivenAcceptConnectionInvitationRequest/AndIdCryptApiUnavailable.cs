@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
@@ -28,12 +30,18 @@ public class AndIdCryptApiUnavailable
 
 		_logger = new FakeLogger<ConnectionController>();
 
+		var options = Options.Create(new BankPartnerConnectionsConfig
+		{
+			BankPartnerConnectionsTableName = "bankPartnerConnections"
+		});
+
 		_connectionController = new ConnectionController(
 			_logger,
 			connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
 			Mock.Of<IAliasProvider>(),
-			Mock.Of<IStorageTableResolver>());
+			Mock.Of<IStorageTableResolver>(),
+			options);
 	}
 
 	[Fact]

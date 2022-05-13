@@ -4,12 +4,15 @@ using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenAcceptConnectionInvitationRequest;
 
 public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
+	private readonly string _connectionId;
+	private readonly string _alias;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
@@ -20,6 +23,9 @@ public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, I
 		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
 		_client = testFixture.CreateClient();
+
+		AcceptInvitation.ConnectionId = "connection-id" + Guid.NewGuid();
+		AcceptInvitation.Alias = "alias" + Guid.NewGuid();
 	}
 
 	public async Task InitializeAsync()
@@ -74,6 +80,15 @@ public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, I
 			.Should().ContainSingle()
 			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
 	}
+
+	[Fact]
+	public void WhenPosting_ThenWriteToTableStorage() =>
+		_testFixture.PendingBankPartnerConnectionsTable
+			.Query<PendingBankPartnerConnection>()
+			.Where(connection =>
+				connection.PartitionKey == AcceptInvitation.ExpectedResponse.ConnectionId
+				&& connection.RowKey == AcceptInvitation.ExpectedResponse.Alias)
+			.Should().ContainSingle();
 
 	[Fact]
 	public void ThenReturnAccepted() =>
