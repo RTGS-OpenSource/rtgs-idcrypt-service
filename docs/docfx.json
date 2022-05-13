@@ -17,7 +17,7 @@
   "build": {
     "postProcessors": ["ExtractSearchIndex"],
     "globalMetadata": {
-      "_appTitle": "RTGS ID Crypt Service Contracts documentation",
+      "_appTitle": "RTGS ID Crypt Service documentation",
       "_appFooter": "<span>Copyright &copy; RTGS Global</span>"
     },
     "markdownEngineName": "markdig",

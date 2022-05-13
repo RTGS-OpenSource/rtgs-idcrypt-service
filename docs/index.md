@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This site contains the documentation for the RTGS ID Crypt Service Contracts.
+This site contains the documentation for the RTGS ID Crypt Service.
 
 ## Links
 
