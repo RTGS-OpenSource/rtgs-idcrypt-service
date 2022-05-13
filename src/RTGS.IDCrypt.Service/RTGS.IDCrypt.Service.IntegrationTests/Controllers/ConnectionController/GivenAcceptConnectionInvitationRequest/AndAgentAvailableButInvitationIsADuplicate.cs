@@ -6,13 +6,12 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenAcceptConnectionInvitationRequest;
 
-public class GivenAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
+public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
+	private HttpResponseMessage _secondHttpResponse;
 
-	private HttpResponseMessage _httpResponse;
-
-	public GivenAcceptInvitationApiUnavailable(AcceptInvitationEndpointUnavailableFixture testFixture)
+	public AndAgentAvailableButInvitationIsADuplicate(ConnectionInvitationFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -30,21 +29,14 @@ public class GivenAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitatio
 			ServiceEndpoint = "service-endpoint"
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/connection/accept", request);
+		await _client.PostAsJsonAsync("api/connection/accept", request);
+		_secondHttpResponse = await _client.PostAsJsonAsync("api/connection/accept", request);
 	}
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
 
 	[Fact]
-	public async Task ThenReturnInternalServerError()
-	{
-		using var _ = new AssertionScope();
-
-		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-
-		var content = await _httpResponse.Content.ReadAsStringAsync();
-
-		content.Should().Be("{\"error\":\"Error accepting invitation\"}");
-	}
+	public void ThenReturnInternalServerError() =>
+		_secondHttpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 }

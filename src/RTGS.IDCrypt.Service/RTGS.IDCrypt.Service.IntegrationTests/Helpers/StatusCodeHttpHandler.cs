@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
-public class StatusCodeHttpHandler : DelegatingHandler
+public sealed class StatusCodeHttpHandler : DelegatingHandler
 {
 	private readonly Dictionary<string, MockHttpResponse> _mockHttpResponses;
 

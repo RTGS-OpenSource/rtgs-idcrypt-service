@@ -1,5 +1,5 @@
 ﻿using Azure.Data.Tables;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
@@ -15,19 +15,14 @@ using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenAcceptConnectionInvitationRequest;
 
-public class AndIdCryptApiAvailable : IAsyncLifetime
+public class AndWritingToTableFails
 {
-	private readonly Mock<IConnectionsClient> _connectionsClientMock;
 	private readonly ConnectionController _connectionController;
-	private readonly Mock<TableClient> _tableClientMock;
-	private readonly Mock<IStorageTableResolver> _storageTableResolver;
+	private readonly AcceptConnectionInvitationRequest _request;
+	private readonly FakeLogger<ConnectionController> _logger;
 
-	private IActionResult _response;
-
-	public AndIdCryptApiAvailable()
+	public AndWritingToTableFails()
 	{
-		_connectionsClientMock = new Mock<IConnectionsClient>();
-
 		var connectionResponse = new ConnectionResponse
 		{
 			Alias = "alias",
@@ -51,7 +46,9 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_connectionsClientMock
+		var connectionsClientMock = new Mock<IConnectionsClient>();
+
+		connectionsClientMock
 			.Setup(connectionsClient => connectionsClient.ReceiveAndAcceptInvitationAsync(
 				It.Is<ReceiveAndAcceptInvitationRequest>(request => requestMatches(request)),
 				It.IsAny<CancellationToken>()))
@@ -66,33 +63,21 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			Alias = connectionResponse.Alias
 		};
 
-		Func<PendingBankPartnerConnection, bool> connectionMatches = request =>
-		{
-			request.Should().BeEquivalentTo(expectedPendingConnection, options =>
-			{
-				options.Excluding(connection => connection.ETag);
-				options.Excluding(connection => connection.Timestamp);
+		var tableClientMock = new Mock<TableClient>();
 
-				return options;
-			});
+		tableClientMock
+				.Setup(tableClient => tableClient.AddEntityAsync(
+					It.IsAny<PendingBankPartnerConnection>(),
+					It.IsAny<CancellationToken>()))
+				.Throws<Exception>();
 
-			return true;
-		};
+		var storageTableResolver = new Mock<IStorageTableResolver>();
 
-		_tableClientMock = new Mock<TableClient>();
-		_tableClientMock
-			.Setup(tableClient => tableClient.AddEntityAsync(
-				It.Is<PendingBankPartnerConnection>(connection => connectionMatches(connection)),
-				It.IsAny<CancellationToken>()))
-			.Verifiable();
-
-		_storageTableResolver = new Mock<IStorageTableResolver>();
-		_storageTableResolver
+		storageTableResolver
 			.Setup(resolver => resolver.GetTable("pendingBankPartnerConnections"))
-			.Returns(_tableClientMock.Object)
-			.Verifiable();
+			.Returns(tableClientMock.Object);
 
-		var logger = new FakeLogger<ConnectionController>();
+		_logger = new FakeLogger<ConnectionController>();
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
@@ -101,17 +86,14 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		});
 
 		_connectionController = new ConnectionController(
-			logger,
-			_connectionsClientMock.Object,
+			_logger,
+			connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
 			Mock.Of<IAliasProvider>(),
-			_storageTableResolver.Object,
+			storageTableResolver.Object,
 			options);
-	}
 
-	public async Task InitializeAsync()
-	{
-		var request = new AcceptConnectionInvitationRequest
+		_request = new AcceptConnectionInvitationRequest
 		{
 			Alias = "alias",
 			Id = "id",
@@ -119,26 +101,28 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			RecipientKeys = new[] { "recipient-key" },
 			ServiceEndpoint = "service-endpoint"
 		};
-
-		_response = await _connectionController.Accept(request, default);
 	}
 
-	public Task DisposeAsync() =>
-		Task.CompletedTask;
+	[Fact]
+	public async Task WhenPosting_ThenThrowException() =>
+		await FluentActions
+			.Awaiting(() => _connectionController.Accept(_request, default))
+			.Should()
+			.ThrowAsync<Exception>();
 
 	[Fact]
-	public void WhenPosting_ThenReturnAccepted() =>
-		_response.Should().BeOfType<AcceptedResult>();
+	public async Task WhenPosting_ThenLog()
+	{
+		using var _ = new AssertionScope();
 
-	[Fact]
-	public void WhenPosting_ThenCallReceiveAndAcceptInvitationAsyncWithExpected() =>
-		_connectionsClientMock.Verify();
+		await FluentActions
+			.Awaiting(() => _connectionController.Accept(_request, default))
+			.Should()
+			.ThrowAsync<Exception>();
 
-	[Fact]
-	public void ThenExpectedTableIsResolved() =>
-		_storageTableResolver.Verify();
-
-	[Fact]
-	public void ThenConnectionIsWritten() =>
-		_tableClientMock.Verify();
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
+			{
+				"Error occurred when saving pending bank partner connection"
+			});
+	}
 }

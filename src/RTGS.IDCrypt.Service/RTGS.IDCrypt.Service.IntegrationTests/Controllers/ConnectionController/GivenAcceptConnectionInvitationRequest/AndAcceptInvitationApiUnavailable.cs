@@ -6,13 +6,13 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenAcceptConnectionInvitationRequest;
 
-public class GivenReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitationEndpointUnavailableFixture>, IAsyncLifetime
+public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 
 	private HttpResponseMessage _httpResponse;
 
-	public GivenReceiveInvitationApiUnavailable(ReceiveInvitationEndpointUnavailableFixture testFixture)
+	public AndAcceptInvitationApiUnavailable(AcceptInvitationEndpointUnavailableFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -45,6 +45,6 @@ public class GivenReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitat
 
 		var content = await _httpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Error receiving invitation\"}");
+		content.Should().Be("{\"error\":\"Error accepting invitation\"}");
 	}
 }

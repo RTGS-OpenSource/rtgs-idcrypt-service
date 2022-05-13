@@ -6,7 +6,7 @@ public static class ReceiveInvitation
 {
 	public const string Path = "/connections/receive-invitation";
 
-	private static string SerialisedResponse => $@"{{ 
+	private static string SerialisedResponse => @"{ 
 		""accept"": ""accept"",
 		""alias"": ""alias"",
 		""connection_id"": ""connection-id"",
@@ -24,10 +24,9 @@ public static class ReceiveInvitation
 		""their_label"": ""their-label"",
 		""their_role"": ""their-role"",
 		""updated_at"": ""updated-at""
-	}}";
+	}";
 
 	public static HttpRequestResponseContext HttpRequestResponseContext =>
 		new(Path, SerialisedResponse);
 }
-
 

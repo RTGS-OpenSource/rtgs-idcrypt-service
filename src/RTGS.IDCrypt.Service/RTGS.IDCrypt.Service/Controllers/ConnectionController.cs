@@ -118,10 +118,21 @@ public class ConnectionController : ControllerBase
 			Type = request.Type
 		};
 
+		ConnectionResponse response;
+
 		try
 		{
-			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+			response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when accepting invitation");
 
+			throw;
+		}
+
+		try
+		{
 			var pendingConnection = new PendingBankPartnerConnection
 			{
 				PartitionKey = response.ConnectionId,
@@ -136,7 +147,7 @@ public class ConnectionController : ControllerBase
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when accepting invitation");
+			_logger.LogError(ex, "Error occurred when saving pending bank partner connection");
 
 			throw;
 		}

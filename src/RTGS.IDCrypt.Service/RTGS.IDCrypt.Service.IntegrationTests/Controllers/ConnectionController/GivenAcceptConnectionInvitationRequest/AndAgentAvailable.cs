@@ -8,13 +8,13 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenAcceptConnectionInvitationRequest;
 
-public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
+public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenAgentAvailable(ConnectionInvitationFixture testFixture)
+	public AndAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
 		_testFixture = testFixture;
 
