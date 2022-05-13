@@ -58,7 +58,7 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-var idCryptMessageHandlerResolver = app.Services.GetService<IdCryptMessageHandlerResolver>();
+var idCryptMessageHandlerResolver = app.Services.GetService<MessageHandlerResolver>();
 
 app.UseRouting();
 

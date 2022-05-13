@@ -3,7 +3,7 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 
 namespace RTGS.IDCrypt.Service.Webhooks.Handlers;
 
-public class IdCryptConnectionMessageHandler : IIdCryptMessageHandler
+public class IdCryptConnectionMessageHandler : IMessageHandler
 {
 	private readonly ILogger<IdCryptConnectionMessageHandler> _logger;
 

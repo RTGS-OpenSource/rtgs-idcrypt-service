@@ -34,8 +34,8 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
 
-		services.AddSingleton<IdCryptMessageHandlerResolver>();
-		services.AddSingleton<IIdCryptMessageHandler, IdCryptConnectionMessageHandler>();
+		services.AddSingleton<MessageHandlerResolver>();
+		services.AddSingleton<IMessageHandler, IdCryptConnectionMessageHandler>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),

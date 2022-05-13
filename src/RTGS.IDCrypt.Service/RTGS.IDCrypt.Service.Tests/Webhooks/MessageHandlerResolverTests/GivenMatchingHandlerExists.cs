@@ -8,28 +8,28 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.IdCryptMessageHandlerResolverTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests;
 
 public class GivenMatchingHandlerExists : IAsyncLifetime
 {
-	private readonly FakeLogger<IdCryptMessageHandlerResolver> _logger;
-	private readonly Mock<IIdCryptMessageHandler> _mockIdCryptMessageHandler;
-	private readonly IdCryptMessageHandlerResolver _resolver;
+	private readonly FakeLogger<MessageHandlerResolver> _logger;
+	private readonly Mock<IMessageHandler> _mockMessageHandler;
+	private readonly MessageHandlerResolver _resolver;
 
 	public GivenMatchingHandlerExists()
 	{
-		_logger = new FakeLogger<IdCryptMessageHandlerResolver>();
+		_logger = new FakeLogger<MessageHandlerResolver>();
 
-		_mockIdCryptMessageHandler = new Mock<IIdCryptMessageHandler>();
+		_mockMessageHandler = new Mock<IMessageHandler>();
 
-		_mockIdCryptMessageHandler.SetupGet(handler => handler.MessageType).Returns("test-route");
+		_mockMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
 
-		var idCryptMessageHandlers = new List<IIdCryptMessageHandler>()
+		var messageHandlers = new List<IMessageHandler>()
 		{
-			_mockIdCryptMessageHandler.Object,
+			_mockMessageHandler.Object,
 		};
 
-		_resolver = new IdCryptMessageHandlerResolver(_logger, idCryptMessageHandlers);
+		_resolver = new MessageHandlerResolver(_logger, messageHandlers);
 	}
 
 	public async Task InitializeAsync()
@@ -42,7 +42,7 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 				Body = new MemoryStream(Encoding.UTF8.GetBytes("the-body")),
 				RouteValues = new RouteValueDictionary
 				{
-					{ "route", "test-route" }
+					{ "route", "message-type" }
 				}
 			}
 		};
@@ -55,11 +55,11 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 
 	[Fact]
 	public void ThenHandlerIsCalledWithExpected() =>
-		_mockIdCryptMessageHandler.Verify(handler => handler.HandleAsync("the-body"), Times.Once);
+		_mockMessageHandler.Verify(handler => handler.HandleAsync("the-body"), Times.Once);
 
 	[Fact]
 	public void ThenLog() =>
-		_logger.Logs[LogLevel.Information].Should().ContainInOrder(new List<string>
+		_logger.Logs[LogLevel.Debug].Should().ContainInOrder(new List<string>
 		{
 			"Handling request...",
 			"Finished handling request"
