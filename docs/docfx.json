@@ -1,0 +1,53 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "..",
+          "files": ["src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service.Contracts/*.csproj", "src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service/*.csproj"]
+        }
+      ],
+      "exclude": ["**/bin/**", "**/obj/**", "src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service/**"],
+      "dest": "api",
+      "filter": "filterConfig.yml",
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "postProcessors": ["ExtractSearchIndex"],
+    "globalMetadata": {
+      "_appTitle": "RTGS ID Crypt Service documentation",
+      "_appFooter": "<span>Copyright &copy; RTGS Global</span>"
+    },
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false,
+    "content": [
+      {
+        "files": ["api/**.yml", "api/index.md"]
+      },
+      {
+        "files": ["toc.yml", "*.md"]
+      }
+    ],
+    "resource": [
+      {
+        "files": ["images/**"]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": ["apidoc/**.md"],
+        "exclude": ["obj/**", "_site/**"]
+      }
+    ],
+    "dest": "_site",
+    "xrefService": ["https://xref.docs.microsoft.com/query?uid={uid}"],
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": ["statictoc", "rtgs-template"]
+  }
+}

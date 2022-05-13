@@ -9,6 +9,7 @@ public record SignMessageRequest
 	/// The RTGS Global identifier.
 	/// </summary>
 	public string RtgsGlobalId { get; init; }
+
 	/// <summary>
 	/// The JSON document to be signed.
 	/// </summary>

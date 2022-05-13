@@ -39,6 +39,11 @@ public class ConnectionController : ControllerBase
 		_bankPartnerConnectionsConfig = bankPartnerConnectionsOptions.Value;
 	}
 
+	/// <summary>
+	/// Endpoint to create an invitation.
+	/// </summary>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
 	[HttpPost]
 	public async Task<IActionResult> Post(CancellationToken cancellationToken)
 	{
@@ -103,6 +108,12 @@ public class ConnectionController : ControllerBase
 		return Ok(response);
 	}
 
+	/// <summary>
+	/// Endpoint to accept an invitation
+	/// </summary>
+	/// <param name="request">The data required to accept an invitations</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="AcceptedResult"/></returns>
 	[HttpPost("Accept")]
 	public async Task<IActionResult> Accept(
 		AcceptConnectionInvitationRequest request,

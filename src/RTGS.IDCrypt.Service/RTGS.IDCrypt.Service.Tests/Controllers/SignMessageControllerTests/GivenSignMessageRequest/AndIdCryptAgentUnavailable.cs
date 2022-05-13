@@ -5,6 +5,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -22,21 +23,26 @@ public class AndIdCryptAgentUnavailable
 	{
 		_signMessageRequest = new SignMessageRequest
 		{
-			Message = "message",
-			RtgsGlobalId = "rtgs-global-id"
+			RtgsGlobalId = "rtgs-global-id",
+			Message = "message"
 		};
+
+		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
+		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
 
 		var matchingBankPartnerConnection = new BankPartnerConnection
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
-			ConnectionId = "connection-id"
+			ConnectionId = "connection-id",
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1))
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
-		var storageTableResolver = new Mock<IStorageTableResolver>();
-		var tableClient = new Mock<TableClient>();
-		var bankPartnerConnections = new Mock<Azure.Pageable<BankPartnerConnection>>();
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+		var tableClientMock = new Mock<TableClient>();
+		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		jsonSignaturesClientMock
 			.Setup(client => client.SignJsonDocumentAsync(
@@ -45,38 +51,40 @@ public class AndIdCryptAgentUnavailable
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		bankPartnerConnections.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
+		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
 			new List<BankPartnerConnection>
 			{
 				matchingBankPartnerConnection,
 			}
 			.GetEnumerator());
 
-		tableClient.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 			tableClient.Query<BankPartnerConnection>(
 				It.IsAny<string>(),
 				It.IsAny<int?>(),
 				It.IsAny<IEnumerable<string>>(),
 				It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnections.Object);
+			.Returns(bankPartnerConnectionsMock.Object);
 
-		storageTableResolver
+		storageTableResolverMock
 			.Setup(storageTableResolver =>
 				storageTableResolver.GetTable("bankPartnerConnections"))
-			.Returns(tableClient.Object);
+			.Returns(tableClientMock.Object);
 
 		_logger = new FakeLogger<SignMessageController>();
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
+			BankPartnerConnectionsTableName = "bankPartnerConnections",
+			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
 
 		_signMessageController = new SignMessageController(
 			_logger,
 			options,
-			storageTableResolver.Object,
-			jsonSignaturesClientMock.Object);
+			storageTableResolverMock.Object,
+			jsonSignaturesClientMock.Object,
+			dateTimeProviderMock.Object);
 	}
 
 	[Fact]

@@ -110,7 +110,7 @@ jobs:
           network: host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
-        
+
   publish-to-nuget:
     if: github.event_name == 'release'
     needs: build-and-test
@@ -127,3 +127,29 @@ jobs:
       - name: 'dotnet publish'
         run: |
           dotnet nuget push ${{env.CONTRACTS_FOLDER}}bin/Release/*.nupkg -k ${{ secrets.NUGET_TOKEN }} -s ${{env.NUGET_URL}}
+
+  generate-docs:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build-and-test
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+
+      - name: Setup DocFX
+        uses: crazy-max/ghaction-chocolatey@v1
+        with:
+          args: install docfx
+
+      - name: DocFX Build
+        run: docfx docs/docfx.json
+        continue-on-error: false
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: doc-site
+          path: 'docs/_site'

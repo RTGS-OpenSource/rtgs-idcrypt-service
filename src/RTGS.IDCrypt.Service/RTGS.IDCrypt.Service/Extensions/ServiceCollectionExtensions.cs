@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
 			{
 				BankPartnerConnectionsTableName = "bankPartnerConnections",
 				PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections"
+				MinimumConnectionAge = TimeSpan.FromMinutes(5)
 			};
 
 			config.Bind(bankPartnerConnectionsConfig);
@@ -33,6 +34,7 @@ public static class ServiceCollectionExtensions
 
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
+		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
 		services.AddSingleton<MessageHandlerResolver>();
 		services.AddSingleton<IMessageHandler, IdCryptConnectionMessageHandler>();

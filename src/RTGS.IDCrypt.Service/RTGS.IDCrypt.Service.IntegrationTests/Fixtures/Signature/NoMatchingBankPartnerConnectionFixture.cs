@@ -1,7 +1,7 @@
 ﻿using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.SigningAndVerifying;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 public class NoMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
 {
