@@ -5,6 +5,7 @@ using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK.JsonSignatures;
+using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Controllers;
 
@@ -16,17 +17,20 @@ public class VerifyController : ControllerBase
 	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
+	private readonly IWalletClient _walletClient;
 
 	public VerifyController(
 		ILogger<VerifyController> logger,
 		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsConfig,
 		IStorageTableResolver storageTableResolver,
-		IJsonSignaturesClient jsonSignaturesClient)
+		IJsonSignaturesClient jsonSignaturesClient,
+		IWalletClient walletClient)
 	{
 		_logger = logger;
 		_bankPartnerConnectionsConfig = bankPartnerConnectionsConfig.Value;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
+		_walletClient = walletClient;
 	}
 
 	[HttpPost]
@@ -80,5 +84,41 @@ public class VerifyController : ControllerBase
 		};
 
 		return Ok(verifyPrivateSignatureResponse);
+	}
+
+	[HttpPost("own")]
+	public async Task<IActionResult> VerifyOwnMessage(VerifyOwnMessageRequest verifyOwnMessageRequest, CancellationToken cancellationToken)
+	{
+		string publicDid;
+		try
+		{
+			publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
+
+			throw;
+		}
+
+		bool verified;
+		try
+		{
+			verified = await _jsonSignaturesClient.VerifyJsonDocumentPublicSignatureAsync(
+				verifyOwnMessageRequest.Message,
+				verifyOwnMessageRequest.PublicSignature, publicDid, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending VerifyPublicSignature request to ID Crypt Cloud Agent");
+
+			throw;
+		}
+
+		return Ok(new VerifyOwnMessageResponse { Verified = verified });
 	}
 }

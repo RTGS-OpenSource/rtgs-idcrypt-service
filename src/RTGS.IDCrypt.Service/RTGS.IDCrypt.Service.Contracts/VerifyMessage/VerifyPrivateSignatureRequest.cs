@@ -6,7 +6,7 @@
 public record VerifyPrivateSignatureRequest
 {
 	/// <summary>
-	/// The RTGS.global Id of the connection with which to sign the document.
+	/// The RTGS.global Id of the connection with which to verify the document.
 	/// </summary>
 	public string RtgsGlobalId { get; init; }
 
@@ -21,7 +21,7 @@ public record VerifyPrivateSignatureRequest
 	public string PrivateSignature { get; init; }
 
 	/// <summary>
-	/// The alias of the connection with which to sign the message.
+	/// The alias of the connection with which to verify the message.
 	/// </summary>
 	public string Alias { get; init; }
 }
