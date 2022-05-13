@@ -1,0 +1,10 @@
+apiRules:
+  - include:
+      uidRegex: 'RTGS.IDCrypt.Service.Controllers'
+      type: Namespace
+  - include:
+      uidRegex: 'RTGS.IDCrypt.Service.Contracts'
+      type: Namespace
+  - exclude:
+      uidRegex: 'RTGS'
+      type: Namespace

@@ -33,6 +33,12 @@ public class VerifyController : ControllerBase
 		_walletClient = walletClient;
 	}
 
+	/// <summary>
+	/// Endpoint to verify a document / signature.
+	/// </summary>
+	/// <param name="verifyPrivateSignatureRequest">The data required to verify a message.</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="VerifyPrivateSignatureResponse"/></returns>
 	[HttpPost]
 	public async Task<IActionResult> Post(
 		VerifyPrivateSignatureRequest verifyPrivateSignatureRequest,
@@ -86,6 +92,12 @@ public class VerifyController : ControllerBase
 		return Ok(verifyPrivateSignatureResponse);
 	}
 
+	/// <summary>
+	/// Endpoint to verify a document / signature that was signed by the same party.
+	/// </summary>
+	/// <param name="verifyOwnMessageRequest">The data required to verify a message.</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="VerifyOwnMessageResponse"/></returns>
 	[HttpPost("own")]
 	public async Task<IActionResult> VerifyOwnMessage(VerifyOwnMessageRequest verifyOwnMessageRequest, CancellationToken cancellationToken)
 	{

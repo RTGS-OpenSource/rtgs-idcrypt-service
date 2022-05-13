@@ -34,6 +34,12 @@ public class SignMessageController : ControllerBase
 		_dateTimeProvider = dateTimeProvider;
 	}
 
+	/// <summary>
+	/// Endpoint to sign a document.
+	/// </summary>
+	/// <param name="signMessageRequest">The data required to sign a message.</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="SignDocumentResponse"/></returns>
 	[HttpPost]
 	public async Task<IActionResult> Post(
 		SignMessageRequest signMessageRequest,
