@@ -3,7 +3,7 @@ using RTGS.IDCryptSDK.Connections.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 
-public class AcceptInvitation
+public static class AcceptInvitation
 {
 	public const string Path = "/connections/connection-id/accept-invitation";
 
@@ -28,7 +28,7 @@ public class AcceptInvitation
 		UpdatedAt = "updated-at"
 	};
 
-	private static string SerialisedResponse => $@"{{ 
+	private static string SerialisedResponse() => $@"{{ 
 		""accept"": ""{ExpectedResponse.Accept}"",
 		""alias"": ""{ExpectedResponse.Alias}"",
 		""connection_id"": ""{ExpectedResponse.ConnectionId}"",

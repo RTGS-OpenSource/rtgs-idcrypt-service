@@ -4,6 +4,6 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 public record MockHttpResponse
 {
-	public string Content { get; init; }
+	public Func<string> GetContent { get; init; }
 	public HttpStatusCode HttpStatusCode { get; init; }
 }

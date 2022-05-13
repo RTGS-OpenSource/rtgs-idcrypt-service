@@ -29,7 +29,7 @@ public class StatusCodeHttpHandler : DelegatingHandler
 
 		var response = new HttpResponseMessage(responseMock.HttpStatusCode)
 		{
-			Content = new StringContent(responseMock.Content)
+			Content = new StringContent(responseMock.GetContent())
 		};
 
 		response.RequestMessage = request;
@@ -56,12 +56,12 @@ public class StatusCodeHttpHandler : DelegatingHandler
 
 		public StatusCodeHttpHandler Build() => new(Responses);
 
-		private Builder WithResponse(string path, string content, HttpStatusCode statusCode)
+		private Builder WithResponse(string path, Func<string> content, HttpStatusCode statusCode)
 		{
 			var mockResponse = new MockHttpResponse
 			{
 				HttpStatusCode = statusCode,
-				Content = content
+				GetContent = content
 			};
 
 			Responses[path] = mockResponse;

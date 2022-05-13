@@ -11,8 +11,6 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController
 public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly string _connectionId;
-	private readonly string _alias;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
