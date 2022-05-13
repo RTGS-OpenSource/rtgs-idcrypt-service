@@ -29,4 +29,3 @@ public static class ReceiveInvitation
 	public static HttpRequestResponseContext HttpRequestResponseContext =>
 		new(Path, SerialisedResponse);
 }
-

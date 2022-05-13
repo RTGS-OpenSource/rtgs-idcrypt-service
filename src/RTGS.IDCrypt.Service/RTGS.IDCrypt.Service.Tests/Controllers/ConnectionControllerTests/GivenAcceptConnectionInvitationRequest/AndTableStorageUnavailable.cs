@@ -15,7 +15,7 @@ using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenAcceptConnectionInvitationRequest;
 
-public class AndTableStorageUnavailable 
+public class AndTableStorageUnavailable
 {
 	private readonly ConnectionController _connectionController;
 	private readonly AcceptConnectionInvitationRequest _request;
@@ -64,7 +64,7 @@ public class AndTableStorageUnavailable
 		};
 
 		var tableClientMock = new Mock<TableClient>();
-	
+
 		var storageTableResolver = new Mock<IStorageTableResolver>();
 		storageTableResolver
 			.Setup(resolver => resolver.GetTable("pendingBankPartnerConnections"))

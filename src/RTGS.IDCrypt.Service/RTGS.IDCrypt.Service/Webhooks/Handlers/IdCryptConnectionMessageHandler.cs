@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using RTGS.IDCrypt.Service.Webhooks.Models;
 
 namespace RTGS.IDCrypt.Service.Webhooks.Handlers;
 
@@ -14,7 +15,7 @@ public class IdCryptConnectionMessageHandler : IIdCryptMessageHandler
 
 	public string MessageType => "connection";
 
-	public async Task HandleAsync(string jsonMessage)
+	public Task HandleAsync(string jsonMessage)
 	{
 		var connection = JsonSerializer.Deserialize<IdCryptConnection>(jsonMessage);
 
@@ -22,10 +23,9 @@ public class IdCryptConnectionMessageHandler : IIdCryptMessageHandler
 		{
 			_logger.LogDebug("Ignoring {RequestType} for {Alias} because state is {State} and not active",
 				MessageType, connection.Alias, connection.State);
-
-			return;
+			return Task.CompletedTask;
 		}
 
-		//TODO: request proof here
+		return Task.CompletedTask;
 	}
 }

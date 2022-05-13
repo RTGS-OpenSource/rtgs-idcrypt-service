@@ -18,7 +18,7 @@ public class GivenStatusIsActive : IAsyncLifetime
 		};
 
 		var handler = new IdCryptConnectionMessageHandler(logger);
-	
+
 		var message = JsonSerializer.Serialize(activeConnection);
 
 		await handler.HandleAsync(message);

@@ -5,7 +5,7 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public abstract class TestFixtureBase : WebApplicationFactory<Program>
 {
-	public TestFixtureBase()
+	protected TestFixtureBase()
 	{
 		LoadConfig();
 	}

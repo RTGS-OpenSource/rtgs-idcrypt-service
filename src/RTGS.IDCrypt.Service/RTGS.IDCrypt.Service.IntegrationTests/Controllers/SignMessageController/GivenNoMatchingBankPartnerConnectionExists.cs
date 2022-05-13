@@ -22,7 +22,6 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 
 	public async Task InitializeAsync()
 	{
-
 		var request = new SignMessageRequest()
 		{
 			RtgsGlobalId = "rtgs-global-id",

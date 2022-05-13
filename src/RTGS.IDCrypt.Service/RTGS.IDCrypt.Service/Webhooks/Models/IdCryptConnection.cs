@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
+namespace RTGS.IDCrypt.Service.Webhooks.Models;
+
 public record IdCryptConnection
 {
 	[JsonPropertyName("alias")]
