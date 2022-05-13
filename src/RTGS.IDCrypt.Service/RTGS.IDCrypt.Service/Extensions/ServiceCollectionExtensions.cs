@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
 			var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 			{
 				BankPartnerConnectionsTableName = "bankPartnerConnections",
-				PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections"
+				PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections",
 				MinimumConnectionAge = TimeSpan.FromMinutes(5)
 			};
 
