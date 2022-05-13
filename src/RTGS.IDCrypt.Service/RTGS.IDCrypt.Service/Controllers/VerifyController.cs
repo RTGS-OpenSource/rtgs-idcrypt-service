@@ -29,6 +29,12 @@ public class VerifyController : ControllerBase
 		_jsonSignaturesClient = jsonSignaturesClient;
 	}
 
+	/// <summary>
+	/// Endpoint to verify a document / signature.
+	/// </summary>
+	/// <param name="verifyPrivateSignatureRequest">The data required to verify a message.</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="VerifyPrivateSignatureResponse"/></returns>
 	[HttpPost]
 	public async Task<IActionResult> Post(
 		VerifyPrivateSignatureRequest verifyPrivateSignatureRequest,
