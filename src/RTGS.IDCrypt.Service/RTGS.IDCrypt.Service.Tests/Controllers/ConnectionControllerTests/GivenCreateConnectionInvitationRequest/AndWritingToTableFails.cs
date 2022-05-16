@@ -22,10 +22,6 @@ public class AndWritingToTableFails
 
 	public AndWritingToTableFails()
 	{
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
-
 		var connectionsClientMock = new Mock<IConnectionsClient>();
 
 		var createInvitationResponse = new CreateInvitationResponse
@@ -44,7 +40,10 @@ public class AndWritingToTableFails
 			}
 		};
 
-		var alias = "alias";
+		const string alias = "alias";
+		const bool autoAccept = true;
+		const bool multiUse = false;
+		const bool usePublicDid = false;
 
 		connectionsClientMock
 			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
@@ -57,7 +56,7 @@ public class AndWritingToTableFails
 
 		var walletClientMock = new Mock<IWalletClient>();
 
-		var publicDid = "public-did";
+		const string publicDid = "public-did";
 
 		walletClientMock
 			.Setup(walletClient => walletClient.GetPublicDidAsync(It.IsAny<CancellationToken>()))

@@ -22,11 +22,11 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	private readonly Mock<IWalletClient> _walletClientMock;
 	private readonly ConnectionController _connectionController;
 	private readonly Mock<TableClient> _tableClientMock;
+
 	private const string Alias = "alias";
 	private const string PublicDid = "public-did";
 
 	private IActionResult _response;
-	private Mock<IStorageTableResolver> _storageTableResolverMock;
 
 	public AndIdCryptApiAvailable()
 	{
@@ -111,8 +111,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		_storageTableResolverMock = new Mock<IStorageTableResolver>();
-		_storageTableResolverMock
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("pendingBankPartnerConnections"))
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
@@ -122,7 +122,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			_connectionsClientMock.Object,
 			_walletClientMock.Object,
 			mockAliasProvider.Object,
-			_storageTableResolverMock.Object,
+			storageTableResolverMock.Object,
 			options);
 	}
 

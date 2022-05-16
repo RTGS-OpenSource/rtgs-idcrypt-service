@@ -49,43 +49,9 @@ public class ConnectionController : ControllerBase
 	{
 		var alias = _aliasProvider.Provide();
 
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
+		var createInvitationResponse = await CreateInvitation(alias, cancellationToken);
 
-		CreateInvitationResponse createInvitationResponse;
-
-		try
-		{
-			createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
-			alias,
-			autoAccept,
-			multiUse,
-			usePublicDid,
-			cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(
-				ex,
-				"Error occurred when sending CreateInvitation request with alias {Alias} to ID Crypt Cloud Agent",
-				alias);
-
-			throw;
-		}
-
-		string publicDid;
-
-		try
-		{
-			publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
-
-			throw;
-		}
+		var publicDid = await GetPublicDid(cancellationToken);
 
 		var pendingConnection = new PendingBankPartnerConnection
 		{
@@ -129,28 +95,7 @@ public class ConnectionController : ControllerBase
 		AcceptConnectionInvitationRequest request,
 		CancellationToken cancellationToken)
 	{
-		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
-		{
-			Alias = request.Alias,
-			Id = request.Id,
-			Label = request.Label,
-			RecipientKeys = request.RecipientKeys,
-			ServiceEndpoint = request.ServiceEndpoint,
-			Type = request.Type
-		};
-
-		ConnectionResponse response;
-
-		try
-		{
-			response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when accepting invitation");
-
-			throw;
-		}
+		var response = await AcceptInvitation(request, cancellationToken);
 
 		var pendingConnection = new PendingBankPartnerConnection
 		{
@@ -163,6 +108,76 @@ public class ConnectionController : ControllerBase
 		await SavePendingBankPartnerConnection(pendingConnection, cancellationToken);
 
 		return Accepted();
+	}
+
+	private async Task<CreateInvitationResponse> CreateInvitation(string alias, CancellationToken cancellationToken)
+	{
+		const bool autoAccept = true;
+		const bool multiUse = false;
+		const bool usePublicDid = false;
+
+		try
+		{
+			var createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
+				alias,
+				autoAccept,
+				multiUse,
+				usePublicDid,
+				cancellationToken);
+
+			return createInvitationResponse;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending CreateInvitation request with alias {Alias} to ID Crypt Cloud Agent",
+				alias);
+
+			throw;
+		}
+	}
+
+	private async Task<string> GetPublicDid(CancellationToken cancellationToken)
+	{
+		try
+		{
+			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+
+			return publicDid;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
+
+			throw;
+		}
+	}
+
+	private async Task<ConnectionResponse> AcceptInvitation(AcceptConnectionInvitationRequest request, CancellationToken cancellationToken)
+	{
+		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
+		{
+			Alias = request.Alias,
+			Id = request.Id,
+			Label = request.Label,
+			RecipientKeys = request.RecipientKeys,
+			ServiceEndpoint = request.ServiceEndpoint,
+			Type = request.Type
+		};
+
+		try
+		{
+			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+
+			return response;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when accepting invitation");
+
+			throw;
+		}
 	}
 
 	private async Task SavePendingBankPartnerConnection(PendingBankPartnerConnection pendingConnection, CancellationToken cancellationToken)
