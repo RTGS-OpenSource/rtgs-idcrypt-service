@@ -87,6 +87,16 @@ public class ConnectionController : ControllerBase
 			throw;
 		}
 
+		var pendingConnection = new PendingBankPartnerConnection
+		{
+			PartitionKey = createInvitationResponse.ConnectionId,
+			RowKey = alias,
+			ConnectionId = createInvitationResponse.ConnectionId,
+			Alias = alias
+		};
+
+		await SavePendingBankPartnerConnection(pendingConnection, cancellationToken);
+
 		var response = new CreateConnectionInvitationResponse
 		{
 			ConnectionId = createInvitationResponse.ConnectionId,
@@ -142,16 +152,23 @@ public class ConnectionController : ControllerBase
 			throw;
 		}
 
+		var pendingConnection = new PendingBankPartnerConnection
+		{
+			PartitionKey = response.ConnectionId,
+			RowKey = response.Alias,
+			ConnectionId = response.ConnectionId,
+			Alias = response.Alias
+		};
+
+		await SavePendingBankPartnerConnection(pendingConnection, cancellationToken);
+
+		return Accepted();
+	}
+
+	private async Task SavePendingBankPartnerConnection(PendingBankPartnerConnection pendingConnection, CancellationToken cancellationToken)
+	{
 		try
 		{
-			var pendingConnection = new PendingBankPartnerConnection
-			{
-				PartitionKey = response.ConnectionId,
-				RowKey = response.Alias,
-				ConnectionId = response.ConnectionId,
-				Alias = response.Alias
-			};
-
 			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.PendingBankPartnerConnectionsTableName);
 
 			await tableClient.AddEntityAsync(pendingConnection, cancellationToken);
@@ -162,7 +179,5 @@ public class ConnectionController : ControllerBase
 
 			throw;
 		}
-
-		return Accepted();
 	}
 }
