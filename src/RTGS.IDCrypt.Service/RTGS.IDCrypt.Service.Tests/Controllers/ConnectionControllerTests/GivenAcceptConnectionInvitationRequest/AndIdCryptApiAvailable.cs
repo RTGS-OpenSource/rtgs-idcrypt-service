@@ -119,7 +119,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			Alias = "alias",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
+			ServiceEndpoint = "service-endpoint",
+			AgentPublicDid = "agent-public-did"
 		};
 
 		_response = await _connectionController.Accept(request, default);

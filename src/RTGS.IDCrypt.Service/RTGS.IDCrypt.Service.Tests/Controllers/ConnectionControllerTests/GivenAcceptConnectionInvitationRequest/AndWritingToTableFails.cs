@@ -55,21 +55,13 @@ public class AndWritingToTableFails
 			.ReturnsAsync(connectionResponse)
 			.Verifiable();
 
-		var expectedPendingConnection = new PendingBankPartnerConnection
-		{
-			PartitionKey = connectionResponse.ConnectionId,
-			RowKey = connectionResponse.Alias,
-			ConnectionId = connectionResponse.ConnectionId,
-			Alias = connectionResponse.Alias
-		};
-
 		var tableClientMock = new Mock<TableClient>();
 
 		tableClientMock
-				.Setup(tableClient => tableClient.AddEntityAsync(
-					It.IsAny<PendingBankPartnerConnection>(),
-					It.IsAny<CancellationToken>()))
-				.Throws<Exception>();
+			.Setup(tableClient => tableClient.AddEntityAsync(
+				It.IsAny<PendingBankPartnerConnection>(),
+				It.IsAny<CancellationToken>()))
+			.Throws<Exception>();
 
 		var storageTableResolver = new Mock<IStorageTableResolver>();
 
@@ -99,7 +91,8 @@ public class AndWritingToTableFails
 			Id = "id",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
+			ServiceEndpoint = "service-endpoint",
+			AgentPublicDid = "agent-public-did"
 		};
 	}
 
@@ -121,8 +114,8 @@ public class AndWritingToTableFails
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-			{
-				"Error occurred when saving pending bank partner connection"
-			});
+		{
+			"Error occurred when saving pending bank partner connection"
+		});
 	}
 }

@@ -65,7 +65,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
-	endpoints.MapPost("/v1/idcrypt/topic/{route}", idCryptMessageHandlerResolver.ResolveAsync)
+	endpoints.MapPost("/v1/idcrypt/topic/{route}", idCryptMessageHandlerResolver!.ResolveAsync)
 );
 
 try

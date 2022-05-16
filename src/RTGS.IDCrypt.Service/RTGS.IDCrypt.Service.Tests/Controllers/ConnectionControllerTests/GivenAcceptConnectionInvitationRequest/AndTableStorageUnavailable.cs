@@ -1,12 +1,10 @@
-﻿using Azure.Data.Tables;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
@@ -55,16 +53,6 @@ public class AndTableStorageUnavailable
 			.ReturnsAsync(connectionResponse)
 			.Verifiable();
 
-		var expectedPendingConnection = new PendingBankPartnerConnection
-		{
-			PartitionKey = connectionResponse.ConnectionId,
-			RowKey = connectionResponse.Alias,
-			ConnectionId = connectionResponse.ConnectionId,
-			Alias = connectionResponse.Alias
-		};
-
-		var tableClientMock = new Mock<TableClient>();
-
 		var storageTableResolver = new Mock<IStorageTableResolver>();
 		storageTableResolver
 			.Setup(resolver => resolver.GetTable("pendingBankPartnerConnections"))
@@ -92,7 +80,8 @@ public class AndTableStorageUnavailable
 			Id = "id",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
+			ServiceEndpoint = "service-endpoint",
+			AgentPublicDid = "agent-public-did"
 		};
 	}
 
@@ -114,8 +103,8 @@ public class AndTableStorageUnavailable
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-			{
-				"Error occurred when saving pending bank partner connection"
-			});
+		{
+			"Error occurred when saving pending bank partner connection"
+		});
 	}
 }

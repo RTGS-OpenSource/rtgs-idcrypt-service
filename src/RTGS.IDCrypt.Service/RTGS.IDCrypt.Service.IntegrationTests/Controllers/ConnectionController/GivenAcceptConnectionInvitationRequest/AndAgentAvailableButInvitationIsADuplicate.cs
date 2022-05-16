@@ -26,7 +26,8 @@ public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<Connecti
 			Id = "id",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
+			ServiceEndpoint = "service-endpoint",
+			AgentPublicDid = "agent-public-did"
 		};
 
 		await _client.PostAsJsonAsync("api/connection/accept", request);

@@ -27,8 +27,8 @@ public class GivenStatusIsNotActive
 		await handler.HandleAsync(message);
 
 		logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(new List<string>
-			{
-				"Ignoring connection for alias because state is not-active and not active"
-			});
+		{
+			"Ignoring connection with alias alias because state is not-active"
+		});
 	}
 }

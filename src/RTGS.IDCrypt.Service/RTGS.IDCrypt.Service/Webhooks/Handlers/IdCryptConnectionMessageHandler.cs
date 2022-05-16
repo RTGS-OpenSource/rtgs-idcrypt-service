@@ -15,17 +15,18 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 
 	public string MessageType => "connection";
 
-	public Task HandleAsync(string jsonMessage)
+	public async Task HandleAsync(string jsonMessage)
 	{
 		var connection = JsonSerializer.Deserialize<IdCryptConnection>(jsonMessage);
 
 		if (connection!.State is not "active")
 		{
-			_logger.LogDebug("Ignoring {RequestType} for {Alias} because state is {State} and not active",
+			_logger.LogDebug("Ignoring {RequestType} with alias {Alias} because state is {State}",
 				MessageType, connection.Alias, connection.State);
-			return Task.CompletedTask;
+
+			return;
 		}
 
-		return Task.CompletedTask;
+		//TODO: request proof here
 	}
 }
