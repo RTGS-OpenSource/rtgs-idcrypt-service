@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Webhooks;
+using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCryptSDK;
 using RTGS.IDCryptSDK.Extensions;
 
@@ -21,6 +23,7 @@ public static class ServiceCollectionExtensions
 			var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 			{
 				BankPartnerConnectionsTableName = "bankPartnerConnections",
+				PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections",
 				MinimumConnectionAge = TimeSpan.FromMinutes(5)
 			};
 
@@ -32,6 +35,9 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
 		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+		services.AddSingleton<MessageHandlerResolver>();
+		services.AddSingleton<IMessageHandler, IdCryptConnectionMessageHandler>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),

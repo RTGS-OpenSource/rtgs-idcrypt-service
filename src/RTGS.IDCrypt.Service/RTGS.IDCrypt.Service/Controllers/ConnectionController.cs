@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
@@ -16,17 +20,23 @@ public class ConnectionController : ControllerBase
 	private readonly IConnectionsClient _connectionsClient;
 	private readonly IWalletClient _walletClient;
 	private readonly IAliasProvider _aliasProvider;
+	private readonly IStorageTableResolver _storageTableResolver;
+	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
 
 	public ConnectionController(
 		ILogger<ConnectionController> logger,
 		IConnectionsClient connectionsClient,
 		IWalletClient walletClient,
-		IAliasProvider aliasProvider)
+		IAliasProvider aliasProvider,
+		IStorageTableResolver storageTableResolver,
+		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsOptions)
 	{
 		_logger = logger;
 		_connectionsClient = connectionsClient;
 		_walletClient = walletClient;
 		_aliasProvider = aliasProvider;
+		_storageTableResolver = storageTableResolver;
+		_bankPartnerConnectionsConfig = bankPartnerConnectionsOptions.Value;
 	}
 
 	/// <summary>
@@ -119,13 +129,36 @@ public class ConnectionController : ControllerBase
 			Type = request.Type
 		};
 
+		ConnectionResponse response;
+
 		try
 		{
-			await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+			response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
 		}
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error occurred when accepting invitation");
+
+			throw;
+		}
+
+		try
+		{
+			var pendingConnection = new PendingBankPartnerConnection
+			{
+				PartitionKey = response.ConnectionId,
+				RowKey = response.Alias,
+				ConnectionId = response.ConnectionId,
+				Alias = response.Alias
+			};
+
+			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.PendingBankPartnerConnectionsTableName);
+
+			await tableClient.AddEntityAsync(pendingConnection, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when saving pending bank partner connection");
 
 			throw;
 		}

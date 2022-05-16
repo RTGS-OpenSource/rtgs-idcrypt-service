@@ -4,22 +4,26 @@ using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenAcceptConnectionInvitationRequest;
 
-public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
+public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenAgentAvailable(ConnectionInvitationFixture testFixture)
+	public AndAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
 		_testFixture = testFixture;
 
 		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
 		_client = testFixture.CreateClient();
+
+		AcceptInvitation.ConnectionId = "connection-id" + Guid.NewGuid();
+		AcceptInvitation.Alias = "alias" + Guid.NewGuid();
 	}
 
 	public async Task InitializeAsync()
@@ -31,7 +35,8 @@ public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, I
 			Alias = "alias",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
+			ServiceEndpoint = "service-endpoint",
+			AgentPublicDid = "agent-public-did"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/connection/accept", request);
@@ -75,6 +80,15 @@ public class GivenAgentAvailable : IClassFixture<ConnectionInvitationFixture>, I
 			.Should().ContainSingle()
 			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
 	}
+
+	[Fact]
+	public void WhenPosting_ThenWriteToTableStorage() =>
+		_testFixture.PendingBankPartnerConnectionsTable
+			.Query<PendingBankPartnerConnection>()
+			.Where(connection =>
+				connection.PartitionKey == AcceptInvitation.ExpectedResponse.ConnectionId
+				&& connection.RowKey == AcceptInvitation.ExpectedResponse.Alias)
+			.Should().ContainSingle();
 
 	[Fact]
 	public void ThenReturnAccepted() =>

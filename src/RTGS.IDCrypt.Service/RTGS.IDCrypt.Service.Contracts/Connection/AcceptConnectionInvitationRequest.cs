@@ -34,4 +34,9 @@ public class AcceptConnectionInvitationRequest
 	/// Service endpoint at which to reach this agent.
 	/// </summary>
 	public string ServiceEndpoint { get; init; }
+
+	/// <summary>
+	/// Public DID of the agent which created this invitation.
+	/// </summary>
+	public string AgentPublicDid { get; init; }
 }

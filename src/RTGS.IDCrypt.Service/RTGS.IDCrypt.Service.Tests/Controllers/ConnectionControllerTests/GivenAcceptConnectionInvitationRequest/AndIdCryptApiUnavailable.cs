@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -27,11 +30,18 @@ public class AndIdCryptApiUnavailable
 
 		_logger = new FakeLogger<ConnectionController>();
 
+		var options = Options.Create(new BankPartnerConnectionsConfig
+		{
+			BankPartnerConnectionsTableName = "bankPartnerConnections"
+		});
+
 		_connectionController = new ConnectionController(
 			_logger,
 			connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
-			Mock.Of<IAliasProvider>());
+			Mock.Of<IAliasProvider>(),
+			Mock.Of<IStorageTableResolver>(),
+			options);
 	}
 
 	[Fact]
@@ -46,7 +56,8 @@ public class AndIdCryptApiUnavailable
 			Alias = "alias",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
+			ServiceEndpoint = "service-endpoint",
+			AgentPublicDid = "agent-public-did"
 		};
 
 		await FluentActions
@@ -56,7 +67,7 @@ public class AndIdCryptApiUnavailable
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				$"Error occurred when accepting invitation"
+				"Error occurred when accepting invitation"
 			});
 	}
 }

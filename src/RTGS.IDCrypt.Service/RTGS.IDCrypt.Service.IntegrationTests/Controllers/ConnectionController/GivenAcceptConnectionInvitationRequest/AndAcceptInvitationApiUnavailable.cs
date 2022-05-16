@@ -6,13 +6,13 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenAcceptConnectionInvitationRequest;
 
-public class GivenAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
+public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 
 	private HttpResponseMessage _httpResponse;
 
-	public GivenAcceptInvitationApiUnavailable(AcceptInvitationEndpointUnavailableFixture testFixture)
+	public AndAcceptInvitationApiUnavailable(AcceptInvitationEndpointUnavailableFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -28,7 +28,8 @@ public class GivenAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitatio
 			Alias = "alias",
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
-			ServiceEndpoint = "service-endpoint"
+			ServiceEndpoint = "service-endpoint",
+			AgentPublicDid = "agent-public-did"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/connection/accept", request);

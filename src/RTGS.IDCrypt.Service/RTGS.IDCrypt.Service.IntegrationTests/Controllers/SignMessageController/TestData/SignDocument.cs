@@ -3,7 +3,7 @@ using RTGS.IDCryptSDK.JsonSignatures.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 
-public class SignDocument
+public static class SignDocument
 {
 	public const string Path = "/json-signatures/sign";
 

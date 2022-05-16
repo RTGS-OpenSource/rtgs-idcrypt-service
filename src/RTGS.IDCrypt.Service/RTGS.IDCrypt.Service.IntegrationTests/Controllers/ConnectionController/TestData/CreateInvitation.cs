@@ -4,7 +4,7 @@ using RTGS.IDCryptSDK.Connections.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 
-public class CreateInvitation
+public static class CreateInvitation
 {
 	public const string Path = "/connections/create-invitation";
 

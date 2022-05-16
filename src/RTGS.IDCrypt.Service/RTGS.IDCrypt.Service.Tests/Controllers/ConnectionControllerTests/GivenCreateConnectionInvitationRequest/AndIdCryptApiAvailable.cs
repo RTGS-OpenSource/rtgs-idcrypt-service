@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -70,11 +73,18 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		var logger = new FakeLogger<ConnectionController>();
 
+		var options = Options.Create(new BankPartnerConnectionsConfig
+		{
+			BankPartnerConnectionsTableName = "bankPartnerConnections"
+		});
+
 		_connectionController = new ConnectionController(
 			logger,
 			_connectionsClientMock.Object,
 			_walletClientMock.Object,
-			mockAliasProvider.Object);
+			mockAliasProvider.Object,
+			Mock.Of<IStorageTableResolver>(),
+			options);
 	}
 
 	public async Task InitializeAsync() =>
