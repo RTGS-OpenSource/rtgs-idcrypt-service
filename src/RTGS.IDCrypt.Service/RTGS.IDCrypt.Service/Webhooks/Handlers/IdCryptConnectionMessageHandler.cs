@@ -15,7 +15,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 
 	public string MessageType => "connection";
 
-	public async Task HandleAsync(string jsonMessage)
+	public Task HandleAsync(string jsonMessage)
 	{
 		var connection = JsonSerializer.Deserialize<IdCryptConnection>(jsonMessage);
 
@@ -23,10 +23,9 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 		{
 			_logger.LogDebug("Ignoring {RequestType} with alias {Alias} because state is {State}",
 				MessageType, connection.Alias, connection.State);
-
-			return;
+			return Task.CompletedTask;
 		}
 
-		//TODO: request proof here
+		return Task.CompletedTask;
 	}
 }
