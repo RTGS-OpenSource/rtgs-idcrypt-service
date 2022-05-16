@@ -49,43 +49,19 @@ public class ConnectionController : ControllerBase
 	{
 		var alias = _aliasProvider.Provide();
 
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
+		var createInvitationResponse = await CreateInvitation(alias, cancellationToken);
 
-		CreateInvitationResponse createInvitationResponse;
+		var publicDid = await GetPublicDid(cancellationToken);
 
-		try
+		var pendingConnection = new PendingBankPartnerConnection
 		{
-			createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
-			alias,
-			autoAccept,
-			multiUse,
-			usePublicDid,
-			cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(
-				ex,
-				"Error occurred when sending CreateInvitation request with alias {Alias} to ID Crypt Cloud Agent",
-				alias);
+			PartitionKey = createInvitationResponse.ConnectionId,
+			RowKey = alias,
+			ConnectionId = createInvitationResponse.ConnectionId,
+			Alias = alias
+		};
 
-			throw;
-		}
-
-		string publicDid;
-
-		try
-		{
-			publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
-
-			throw;
-		}
+		await SavePendingBankPartnerConnection(pendingConnection, cancellationToken);
 
 		var response = new CreateConnectionInvitationResponse
 		{
@@ -119,6 +95,67 @@ public class ConnectionController : ControllerBase
 		AcceptConnectionInvitationRequest request,
 		CancellationToken cancellationToken)
 	{
+		var response = await AcceptInvitation(request, cancellationToken);
+
+		var pendingConnection = new PendingBankPartnerConnection
+		{
+			PartitionKey = response.ConnectionId,
+			RowKey = response.Alias,
+			ConnectionId = response.ConnectionId,
+			Alias = response.Alias
+		};
+
+		await SavePendingBankPartnerConnection(pendingConnection, cancellationToken);
+
+		return Accepted();
+	}
+
+	private async Task<CreateInvitationResponse> CreateInvitation(string alias, CancellationToken cancellationToken)
+	{
+		const bool autoAccept = true;
+		const bool multiUse = false;
+		const bool usePublicDid = false;
+
+		try
+		{
+			var createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
+				alias,
+				autoAccept,
+				multiUse,
+				usePublicDid,
+				cancellationToken);
+
+			return createInvitationResponse;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when sending CreateInvitation request with alias {Alias} to ID Crypt Cloud Agent",
+				alias);
+
+			throw;
+		}
+	}
+
+	private async Task<string> GetPublicDid(CancellationToken cancellationToken)
+	{
+		try
+		{
+			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+
+			return publicDid;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
+
+			throw;
+		}
+	}
+
+	private async Task<ConnectionResponse> AcceptInvitation(AcceptConnectionInvitationRequest request, CancellationToken cancellationToken)
+	{
 		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
 		{
 			Alias = request.Alias,
@@ -129,11 +166,11 @@ public class ConnectionController : ControllerBase
 			Type = request.Type
 		};
 
-		ConnectionResponse response;
-
 		try
 		{
-			response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+
+			return response;
 		}
 		catch (Exception ex)
 		{
@@ -141,17 +178,12 @@ public class ConnectionController : ControllerBase
 
 			throw;
 		}
+	}
 
+	private async Task SavePendingBankPartnerConnection(PendingBankPartnerConnection pendingConnection, CancellationToken cancellationToken)
+	{
 		try
 		{
-			var pendingConnection = new PendingBankPartnerConnection
-			{
-				PartitionKey = response.ConnectionId,
-				RowKey = response.Alias,
-				ConnectionId = response.ConnectionId,
-				Alias = response.Alias
-			};
-
 			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.PendingBankPartnerConnectionsTableName);
 
 			await tableClient.AddEntityAsync(pendingConnection, cancellationToken);
@@ -162,7 +194,5 @@ public class ConnectionController : ControllerBase
 
 			throw;
 		}
-
-		return Accepted();
 	}
 }

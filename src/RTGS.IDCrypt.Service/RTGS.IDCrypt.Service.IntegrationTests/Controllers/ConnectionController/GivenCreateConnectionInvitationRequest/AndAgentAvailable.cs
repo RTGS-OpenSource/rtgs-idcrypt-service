@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationRequest;
 
@@ -109,5 +110,21 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 				ServiceEndpoint = "http://192.168.56.101:8020"
 			}
 		});
+	}
+
+	[Fact]
+	public void WhenPosting_ThenWriteToTableStorage()
+	{
+		var inviteRequestQueryParams = QueryHelpers.ParseQuery(
+			_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].First().RequestUri!.Query);
+
+		var alias = inviteRequestQueryParams["alias"];
+
+		_testFixture.PendingBankPartnerConnectionsTable
+			.Query<PendingBankPartnerConnection>()
+			.Where(connection =>
+				connection.PartitionKey == CreateInvitation.Response.ConnectionId
+				&& connection.RowKey == alias)
+			.Should().ContainSingle();
 	}
 }

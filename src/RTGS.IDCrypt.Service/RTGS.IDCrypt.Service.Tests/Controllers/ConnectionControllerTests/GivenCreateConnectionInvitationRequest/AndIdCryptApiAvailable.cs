@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Data.Tables;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
@@ -19,6 +21,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	private readonly CreateInvitationResponse _createInvitationResponse;
 	private readonly Mock<IWalletClient> _walletClientMock;
 	private readonly ConnectionController _connectionController;
+	private readonly Mock<TableClient> _tableClientMock;
+
 	private const string Alias = "alias";
 	private const string PublicDid = "public-did";
 
@@ -75,15 +79,50 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
+			BankPartnerConnectionsTableName = "bankPartnerConnections",
+			PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections"
 		});
+
+		var expectedPendingConnection = new PendingBankPartnerConnection
+		{
+			PartitionKey = _createInvitationResponse.ConnectionId,
+			RowKey = Alias,
+			ConnectionId = _createInvitationResponse.ConnectionId,
+			Alias = Alias
+		};
+
+		Func<PendingBankPartnerConnection, bool> connectionMatches = request =>
+		{
+			request.Should().BeEquivalentTo(expectedPendingConnection, options =>
+			{
+				options.Excluding(connection => connection.ETag);
+				options.Excluding(connection => connection.Timestamp);
+
+				return options;
+			});
+
+			return true;
+		};
+
+		_tableClientMock = new Mock<TableClient>();
+		_tableClientMock
+			.Setup(tableClient => tableClient.AddEntityAsync(
+				It.Is<PendingBankPartnerConnection>(connection => connectionMatches(connection)),
+				It.IsAny<CancellationToken>()))
+			.Verifiable();
+
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+		storageTableResolverMock
+			.Setup(resolver => resolver.GetTable("pendingBankPartnerConnections"))
+			.Returns(_tableClientMock.Object)
+			.Verifiable();
 
 		_connectionController = new ConnectionController(
 			logger,
 			_connectionsClientMock.Object,
 			_walletClientMock.Object,
 			mockAliasProvider.Object,
-			Mock.Of<IStorageTableResolver>(),
+			storageTableResolverMock.Object,
 			options);
 	}
 
@@ -122,4 +161,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	[Fact]
 	public void WhenPosting_ThenCallGetPublicDidAsyncWithExpected() =>
 		_walletClientMock.Verify();
+
+	[Fact]
+	public void WhenPosting_ThenWritePendingBankPartnerToTableStorage() =>
+		_tableClientMock.Verify();
 }
