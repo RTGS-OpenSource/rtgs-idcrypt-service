@@ -9,12 +9,10 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public class ThrowingFixture : WebApplicationFactory<Program>
 {
-	private static readonly JsonDocument Document = JsonDocument.Parse(@"{ ""Message"": ""I am the walrus"" }");
-
 	public static SignMessageRequest SignMessageRequest => new()
 	{
 		RtgsGlobalId = "rtgs-global-id",
-		Message = Document.RootElement
+		Message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" })
 	};
 
 	protected override IHost CreateHost(IHostBuilder builder)
@@ -37,11 +35,5 @@ public class ThrowingFixture : WebApplicationFactory<Program>
 		});
 
 		return base.CreateHost(builder);
-	}
-
-	protected override void Dispose(bool disposing)
-	{
-		Document.Dispose();
-		base.Dispose(disposing);
 	}
 }

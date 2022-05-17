@@ -26,12 +26,12 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	public AndNoMatchingBankPartnerConnectionExists()
 	{
-		using var document = JsonDocument.Parse(@"{ ""Message"": ""I am the walrus"" }");
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
 		_signMessageRequest = new SignMessageRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
-			Message = document.RootElement
+			Message = message
 		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();

@@ -25,12 +25,12 @@ public class GivenMultipleMatchingBankPartnerConnectionsExist : IClassFixture<Mu
 
 	public async Task InitializeAsync()
 	{
-		using var document = JsonDocument.Parse(@"{ ""Message"": ""I am the walrus"" }");
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
 		var request = new SignMessageRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
-			Message = document.RootElement
+			Message = message
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/signmessage", request);
