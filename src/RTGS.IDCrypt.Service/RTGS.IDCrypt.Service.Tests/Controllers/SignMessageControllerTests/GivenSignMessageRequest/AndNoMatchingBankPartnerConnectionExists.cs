@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Text.Json;
+using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,10 +26,12 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	public AndNoMatchingBankPartnerConnectionExists()
 	{
+		using var document = JsonDocument.Parse(@"{ ""Message"": ""I am the walrus"" }");
+
 		_signMessageRequest = new SignMessageRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
-			Message = "message"
+			Message = document.RootElement
 		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
@@ -77,7 +80,7 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	[Fact]
 	public void WhenPostingSignMessageRequest_ThenDoNotCallSignMessage() =>
 		_jsonSignaturesClientMock.Verify(client =>
-			client.SignJsonDocumentAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+			client.SignDocumentAsync(It.IsAny<JsonElement>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 
 	[Fact]
 	public void WhenPostingSignMessageRequest_ThenReturnNotFoundResponse() =>
@@ -87,6 +90,6 @@ public class AndNoMatchingBankPartnerConnectionExists : IAsyncLifetime
 	public void WhenPostingSignMessageRequest_ThenLog() =>
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 			{
-				$"No activated bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}."
+				$"No activated bank partner connection found for RTGS Global ID {_signMessageRequest.RtgsGlobalId}"
 			});
 }

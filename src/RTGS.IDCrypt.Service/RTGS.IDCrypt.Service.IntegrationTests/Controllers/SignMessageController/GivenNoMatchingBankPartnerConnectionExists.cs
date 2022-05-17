@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
@@ -22,10 +23,12 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 
 	public async Task InitializeAsync()
 	{
+		using var document = JsonDocument.Parse(@"{ ""Message"": ""I am the walrus"" }");
+
 		var request = new SignMessageRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
-			Message = @"{ ""Message"": ""I am the walrus"" }"
+			Message = document.RootElement
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("api/signmessage", request);

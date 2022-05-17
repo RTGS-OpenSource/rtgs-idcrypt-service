@@ -27,7 +27,7 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 			.Build();
 	}
 
-	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; set; }
+	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
 	protected override async Task Seed()
 	{

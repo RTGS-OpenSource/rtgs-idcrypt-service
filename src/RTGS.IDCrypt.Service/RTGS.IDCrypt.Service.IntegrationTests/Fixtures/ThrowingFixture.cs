@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
@@ -8,10 +9,12 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public class ThrowingFixture : WebApplicationFactory<Program>
 {
+	private static readonly JsonDocument Document = JsonDocument.Parse(@"{ ""Message"": ""I am the walrus"" }");
+
 	public static SignMessageRequest SignMessageRequest => new()
 	{
 		RtgsGlobalId = "rtgs-global-id",
-		Message = @"{ ""Message"": ""I am the walrus"" }"
+		Message = Document.RootElement
 	};
 
 	protected override IHost CreateHost(IHostBuilder builder)
@@ -34,5 +37,11 @@ public class ThrowingFixture : WebApplicationFactory<Program>
 		});
 
 		return base.CreateHost(builder);
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		Document.Dispose();
+		base.Dispose(disposing);
 	}
 }
