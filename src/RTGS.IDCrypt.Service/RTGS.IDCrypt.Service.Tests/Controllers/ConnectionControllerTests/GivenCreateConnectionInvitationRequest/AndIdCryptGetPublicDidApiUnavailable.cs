@@ -4,7 +4,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -73,11 +73,10 @@ public class AndIdCryptGetPublicDidApiUnavailable
 
 		_connectionController = new ConnectionController(
 			_logger,
-			connectionsClientMock.Object,
 			walletClientMock.Object,
 			mockAliasProvider.Object,
-			Mock.Of<IStorageTableResolver>(),
-			options);
+			Mock.Of<IConnectionService>(),
+			Mock.Of<IConnectionStorageService>());
 	}
 
 	[Fact]

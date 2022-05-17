@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
-using RTGS.IDCrypt.Service.Storage;
-using RTGS.IDCryptSDK.Connections;
+using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
@@ -17,26 +14,23 @@ namespace RTGS.IDCrypt.Service.Controllers;
 public class ConnectionController : ControllerBase
 {
 	private readonly ILogger<ConnectionController> _logger;
-	private readonly IConnectionsClient _connectionsClient;
 	private readonly IWalletClient _walletClient;
 	private readonly IAliasProvider _aliasProvider;
-	private readonly IStorageTableResolver _storageTableResolver;
-	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
+	private readonly IConnectionService _connectionService;
+	private readonly IConnectionStorageService _connectionStorageService;
 
 	public ConnectionController(
 		ILogger<ConnectionController> logger,
-		IConnectionsClient connectionsClient,
 		IWalletClient walletClient,
 		IAliasProvider aliasProvider,
-		IStorageTableResolver storageTableResolver,
-		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsOptions)
+		IConnectionService connectionService,
+		IConnectionStorageService connectionStorageService)
 	{
 		_logger = logger;
-		_connectionsClient = connectionsClient;
 		_walletClient = walletClient;
 		_aliasProvider = aliasProvider;
-		_storageTableResolver = storageTableResolver;
-		_bankPartnerConnectionsConfig = bankPartnerConnectionsOptions.Value;
+		_connectionService = connectionService;
+		_connectionStorageService = connectionStorageService;
 	}
 
 	/// <summary>
@@ -49,7 +43,7 @@ public class ConnectionController : ControllerBase
 	{
 		var alias = _aliasProvider.Provide();
 
-		var createInvitationResponse = await CreateInvitation(alias, cancellationToken);
+		var createInvitationResponse = await _connectionService.CreateInvitationAsync(alias, cancellationToken);
 
 		var publicDid = await GetPublicDid(cancellationToken);
 
@@ -61,7 +55,7 @@ public class ConnectionController : ControllerBase
 			Alias = alias
 		};
 
-		await SavePendingBankPartnerConnection(pendingConnection, cancellationToken);
+		await _connectionStorageService.SavePendingBankPartnerConnectionAsync(pendingConnection, cancellationToken);
 
 		var response = new CreateConnectionInvitationResponse
 		{
@@ -95,7 +89,17 @@ public class ConnectionController : ControllerBase
 		AcceptConnectionInvitationRequest request,
 		CancellationToken cancellationToken)
 	{
-		var response = await AcceptInvitation(request, cancellationToken);
+		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
+		{
+			Alias = request.Alias,
+			Id = request.Id,
+			Label = request.Label,
+			RecipientKeys = request.RecipientKeys,
+			ServiceEndpoint = request.ServiceEndpoint,
+			Type = request.Type
+		};
+
+		var response = await _connectionService.AcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
 
 		var pendingConnection = new PendingBankPartnerConnection
 		{
@@ -105,38 +109,12 @@ public class ConnectionController : ControllerBase
 			Alias = response.Alias
 		};
 
-		await SavePendingBankPartnerConnection(pendingConnection, cancellationToken);
+		await _connectionStorageService.SavePendingBankPartnerConnectionAsync(pendingConnection, cancellationToken);
 
 		return Accepted();
 	}
 
-	private async Task<CreateInvitationResponse> CreateInvitation(string alias, CancellationToken cancellationToken)
-	{
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
 
-		try
-		{
-			var createInvitationResponse = await _connectionsClient.CreateInvitationAsync(
-				alias,
-				autoAccept,
-				multiUse,
-				usePublicDid,
-				cancellationToken);
-
-			return createInvitationResponse;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(
-				ex,
-				"Error occurred when sending CreateInvitation request with alias {Alias} to ID Crypt Cloud Agent",
-				alias);
-
-			throw;
-		}
-	}
 
 	private async Task<string> GetPublicDid(CancellationToken cancellationToken)
 	{
@@ -149,48 +127,6 @@ public class ConnectionController : ControllerBase
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
-
-			throw;
-		}
-	}
-
-	private async Task<ConnectionResponse> AcceptInvitation(AcceptConnectionInvitationRequest request, CancellationToken cancellationToken)
-	{
-		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
-		{
-			Alias = request.Alias,
-			Id = request.Id,
-			Label = request.Label,
-			RecipientKeys = request.RecipientKeys,
-			ServiceEndpoint = request.ServiceEndpoint,
-			Type = request.Type
-		};
-
-		try
-		{
-			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
-
-			return response;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when accepting invitation");
-
-			throw;
-		}
-	}
-
-	private async Task SavePendingBankPartnerConnection(PendingBankPartnerConnection pendingConnection, CancellationToken cancellationToken)
-	{
-		try
-		{
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.PendingBankPartnerConnectionsTableName);
-
-			await tableClient.AddEntityAsync(pendingConnection, cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when saving pending bank partner connection");
 
 			throw;
 		}

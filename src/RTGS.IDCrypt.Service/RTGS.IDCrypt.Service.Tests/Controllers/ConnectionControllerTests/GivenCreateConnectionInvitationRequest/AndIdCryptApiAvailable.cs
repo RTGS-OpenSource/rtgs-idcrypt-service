@@ -1,15 +1,11 @@
-﻿using Azure.Data.Tables;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
-using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 
@@ -17,11 +13,11 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionsClient> _connectionsClientMock;
+	private readonly Mock<IConnectionService> _connectionServiceMock;
 	private readonly CreateInvitationResponse _createInvitationResponse;
 	private readonly Mock<IWalletClient> _walletClientMock;
 	private readonly ConnectionController _connectionController;
-	private readonly Mock<TableClient> _tableClientMock;
+	private readonly Mock<IConnectionStorageService> _connectionStorageServiceMock;
 
 	private const string Alias = "alias";
 	private const string PublicDid = "public-did";
@@ -30,11 +26,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	public AndIdCryptApiAvailable()
 	{
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
-
-		_connectionsClientMock = new Mock<IConnectionsClient>();
+		_connectionServiceMock = new Mock<IConnectionService>();
 
 		_createInvitationResponse = new CreateInvitationResponse
 		{
@@ -52,12 +44,9 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			}
 		};
 
-		_connectionsClientMock
-			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
+		_connectionServiceMock
+			.Setup(service => service.CreateInvitationAsync(
 				Alias,
-				autoAccept,
-				multiUse,
-				usePublicDid,
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(_createInvitationResponse)
 			.Verifiable();
@@ -76,12 +65,6 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.Returns(Alias);
 
 		var logger = new FakeLogger<ConnectionController>();
-
-		var options = Options.Create(new BankPartnerConnectionsConfig
-		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections",
-			PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections"
-		});
 
 		var expectedPendingConnection = new PendingBankPartnerConnection
 		{
@@ -104,26 +87,20 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_tableClientMock = new Mock<TableClient>();
-		_tableClientMock
-			.Setup(tableClient => tableClient.AddEntityAsync(
+		_connectionStorageServiceMock = new Mock<IConnectionStorageService>();
+		_connectionStorageServiceMock.Setup(
+			service => service.SavePendingBankPartnerConnectionAsync(
 				It.Is<PendingBankPartnerConnection>(connection => connectionMatches(connection)),
-				It.IsAny<CancellationToken>()))
+			It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var storageTableResolverMock = new Mock<IStorageTableResolver>();
-		storageTableResolverMock
-			.Setup(resolver => resolver.GetTable("pendingBankPartnerConnections"))
-			.Returns(_tableClientMock.Object)
-			.Verifiable();
 
 		_connectionController = new ConnectionController(
 			logger,
-			_connectionsClientMock.Object,
 			_walletClientMock.Object,
 			mockAliasProvider.Object,
-			storageTableResolverMock.Object,
-			options);
+			_connectionServiceMock.Object,
+			_connectionStorageServiceMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
@@ -156,7 +133,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	[Fact]
 	public void WhenPosting_ThenCallCreateInvitationAsyncWithExpected() =>
-		_connectionsClientMock.Verify();
+		_connectionServiceMock.Verify();
 
 	[Fact]
 	public void WhenPosting_ThenCallGetPublicDidAsyncWithExpected() =>
@@ -164,5 +141,5 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	[Fact]
 	public void WhenPosting_ThenWritePendingBankPartnerToTableStorage() =>
-		_tableClientMock.Verify();
+		_connectionStorageServiceMock.Verify();
 }

@@ -1,13 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
-using RTGS.IDCrypt.Service.Config;
+﻿using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 
@@ -20,32 +16,26 @@ public class AndIdCryptApiUnavailable
 
 	public AndIdCryptApiUnavailable()
 	{
-		var connectionsClientMock = new Mock<IConnectionsClient>();
+		var connectionServiceMock = new Mock<IConnectionService>();
 
-		connectionsClientMock
-			.Setup(connectionsClient => connectionsClient.ReceiveAndAcceptInvitationAsync(
+		connectionServiceMock
+			.Setup(service => service.AcceptInvitationAsync(
 				It.IsAny<ReceiveAndAcceptInvitationRequest>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
 		_logger = new FakeLogger<ConnectionController>();
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
-		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
-		});
-
 		_connectionController = new ConnectionController(
 			_logger,
-			connectionsClientMock.Object,
 			Mock.Of<IWalletClient>(),
 			Mock.Of<IAliasProvider>(),
-			Mock.Of<IStorageTableResolver>(),
-			options);
+			connectionServiceMock.Object,
+			Mock.Of<IConnectionStorageService>());
 	}
 
 	[Fact]
-	public async Task WhenPosting_ThenLog()
+	public async Task WhenPosting_ThenThrows()
 	{
 		using var _ = new AssertionScope();
 
@@ -64,10 +54,5 @@ public class AndIdCryptApiUnavailable
 			.Awaiting(() => _connectionController.Accept(request, default))
 			.Should()
 			.ThrowAsync<Exception>();
-
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-			{
-				"Error occurred when accepting invitation"
-			});
 	}
 }

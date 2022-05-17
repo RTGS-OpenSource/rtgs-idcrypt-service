@@ -33,7 +33,6 @@ public class MessageHandlerResolver
 			if (handler is null)
 			{
 				_logger.LogDebug("No message handler found for message type {MessageType}", messageType);
-
 				return;
 			}
 
@@ -47,6 +46,10 @@ public class MessageHandlerResolver
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Failed to handle request");
+
+			context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+			await context.Response.WriteAsJsonAsync(new { Error = ex.Message });
 		}
 
 		await context.Response.CompleteAsync();

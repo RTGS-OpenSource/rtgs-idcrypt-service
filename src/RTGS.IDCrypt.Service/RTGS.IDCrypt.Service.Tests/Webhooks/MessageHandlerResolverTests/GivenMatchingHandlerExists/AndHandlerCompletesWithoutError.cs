@@ -8,15 +8,16 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests.GivenMatchingHandlerExists;
 
-public class GivenMatchingHandlerExists : IAsyncLifetime
+public class AndHandlerCompletesWithoutError : IAsyncLifetime
 {
 	private readonly FakeLogger<MessageHandlerResolver> _logger;
 	private readonly Mock<IMessageHandler> _mockMessageHandler;
 	private readonly MessageHandlerResolver _resolver;
+	private DefaultHttpContext _defaultHttpContext;
 
-	public GivenMatchingHandlerExists()
+	public AndHandlerCompletesWithoutError()
 	{
 		_logger = new FakeLogger<MessageHandlerResolver>();
 
@@ -34,7 +35,7 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 
 	public async Task InitializeAsync()
 	{
-		var defaultHttpContext = new DefaultHttpContext
+		_defaultHttpContext = new DefaultHttpContext
 		{
 			Request =
 			{
@@ -47,7 +48,7 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 			}
 		};
 
-		await _resolver.ResolveAsync(defaultHttpContext);
+		await _resolver.ResolveAsync(_defaultHttpContext);
 	}
 
 	public Task DisposeAsync() =>
@@ -64,4 +65,8 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 			"Handling request...",
 			"Finished handling request"
 		});
+
+	[Fact]
+	public void ThenResponseIsOk() =>
+		_defaultHttpContext.Response.StatusCode.Should().Be(StatusCodes.Status200OK);
 }

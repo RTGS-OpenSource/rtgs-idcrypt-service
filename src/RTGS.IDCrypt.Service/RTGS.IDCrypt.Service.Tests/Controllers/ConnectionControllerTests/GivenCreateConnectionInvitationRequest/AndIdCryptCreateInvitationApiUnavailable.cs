@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationRequest;
@@ -20,14 +18,11 @@ public class AndIdCryptCreateInvitationApiUnavailable
 
 	public AndIdCryptCreateInvitationApiUnavailable()
 	{
-		var connectionsClientMock = new Mock<IConnectionsClient>();
+		var connectionServiceMock = new Mock<IConnectionService>();
 
-		connectionsClientMock
+		connectionServiceMock
 			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
 				It.IsAny<string>(),
-				It.IsAny<bool>(),
-				It.IsAny<bool>(),
-				It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
@@ -48,15 +43,14 @@ public class AndIdCryptCreateInvitationApiUnavailable
 
 		_connectionController = new ConnectionController(
 			_logger,
-			connectionsClientMock.Object,
 			_walletClientMock.Object,
 			mockAliasProvider.Object,
-			Mock.Of<IStorageTableResolver>(),
-			options);
+			connectionServiceMock.Object,
+			Mock.Of<IConnectionStorageService>());
 	}
 
 	[Fact]
-	public async Task WhenPosting_ThenLog()
+	public async Task WhenPosting_ThenThrows()
 	{
 		using var _ = new AssertionScope();
 
@@ -64,11 +58,6 @@ public class AndIdCryptCreateInvitationApiUnavailable
 			.Awaiting(() => _connectionController.Post(default))
 			.Should()
 			.ThrowAsync<Exception>();
-
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-			{
-				$"Error occurred when sending CreateInvitation request with alias {Alias} to ID Crypt Cloud Agent"
-			});
 	}
 
 	[Fact]
