@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Text.Json;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -21,10 +22,12 @@ public class AndIdCryptAgentUnavailable
 
 	public AndIdCryptAgentUnavailable()
 	{
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
+
 		_signMessageRequest = new SignMessageRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
-			Message = "message"
+			Message = message
 		};
 
 		var referenceDate = new DateTime(2022, 4, 1, 0, 0, 0);
@@ -45,8 +48,8 @@ public class AndIdCryptAgentUnavailable
 		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		jsonSignaturesClientMock
-			.Setup(client => client.SignJsonDocumentAsync(
-				It.IsAny<string>(),
+			.Setup(client => client.SignDocumentAsync(
+				It.IsAny<JsonElement>(),
 				It.IsAny<string>(),
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());

@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Text.Json;
+using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -24,10 +25,12 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 	public AndMultipleMatchingBankPartnerConnectionExists()
 	{
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
+
 		_signMessageRequest = new SignMessageRequest
 		{
 			RtgsGlobalId = "rtgs-global-id-1",
-			Message = "message"
+			Message = message
 		};
 
 		var signDocumentResponse = new SignDocumentResponse
@@ -77,7 +80,7 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		_jsonSignaturesClientMock
-			.Setup(client => client.SignJsonDocumentAsync(
+			.Setup(client => client.SignDocumentAsync(
 				_signMessageRequest.Message,
 				_validConnection.ConnectionId,
 				It.IsAny<CancellationToken>()))

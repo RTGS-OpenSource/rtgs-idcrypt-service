@@ -55,14 +55,12 @@ public class SignMessageController : ControllerBase
 				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
 				&& bankPartnerConnection.CreatedAt <= dateThreshold).ToList();
 
-		var bankPartnerConnection = bankPartnerConnections
-			.OrderByDescending(connection => connection.CreatedAt)
-			.FirstOrDefault();
+		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.CreatedAt);
 
 		if (bankPartnerConnection is null)
 		{
 			_logger.LogError(
-				"No activated bank partner connection found for RTGS Global ID {RtgsGlobalId}.",
+				"No activated bank partner connection found for RTGS Global ID {RtgsGlobalId}",
 				signMessageRequest.RtgsGlobalId);
 
 			return NotFound(new { Error = "No activated bank partner connection found, please try again in a few minutes." });
@@ -72,7 +70,7 @@ public class SignMessageController : ControllerBase
 
 		try
 		{
-			signDocumentResponse = await _jsonSignaturesClient.SignJsonDocumentAsync(
+			signDocumentResponse = await _jsonSignaturesClient.SignDocumentAsync(
 				signMessageRequest.Message,
 				bankPartnerConnection.ConnectionId,
 				cancellationToken);
