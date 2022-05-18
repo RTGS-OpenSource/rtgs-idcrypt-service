@@ -1,8 +1,8 @@
-﻿using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
+﻿using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
+using RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.TestData;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
 
 public class ProofExchangeFixture : TestFixtureBase
 {
@@ -10,7 +10,7 @@ public class ProofExchangeFixture : TestFixtureBase
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
-			.WithOkResponse(Proof.HttpRequestResponseContext)
+			.WithOkResponse(SendProofRequest.HttpRequestResponseContext)
 			.Build();
 	}
 
