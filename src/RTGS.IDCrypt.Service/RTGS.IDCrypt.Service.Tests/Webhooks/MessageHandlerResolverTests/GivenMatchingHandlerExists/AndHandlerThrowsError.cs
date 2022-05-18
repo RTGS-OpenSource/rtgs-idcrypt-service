@@ -56,10 +56,6 @@ public class AndHandlerThrowsError : IAsyncLifetime
 		Task.CompletedTask;
 
 	[Fact]
-	public void ThenHandlerIsCalledWithExpected() =>
-		_mockMessageHandler.Verify(handler => handler.HandleAsync("the-body"), Times.Once);
-
-	[Fact]
 	public void ThenLog()
 	{
 		using var _ = new AssertionScope();
@@ -67,7 +63,6 @@ public class AndHandlerThrowsError : IAsyncLifetime
 		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo("Handling request...");
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Failed to handle request");
 	}
-
 
 	[Fact]
 	public void ThenResponseIsInternalServerError() =>

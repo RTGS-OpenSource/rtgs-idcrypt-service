@@ -6,11 +6,11 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionStorageService.GivenSavingPendingBankPartnerConnection;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenSavingPendingBankPartnerConnection;
 
 public class AndTableStorageAvailable : IAsyncLifetime
 {
-	private readonly Service.Services.ConnectionStorageService _connectionStorageService;
+	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
 	private readonly PendingBankPartnerConnection _pendingConnection;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
@@ -51,18 +51,18 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
-		var logger = new FakeLogger<Service.Services.ConnectionStorageService>();
+		var logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
 
 		var options = Options.Create(new BankPartnerConnectionsConfig
 		{
 			PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections"
 		});
 
-		_connectionStorageService =
-			new Service.Services.ConnectionStorageService(_storageTableResolverMock.Object, options, logger);
+		_connectionRepository =
+			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionStorageService.SavePendingBankPartnerConnectionAsync(_pendingConnection);
+	public async Task InitializeAsync() => await _connectionRepository.SavePendingBankPartnerConnectionAsync(_pendingConnection);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

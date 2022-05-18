@@ -1,8 +1,8 @@
 ﻿using RTGS.IDCrypt.Service.Models;
 
-namespace RTGS.IDCrypt.Service.Services;
+namespace RTGS.IDCrypt.Service.Repositories;
 
-public interface IConnectionStorageService
+public interface IConnectionRepository
 {
 	Task SavePendingBankPartnerConnectionAsync(PendingBankPartnerConnection pendingConnection, CancellationToken cancellationToken = default);
 }

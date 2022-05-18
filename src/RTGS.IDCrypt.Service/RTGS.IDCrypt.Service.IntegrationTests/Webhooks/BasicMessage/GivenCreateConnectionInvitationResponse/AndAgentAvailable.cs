@@ -2,7 +2,6 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
@@ -30,25 +29,25 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 	public async Task InitializeAsync()
 	{
-		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
+		var connectionInvitation = new ConnectionInvitation
 		{
 			Alias = "alias",
-			AgentPublicDid = "agent-public-did",
-			Invitation = new ConnectionInvitation
-			{
-				Id = "id",
-				Type = "type",
-				Label = "label",
-				RecipientKeys = new[] { "recipient-key" },
-				ServiceEndpoint = "service-endpoint"
-			}
+			ImageUrl = "image-url",
+			InvitationUrl = "invitation-url",
+			Did = "did",
+			Label = "label",
+			RecipientKeys = new[] { "recipient-key-1" },
+			ServiceEndpoint = "service-endpoint",
+			Id = "id",
+			PublicDid = "public-did",
+			Type = "type"
 		};
 
 		var basicMessage = new IdCryptBasicMessage
 		{
-			MessageType = nameof(CreateConnectionInvitationResponse),
-			ConnectionId = "connection-id",
-			Content = JsonSerializer.Serialize(createConnectionInvitationResponse)
+			MessageType = nameof(ConnectionInvitation),
+			ConnectionId = "connection_id",
+			Content = JsonSerializer.Serialize(connectionInvitation)
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);

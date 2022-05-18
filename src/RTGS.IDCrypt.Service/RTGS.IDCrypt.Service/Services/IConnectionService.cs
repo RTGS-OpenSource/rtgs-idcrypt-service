@@ -1,9 +1,10 @@
-﻿using RTGS.IDCryptSDK.Connections.Models;
+﻿using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.Services;
 
 public interface IConnectionService
 {
-	Task<ConnectionResponse> AcceptInvitationAsync(ReceiveAndAcceptInvitationRequest receiveAndAcceptInvitationRequest, CancellationToken cancellationToken = default);
-	Task<CreateInvitationResponse> CreateInvitationAsync(string alias, CancellationToken cancellationToken = default);
+	Task AcceptInvitationAsync(ConnectionInvitation invitation, CancellationToken cancellationToken = default);
+
+	Task<ConnectionInvitation> CreateConnectionInvitationAsync(CancellationToken cancellationToken = default);
 }

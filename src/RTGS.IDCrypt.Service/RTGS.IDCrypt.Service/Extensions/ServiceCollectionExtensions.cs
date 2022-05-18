@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Webhooks;
@@ -35,7 +36,7 @@ public static class ServiceCollectionExtensions
 		});
 
 		services.AddSingleton<IConnectionService, ConnectionService>();
-		services.AddSingleton<IConnectionStorageService, ConnectionStorageService>();
+		services.AddSingleton<IConnectionRepository, ConnectionRepository>();
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
 		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
@@ -44,7 +45,7 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IMessageHandler, IdCryptConnectionMessageHandler>();
 		services.AddSingleton<IMessageHandler, IdCryptBasicMessageHandler>();
 
-		services.AddSingleton<IBasicMessageHandler, CreateConnectionInvitationResponseBasicMessageHandler>();
+		services.AddSingleton<IBasicMessageHandler, ConnectionInvitationBasicMessageHandler>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),

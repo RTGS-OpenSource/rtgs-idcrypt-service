@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RTGS.IDCrypt.Service.Contracts.Connection;
-using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Services;
-using RTGS.IDCryptSDK.Connections.Models;
-using RTGS.IDCryptSDK.Wallet;
-using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
 
 namespace RTGS.IDCrypt.Service.Controllers;
 
@@ -13,24 +9,12 @@ namespace RTGS.IDCrypt.Service.Controllers;
 [ApiController]
 public class ConnectionController : ControllerBase
 {
-	private readonly ILogger<ConnectionController> _logger;
-	private readonly IWalletClient _walletClient;
-	private readonly IAliasProvider _aliasProvider;
 	private readonly IConnectionService _connectionService;
-	private readonly IConnectionStorageService _connectionStorageService;
 
 	public ConnectionController(
-		ILogger<ConnectionController> logger,
-		IWalletClient walletClient,
-		IAliasProvider aliasProvider,
-		IConnectionService connectionService,
-		IConnectionStorageService connectionStorageService)
+		IConnectionService connectionService)
 	{
-		_logger = logger;
-		_walletClient = walletClient;
-		_aliasProvider = aliasProvider;
 		_connectionService = connectionService;
-		_connectionStorageService = connectionStorageService;
 	}
 
 	/// <summary>
@@ -39,96 +23,39 @@ public class ConnectionController : ControllerBase
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
 	[HttpPost]
-	public async Task<IActionResult> Post(CancellationToken cancellationToken)
+	public async Task<IActionResult> Post(CancellationToken cancellationToken = default)
 	{
-		var alias = _aliasProvider.Provide();
+		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(cancellationToken);
 
-		var createInvitationResponse = await _connectionService.CreateInvitationAsync(alias, cancellationToken);
-
-		var publicDid = await GetPublicDid(cancellationToken);
-
-		var pendingConnection = new PendingBankPartnerConnection
-		{
-			PartitionKey = createInvitationResponse.ConnectionId,
-			RowKey = alias,
-			ConnectionId = createInvitationResponse.ConnectionId,
-			Alias = alias
-		};
-
-		await _connectionStorageService.SavePendingBankPartnerConnectionAsync(pendingConnection, cancellationToken);
-
-		var response = new CreateConnectionInvitationResponse
-		{
-			ConnectionId = createInvitationResponse.ConnectionId,
-			Alias = alias,
-			AgentPublicDid = publicDid,
-			InvitationUrl = createInvitationResponse.InvitationUrl,
-			Invitation = new ConnectionInvitation
-			{
-				Did = createInvitationResponse.Invitation.Did,
-				Id = createInvitationResponse.Invitation.Id,
-				ImageUrl = createInvitationResponse.Invitation.ImageUrl,
-				Label = createInvitationResponse.Invitation.Label,
-				RecipientKeys = createInvitationResponse.Invitation.RecipientKeys,
-				ServiceEndpoint = createInvitationResponse.Invitation.ServiceEndpoint,
-				Type = createInvitationResponse.Invitation.Type
-			}
-		};
+		var response = createConnectionInvitationResponse.MapToContract();
 
 		return Ok(response);
 	}
 
 	/// <summary>
-	/// Endpoint to accept an invitation
+	/// Endpoint to accept an invitation.
 	/// </summary>
-	/// <param name="request">The data required to accept an invitations</param>
+	/// <param name="request">The data required to accept an invitation.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="AcceptedResult"/></returns>
 	[HttpPost("Accept")]
 	public async Task<IActionResult> Accept(
 		AcceptConnectionInvitationRequest request,
-		CancellationToken cancellationToken)
+		CancellationToken cancellationToken = default)
 	{
-		var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
+		var invitation = new Models.ConnectionInvitation
 		{
 			Alias = request.Alias,
 			Id = request.Id,
 			Label = request.Label,
 			RecipientKeys = request.RecipientKeys,
 			ServiceEndpoint = request.ServiceEndpoint,
-			Type = request.Type
+			Type = request.Type,
+			PublicDid = request.AgentPublicDid
 		};
 
-		var response = await _connectionService.AcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
-
-		var pendingConnection = new PendingBankPartnerConnection
-		{
-			PartitionKey = response.ConnectionId,
-			RowKey = response.Alias,
-			ConnectionId = response.ConnectionId,
-			Alias = response.Alias
-		};
-
-		await _connectionStorageService.SavePendingBankPartnerConnectionAsync(pendingConnection, cancellationToken);
+		await _connectionService.AcceptInvitationAsync(invitation, cancellationToken);
 
 		return Accepted();
-	}
-
-
-
-	private async Task<string> GetPublicDid(CancellationToken cancellationToken)
-	{
-		try
-		{
-			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
-
-			return publicDid;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent");
-
-			throw;
-		}
 	}
 }

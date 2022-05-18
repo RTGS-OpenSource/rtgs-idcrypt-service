@@ -2,7 +2,7 @@
 
 public interface IBasicMessageHandler
 {
-	public string ForType { get; }
+	public string MessageType { get; }
 
 	Task HandleAsync(string message, CancellationToken cancellationToken = default);
 }

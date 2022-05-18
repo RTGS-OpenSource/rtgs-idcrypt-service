@@ -3,17 +3,17 @@ using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 
-namespace RTGS.IDCrypt.Service.Services;
+namespace RTGS.IDCrypt.Service.Repositories;
 
-public class ConnectionStorageService : IConnectionStorageService
+public class ConnectionRepository : IConnectionRepository
 {
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
-	private readonly ILogger<ConnectionStorageService> _logger;
+	private readonly ILogger<ConnectionRepository> _logger;
 
-	public ConnectionStorageService(IStorageTableResolver storageTableResolver,
+	public ConnectionRepository(IStorageTableResolver storageTableResolver,
 		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsOptions,
-		ILogger<ConnectionStorageService> logger)
+		ILogger<ConnectionRepository> logger)
 	{
 		_storageTableResolver = storageTableResolver;
 		_bankPartnerConnectionsConfig = bankPartnerConnectionsOptions.Value;

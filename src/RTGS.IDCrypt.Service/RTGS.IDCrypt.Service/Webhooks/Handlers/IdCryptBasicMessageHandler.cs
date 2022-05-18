@@ -15,7 +15,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 		IEnumerable<IBasicMessageHandler> handlers)
 	{
 		_logger = logger;
-		_handlers = handlers.ToDictionary(handler => handler.ForType, handler => handler);
+		_handlers = handlers.ToDictionary(handler => handler.MessageType, handler => handler);
 	}
 
 	public string MessageType => "basicmessage";
@@ -24,18 +24,17 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 	{
 		var message = JsonSerializer.Deserialize<IdCryptBasicMessage>(jsonMessage);
 
-		_logger.LogInformation("Received {MessageType} BasicMessage: {Content}", message!.MessageType, message.Content);
+		_logger.LogInformation("Received {MessageType} BasicMessage.", message!.MessageType);
 
-		if (_handlers.TryGetValue(message!.MessageType, out var handler))
+		if (_handlers.TryGetValue(message.MessageType, out var handler))
 		{
 			await handler.HandleAsync(message.Content);
 
-			_logger.LogInformation("Handled {MessageType} BasicMessage", message.MessageType);
+			_logger.LogInformation("Handled {MessageType} BasicMessage.", message.MessageType);
 		}
 		else
 		{
-			_logger.LogDebug("No BasicMessage handler found for message type {MessageType}", message.MessageType);
-
+			_logger.LogDebug("No BasicMessage handler found for message type {MessageType}.", message.MessageType);
 		}
 	}
 }

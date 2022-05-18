@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenCreateConnectionInvitationResponse;
@@ -23,25 +23,25 @@ public class AndReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitatio
 
 	public async Task InitializeAsync()
 	{
-		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
+		var connectionInvitation = new ConnectionInvitation
 		{
 			Alias = "alias",
-			AgentPublicDid = "agent-public-did",
-			Invitation = new ConnectionInvitation
-			{
-				Id = "id",
-				Type = "type",
-				Label = "label",
-				RecipientKeys = new[] { "recipient-key" },
-				ServiceEndpoint = "service-endpoint"
-			}
+			ImageUrl = "image-url",
+			InvitationUrl = "invitation-url",
+			Did = "did",
+			Label = "label",
+			RecipientKeys = new[] { "recipient-key-1" },
+			ServiceEndpoint = "service-endpoint",
+			Id = "id",
+			PublicDid = "public-did",
+			Type = "type"
 		};
 
 		var basicMessage = new IdCryptBasicMessage
 		{
-			MessageType = nameof(CreateConnectionInvitationResponse),
+			MessageType = nameof(ConnectionInvitation),
 			ConnectionId = "connection_id",
-			Content = JsonSerializer.Serialize(createConnectionInvitationResponse)
+			Content = JsonSerializer.Serialize(connectionInvitation)
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
