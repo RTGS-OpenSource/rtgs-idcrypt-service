@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests;
 
-public class GivenBasicMessageHandlerExisis : IAsyncLifetime
+public class GivenStatusIsActive : IAsyncLifetime
 {
 	public async Task InitializeAsync()
 	{
