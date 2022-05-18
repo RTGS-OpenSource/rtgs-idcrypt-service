@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using RTGS.IDCrypt.Service.Contracts.SignMessage;
@@ -11,7 +12,7 @@ public class ThrowingFixture : WebApplicationFactory<Program>
 	public static SignMessageRequest SignMessageRequest => new()
 	{
 		RtgsGlobalId = "rtgs-global-id",
-		Message = @"{ ""Message"": ""I am the walrus"" }"
+		Message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" })
 	};
 
 	protected override IHost CreateHost(IHostBuilder builder)

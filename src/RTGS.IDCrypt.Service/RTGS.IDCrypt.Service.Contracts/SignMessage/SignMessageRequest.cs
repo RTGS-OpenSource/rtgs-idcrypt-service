@@ -1,4 +1,6 @@
-﻿namespace RTGS.IDCrypt.Service.Contracts.SignMessage;
+﻿using System.Text.Json;
+
+namespace RTGS.IDCrypt.Service.Contracts.SignMessage;
 
 /// <summary>
 ///  Model of the sign message request.
@@ -13,5 +15,5 @@ public record SignMessageRequest
 	/// <summary>
 	/// The JSON document to be signed.
 	/// </summary>
-	public string Message { get; init; }
+	public JsonElement Message { get; init; }
 }
