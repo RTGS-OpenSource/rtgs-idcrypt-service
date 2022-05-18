@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Text.Json;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -22,10 +23,12 @@ public class AndIdCryptAgentApiUnavailable
 
 	public AndIdCryptAgentApiUnavailable()
 	{
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
+
 		_request = new VerifyPrivateSignatureRequest
 		{
 			RtgsGlobalId = "rtgs-global-id-1",
-			Message = @"{ ""Message"": ""I am the walrus"" }",
+			Message = message,
 			PrivateSignature = "private-signature",
 			Alias = "alias-1"
 		};
@@ -36,8 +39,8 @@ public class AndIdCryptAgentApiUnavailable
 		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		jsonSignaturesClientMock
-			.Setup(client => client.VerifyJsonDocumentPrivateSignatureAsync(
-				It.IsAny<string>(),
+			.Setup(client => client.VerifyPrivateSignatureAsync(
+				It.IsAny<JsonElement>(),
 				It.IsAny<string>(),
 				It.IsAny<string>(),
 				It.IsAny<CancellationToken>()))
