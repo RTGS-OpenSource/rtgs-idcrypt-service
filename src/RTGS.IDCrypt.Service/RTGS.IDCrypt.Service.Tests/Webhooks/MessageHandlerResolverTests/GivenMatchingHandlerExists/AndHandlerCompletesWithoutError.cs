@@ -8,16 +8,16 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests.GivenMatchingHandlerExists;
 
-public class GivenNoMatchingHandlerExists : IAsyncLifetime
+public class AndHandlerCompletesWithoutError : IAsyncLifetime
 {
 	private readonly FakeLogger<MessageHandlerResolver> _logger;
 	private readonly Mock<IMessageHandler> _mockMessageHandler;
 	private readonly MessageHandlerResolver _resolver;
 	private DefaultHttpContext _defaultHttpContext;
 
-	public GivenNoMatchingHandlerExists()
+	public AndHandlerCompletesWithoutError()
 	{
 		_logger = new FakeLogger<MessageHandlerResolver>();
 
@@ -43,7 +43,7 @@ public class GivenNoMatchingHandlerExists : IAsyncLifetime
 				Body = new MemoryStream(Encoding.UTF8.GetBytes("the-body")),
 				RouteValues = new RouteValueDictionary
 				{
-					{ "route", "invalid-message-type" }
+					{ "route", "message-type" }
 				}
 			}
 		};
@@ -55,15 +55,15 @@ public class GivenNoMatchingHandlerExists : IAsyncLifetime
 		Task.CompletedTask;
 
 	[Fact]
-	public void ThenHandlerIsNotCalled() =>
-		_mockMessageHandler.Verify(handler => handler.HandleAsync(It.IsAny<string>()), Times.Never);
+	public void ThenHandlerIsCalledWithExpected() =>
+		_mockMessageHandler.Verify(handler => handler.HandleAsync("the-body"), Times.Once);
 
 	[Fact]
 	public void ThenLog() =>
 		_logger.Logs[LogLevel.Debug].Should().ContainInOrder(new List<string>
 		{
 			"Handling request...",
-			"No message handler found for message type invalid-message-type"
+			"Finished handling request"
 		});
 
 	[Fact]

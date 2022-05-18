@@ -32,6 +32,6 @@ public class AndCreateInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 
 		var content = await _httpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Error creating invitation\"}");
+		content.Should().Be("{\"error\":\"Error creating connection invitation\"}");
 	}
 }

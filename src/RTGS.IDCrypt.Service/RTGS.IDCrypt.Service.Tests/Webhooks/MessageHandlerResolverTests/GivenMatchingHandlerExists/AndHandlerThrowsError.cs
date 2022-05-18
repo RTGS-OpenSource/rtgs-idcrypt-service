@@ -8,21 +8,23 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests.GivenMatchingHandlerExists;
 
-public class GivenMatchingHandlerExists : IAsyncLifetime
+public class AndHandlerThrowsError : IAsyncLifetime
 {
 	private readonly FakeLogger<MessageHandlerResolver> _logger;
 	private readonly Mock<IMessageHandler> _mockMessageHandler;
 	private readonly MessageHandlerResolver _resolver;
+	private DefaultHttpContext _defaultHttpContext;
 
-	public GivenMatchingHandlerExists()
+	public AndHandlerThrowsError()
 	{
 		_logger = new FakeLogger<MessageHandlerResolver>();
 
 		_mockMessageHandler = new Mock<IMessageHandler>();
 
 		_mockMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
+		_mockMessageHandler.Setup(handler => handler.HandleAsync(It.IsAny<string>())).Throws<Exception>();
 
 		var messageHandlers = new List<IMessageHandler>()
 		{
@@ -34,7 +36,7 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 
 	public async Task InitializeAsync()
 	{
-		var defaultHttpContext = new DefaultHttpContext
+		_defaultHttpContext = new DefaultHttpContext
 		{
 			Request =
 			{
@@ -47,21 +49,22 @@ public class GivenMatchingHandlerExists : IAsyncLifetime
 			}
 		};
 
-		await _resolver.ResolveAsync(defaultHttpContext);
+		await _resolver.ResolveAsync(_defaultHttpContext);
 	}
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
 
 	[Fact]
-	public void ThenHandlerIsCalledWithExpected() =>
-		_mockMessageHandler.Verify(handler => handler.HandleAsync("the-body"), Times.Once);
+	public void ThenLog()
+	{
+		using var _ = new AssertionScope();
+
+		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo("Handling request...");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Failed to handle request");
+	}
 
 	[Fact]
-	public void ThenLog() =>
-		_logger.Logs[LogLevel.Debug].Should().ContainInOrder(new List<string>
-		{
-			"Handling request...",
-			"Finished handling request"
-		});
+	public void ThenResponseIsInternalServerError() =>
+		_defaultHttpContext.Response.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
 }
