@@ -2,7 +2,6 @@
 using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCryptSDK.Connections.Models;
 
@@ -18,13 +17,6 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	public AndConnectionServiceAvailable()
 	{
 		_connectionServiceMock = new Mock<IConnectionService>();
-
-		var connectionResponse = new ConnectionResponse
-		{
-			Alias = "alias",
-			ConnectionId = "connection-id",
-			State = "invitation"
-		};
 
 		var expectedRequest = new ReceiveAndAcceptInvitationRequest
 		{
@@ -48,27 +40,6 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 				It.Is<Models.ConnectionInvitation>(request => requestMatches(request)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
-
-		var expectedPendingConnection = new PendingBankPartnerConnection
-		{
-			PartitionKey = connectionResponse.ConnectionId,
-			RowKey = connectionResponse.Alias,
-			ConnectionId = connectionResponse.ConnectionId,
-			Alias = connectionResponse.Alias
-		};
-
-		Func<PendingBankPartnerConnection, bool> connectionMatches = request =>
-		{
-			request.Should().BeEquivalentTo(expectedPendingConnection, options =>
-			{
-				options.Excluding(connection => connection.ETag);
-				options.Excluding(connection => connection.Timestamp);
-
-				return options;
-			});
-
-			return true;
-		};
 
 		_connectionController = new ConnectionController(_connectionServiceMock.Object);
 	}

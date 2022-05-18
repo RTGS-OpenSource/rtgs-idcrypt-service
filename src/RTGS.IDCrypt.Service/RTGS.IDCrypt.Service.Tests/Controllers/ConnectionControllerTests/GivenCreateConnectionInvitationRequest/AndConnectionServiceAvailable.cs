@@ -15,13 +15,12 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	private const string PublicDid = "public-did";
 
 	private IActionResult _response;
-	private readonly ConnectionInvitation _connectionInvitation;
 
 	public AndConnectionServiceAvailable()
 	{
 		_connectionServiceMock = new Mock<IConnectionService>();
 
-		_connectionInvitation = new ConnectionInvitation
+		var connectionInvitation = new ConnectionInvitation
 		{
 			Alias = Alias,
 			PublicDid = PublicDid,
@@ -38,7 +37,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 		_connectionServiceMock
 			.Setup(service => service.CreateConnectionInvitationAsync(
 				It.IsAny<CancellationToken>()))
-			.ReturnsAsync(_connectionInvitation)
+			.ReturnsAsync(connectionInvitation)
 			.Verifiable();
 
 		_connectionController = new ConnectionController(_connectionServiceMock.Object);
@@ -77,5 +76,4 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	[Fact]
 	public void WhenPosting_ThenCallCreateInvitationAsyncWithExpected() =>
 		_connectionServiceMock.Verify();
-
 }
