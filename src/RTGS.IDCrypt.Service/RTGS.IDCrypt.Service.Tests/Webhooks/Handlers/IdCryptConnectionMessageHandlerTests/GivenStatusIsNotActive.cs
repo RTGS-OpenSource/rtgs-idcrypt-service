@@ -1,8 +1,10 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Moq;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
+using RTGS.IDCryptSDK.Proof;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests;
 
@@ -13,7 +15,7 @@ public class GivenStatusIsNotActive
 	{
 		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
-		var handler = new IdCryptConnectionMessageHandler(logger);
+		var handler = new IdCryptConnectionMessageHandler(logger, Mock.Of<IProofClient>());
 
 		var notActiveConnection = new IdCryptConnection
 		{
@@ -24,7 +26,7 @@ public class GivenStatusIsNotActive
 
 		var message = JsonSerializer.Serialize(notActiveConnection);
 
-		await handler.HandleAsync(message);
+		await handler.HandleAsync(message, default);
 
 		logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(new List<string>
 		{
