@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json;
+using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.Proof;
 using RTGS.IDCryptSDK.Proof.Models;
@@ -34,9 +36,53 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 
 		var request = new SendProofRequestRequest
 		{
-			ConnectionId = connection.ConnectionId
+			ConnectionId = connection.ConnectionId,
+			RequestedProofDetails = new()
+			{
+				Name = "RTGS.global Network Participation",
+				Version = "1.0",
+				Attributes = ProofAttributes.RtgsNetworkParticipation
+			}
 		};
 
 		await _proofClient.SendProofRequestAsync(request, cancellationToken);
 	}
+}
+
+public static class ProofAttributes
+{
+	private static List<KeyValuePair<string, string>> _rtgsNetworkParticipation = new()
+	{
+		KeyValuePair.Create("participant", "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"),
+		KeyValuePair.Create("RTGS_global", "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"),
+		KeyValuePair.Create("base_currency", "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"),
+		KeyValuePair.Create("parent", "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"),
+		KeyValuePair.Create("products_and_services", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("category", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("description", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("full_legal_name", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("date_of_establishment_year", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("identifier_RTGSg", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("contacts_phone", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("establishment_country_name", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("establishment_country_code", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("business_line", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("csleid", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("identifier_LEI", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("listing_status", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("aliases", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("preferred_label", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("contacts_country_name", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("contacts_country_code", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("contacts_email", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("full_legal_name_local", "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"),
+		KeyValuePair.Create("idprefix", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
+		KeyValuePair.Create("id", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
+		KeyValuePair.Create("risk_monitoring_status", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
+		KeyValuePair.Create("monitored", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
+		KeyValuePair.Create("risk_monitoring_subscription_uri", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
+	};
+
+	public static Dictionary<string, RequestedAttribute> RtgsNetworkParticipation =>
+		_rtgsNetworkParticipation.ToProofAttributes();
 }
