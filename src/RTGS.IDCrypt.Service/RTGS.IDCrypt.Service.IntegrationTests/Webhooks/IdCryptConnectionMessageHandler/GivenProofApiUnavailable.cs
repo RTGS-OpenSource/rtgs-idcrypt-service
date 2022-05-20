@@ -9,7 +9,6 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenCreat
 public class GivenProofApiUnavailable : IClassFixture<SendProofRequestEndpointUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-
 	private HttpResponseMessage _httpResponse;
 
 	public GivenProofApiUnavailable(SendProofRequestEndpointUnavailableFixture testFixture)

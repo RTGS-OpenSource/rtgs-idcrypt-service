@@ -33,10 +33,6 @@
     <None Update="testsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailable\AndConnectionIsNotActive.WhenCallingIdCryptAgent_ThenBodyIsExpected.verified.txt">
-      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
-      <DependentUpon>AndConnectionIsNotActive.cs</DependentUpon>
-    </None>
     <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailable\AndConnectionIsActive.WhenCallingIdCryptAgent_ThenBodyIsExpected.verified.txt">
       <DependentUpon>AndConnectionIsActive.cs</DependentUpon>
     </None>

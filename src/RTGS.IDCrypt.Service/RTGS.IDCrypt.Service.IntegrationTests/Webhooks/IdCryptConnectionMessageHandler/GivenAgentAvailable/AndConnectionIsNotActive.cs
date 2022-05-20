@@ -3,11 +3,9 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
 using RTGS.IDCrypt.Service.Webhooks.Models;
-using VerifyXunit;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler;
 
-[UsesVerify]
 public class AndConnectionIsNotActive : IClassFixture<ProofExchangeFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
