@@ -34,7 +34,7 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 
 		var message = JsonSerializer.Serialize(basicMessage);
 
-		await handler.HandleAsync(message);
+		await handler.HandleAsync(message, default);
 	}
 
 	public Task DisposeAsync() => Task.CompletedTask;

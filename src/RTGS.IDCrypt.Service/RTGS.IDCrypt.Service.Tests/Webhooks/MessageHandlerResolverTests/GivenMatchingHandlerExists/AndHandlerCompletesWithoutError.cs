@@ -57,7 +57,7 @@ public class AndHandlerCompletesWithoutError : IAsyncLifetime
 	[Fact]
 	public void ThenHandlerIsCalledWithExpected() =>
 		_mockMessageHandler.Verify(handler => handler.HandleAsync(
-			"the-body", It.IsAny<CancellationToken>()), 
+			"the-body", It.IsAny<CancellationToken>()),
 			Times.Once);
 
 	[Fact]

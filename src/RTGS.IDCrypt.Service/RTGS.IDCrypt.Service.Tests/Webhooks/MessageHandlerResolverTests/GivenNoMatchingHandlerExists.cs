@@ -57,7 +57,7 @@ public class GivenNoMatchingHandlerExists : IAsyncLifetime
 	[Fact]
 	public void ThenHandlerIsNotCalled() =>
 		_mockMessageHandler.Verify(handler => handler.HandleAsync(
-			It.IsAny<string>(), It.IsAny<CancellationToken>()), 
+			It.IsAny<string>(), It.IsAny<CancellationToken>()),
 			Times.Never);
 
 	[Fact]

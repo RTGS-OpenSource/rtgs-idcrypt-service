@@ -24,7 +24,7 @@ public class AndHandlerThrowsError : IAsyncLifetime
 		_mockMessageHandler = new Mock<IMessageHandler>();
 
 		_mockMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
-		_mockMessageHandler.Setup(handler => handler.HandleAsync(It.IsAny<string>())).Throws<Exception>();
+		_mockMessageHandler.Setup(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
 		var messageHandlers = new List<IMessageHandler>()
 		{

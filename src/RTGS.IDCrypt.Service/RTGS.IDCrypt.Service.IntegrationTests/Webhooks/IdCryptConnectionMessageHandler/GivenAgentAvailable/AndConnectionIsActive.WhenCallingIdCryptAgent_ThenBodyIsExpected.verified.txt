@@ -1,0 +1,235 @@
+﻿{
+  "connection_id": "connection-id",
+  "comment": "Requesting identification",
+  "proof_request": {
+    "name": "RTGS.global Network Participation",
+    "version": "1.0",
+    "requested_attributes": {
+      "0_participant_uuid": {
+        "name": "participant",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"
+          }
+        ]
+      },
+      "0_RTGS_global_uuid": {
+        "name": "RTGS_global",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"
+          }
+        ]
+      },
+      "0_base_currency_uuid": {
+        "name": "base_currency",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"
+          }
+        ]
+      },
+      "0_parent_uuid": {
+        "name": "parent",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"
+          }
+        ]
+      },
+      "0_products_and_services_uuid": {
+        "name": "products_and_services",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_category_uuid": {
+        "name": "category",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_description_uuid": {
+        "name": "description",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_full_legal_name_uuid": {
+        "name": "full_legal_name",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_date_of_establishment_year_uuid": {
+        "name": "date_of_establishment_year",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_identifier_RTGSg_uuid": {
+        "name": "identifier_RTGSg",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_contacts_phone_uuid": {
+        "name": "contacts_phone",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_establishment_country_name_uuid": {
+        "name": "establishment_country_name",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_establishment_country_code_uuid": {
+        "name": "establishment_country_code",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_business_line_uuid": {
+        "name": "business_line",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_csleid_uuid": {
+        "name": "csleid",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_identifier_LEI_uuid": {
+        "name": "identifier_LEI",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_listing_status_uuid": {
+        "name": "listing_status",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_aliases_uuid": {
+        "name": "aliases",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_preferred_label_uuid": {
+        "name": "preferred_label",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_contacts_country_name_uuid": {
+        "name": "contacts_country_name",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_contacts_country_code_uuid": {
+        "name": "contacts_country_code",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_contacts_email_uuid": {
+        "name": "contacts_email",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_full_legal_name_local_uuid": {
+        "name": "full_legal_name_local",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default"
+          }
+        ]
+      },
+      "0_idprefix_uuid": {
+        "name": "idprefix",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"
+          }
+        ]
+      },
+      "0_id_uuid": {
+        "name": "id",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"
+          }
+        ]
+      },
+      "0_risk_monitoring_status_uuid": {
+        "name": "risk_monitoring_status",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"
+          }
+        ]
+      },
+      "0_monitored_uuid": {
+        "name": "monitored",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"
+          }
+        ]
+      },
+      "0_risk_monitoring_subscription_uri_uuid": {
+        "name": "risk_monitoring_subscription_uri",
+        "restrictions": [
+          {
+            "cred_def_id": "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"
+          }
+        ]
+      }
+    },
+    "requested_predicates": {}
+  }
+}

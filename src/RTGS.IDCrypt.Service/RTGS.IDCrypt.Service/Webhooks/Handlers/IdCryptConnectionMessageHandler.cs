@@ -37,21 +37,29 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 		var request = new SendProofRequestRequest
 		{
 			ConnectionId = connection.ConnectionId,
+			Comment = "Requesting identification",
 			RequestedProofDetails = new()
 			{
 				Name = "RTGS.global Network Participation",
 				Version = "1.0",
-				Attributes = ProofAttributes.RtgsNetworkParticipation
+				Attributes = _rtgsNetworkParticipationProofAttributes.ToProofAttributes(),
+				RequestedPredicates = new()
 			}
 		};
 
-		await _proofClient.SendProofRequestAsync(request, cancellationToken);
-	}
-}
+		try
+		{
+			await _proofClient.SendProofRequestAsync(request, cancellationToken);
+		}
+		catch (Exception exception)
+		{
+			_logger.LogError(exception, "Error occurred requesting proof");
 
-public static class ProofAttributes
-{
-	private static List<KeyValuePair<string, string>> _rtgsNetworkParticipation = new()
+			throw;
+		}
+	}
+
+	private readonly List<KeyValuePair<string, string>> _rtgsNetworkParticipationProofAttributes = new()
 	{
 		KeyValuePair.Create("participant", "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"),
 		KeyValuePair.Create("RTGS_global", "XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default"),
@@ -82,7 +90,4 @@ public static class ProofAttributes
 		KeyValuePair.Create("monitored", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
 		KeyValuePair.Create("risk_monitoring_subscription_uri", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
 	};
-
-	public static Dictionary<string, RequestedAttribute> RtgsNetworkParticipation =>
-		_rtgsNetworkParticipation.ToProofAttributes();
 }
