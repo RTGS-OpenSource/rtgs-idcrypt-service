@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
+using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Services;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationRequest;
@@ -15,12 +15,15 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	private const string PublicDid = "public-did";
 
 	private IActionResult _response;
+	private CreateConnectionInvitationRequest _createConnectionInvitationRequest;
 
 	public AndConnectionServiceAvailable()
 	{
+		_createConnectionInvitationRequest = new CreateConnectionInvitationRequest { RtgsGlobalId = "rtgs-global-id" };
+
 		_connectionServiceMock = new Mock<IConnectionService>();
 
-		var connectionInvitation = new ConnectionInvitation
+		var connectionInvitation = new Models.ConnectionInvitation
 		{
 			Alias = Alias,
 			PublicDid = PublicDid,
@@ -36,6 +39,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 
 		_connectionServiceMock
 			.Setup(service => service.CreateConnectionInvitationAsync(
+				_createConnectionInvitationRequest.RtgsGlobalId,
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(connectionInvitation)
 			.Verifiable();
@@ -44,7 +48,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _connectionController.Post();
+		_response = await _connectionController.Post(_createConnectionInvitationRequest, default);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
@@ -52,7 +56,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	[Fact]
 	public void WhenPosting_ThenReturnOkResponseWithExpected()
 	{
-		var createConnectionInvitationResponse = new Contracts.Connection.CreateConnectionInvitationResponse
+		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
 		{
 			Alias = Alias,
 			AgentPublicDid = PublicDid,

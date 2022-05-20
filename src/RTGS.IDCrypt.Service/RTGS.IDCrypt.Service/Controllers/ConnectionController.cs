@@ -23,7 +23,9 @@ public class ConnectionController : ControllerBase
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
 	[HttpPost]
-	public async Task<IActionResult> Post(CancellationToken cancellationToken = default)
+	public async Task<IActionResult> Post(
+		CreateConnectionInvitationRequest createConnectionInvitationRequest,
+		CancellationToken cancellationToken = default)
 	{
 		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(cancellationToken);
 

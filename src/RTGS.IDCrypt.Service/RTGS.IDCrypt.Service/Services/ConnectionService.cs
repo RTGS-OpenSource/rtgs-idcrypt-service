@@ -65,11 +65,14 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task<ConnectionInvitation> CreateConnectionInvitationAsync(CancellationToken cancellationToken = default)
+	public async Task<ConnectionInvitation> CreateConnectionInvitationAsync(
+		string rtgsGlobalId,
+		CancellationToken cancellationToken = default)
 	{
 		const bool autoAccept = true;
 		const bool multiUse = false;
 		const bool usePublicDid = false;
+
 		var alias = _aliasProvider.Provide();
 
 		try
