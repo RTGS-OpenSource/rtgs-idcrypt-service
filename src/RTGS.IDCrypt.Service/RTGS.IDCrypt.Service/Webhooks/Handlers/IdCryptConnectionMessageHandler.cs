@@ -19,7 +19,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 		_proofClient = proofClient;
 	}
 
-	public string MessageType => "connection";
+	public string MessageType => "connections";
 
 	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{
@@ -27,8 +27,8 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 
 		if (connection!.State is not "active")
 		{
-			_logger.LogDebug("Ignoring {RequestType} with alias {Alias} because state is {State}",
-				MessageType, connection.Alias, connection.State);
+			_logger.LogDebug("Ignoring connection with alias {Alias} because state is {State}",
+				connection.Alias, connection.State);
 
 			return;
 		}

@@ -27,7 +27,7 @@ public class AndConnectionIsNotActive : IClassFixture<ProofExchangeFixture>, IAs
 			State = "not-active"
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/connection", request);
+		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/connections", request);
 	}
 
 	public Task DisposeAsync() =>

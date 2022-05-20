@@ -26,4 +26,8 @@
     <ProjectReference Include="..\RTGS.IDCrypt.Service\RTGS.IDCrypt.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Webhooks\Handlers\PresentProofHandlerTests\" />
+  </ItemGroup>
+
 </Project>

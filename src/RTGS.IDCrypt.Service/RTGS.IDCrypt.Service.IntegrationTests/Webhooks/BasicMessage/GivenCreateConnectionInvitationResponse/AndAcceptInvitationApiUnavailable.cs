@@ -44,7 +44,7 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 			Content = JsonSerializer.Serialize(connectionInvitation)
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
+		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);
 	}
 
 	public Task DisposeAsync() =>

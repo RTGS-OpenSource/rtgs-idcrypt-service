@@ -43,8 +43,8 @@ public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<Connecti
 			Content = JsonSerializer.Serialize(connectionInvitation)
 		};
 
-		await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
-		_secondHttpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
+		await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);
+		_secondHttpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);
 	}
 
 	public Task DisposeAsync() =>
