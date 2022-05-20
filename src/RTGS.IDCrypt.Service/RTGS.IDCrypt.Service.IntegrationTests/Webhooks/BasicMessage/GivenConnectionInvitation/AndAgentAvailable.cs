@@ -7,13 +7,14 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenCreateConnectionInvitationResponse;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
 
 public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
+	private ConnectionInvitation _connectionInvitation;
 
 	public AndAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
@@ -29,7 +30,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 	public async Task InitializeAsync()
 	{
-		var connectionInvitation = new ConnectionInvitation
+		_connectionInvitation = new ConnectionInvitation
 		{
 			Alias = "alias",
 			ImageUrl = "image-url",
@@ -40,14 +41,15 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
 			PublicDid = "public-did",
-			Type = "type"
+			Type = "type",
+			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
 		var basicMessage = new IdCryptBasicMessage
 		{
 			MessageType = nameof(ConnectionInvitation),
 			ConnectionId = "connection_id",
-			Content = JsonSerializer.Serialize(connectionInvitation)
+			Content = JsonSerializer.Serialize(_connectionInvitation)
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
@@ -95,10 +97,10 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 	[Fact]
 	public void WhenPosting_ThenWriteToTableStorage() =>
-		_testFixture.PendingBankPartnerConnectionsTable
-			.Query<PendingBankPartnerConnection>()
+		_testFixture.BankPartnerConnectionsTable
+			.Query<BankPartnerConnection>()
 			.Where(connection =>
-				connection.PartitionKey == AcceptInvitation.ExpectedResponse.ConnectionId
+				connection.PartitionKey == _connectionInvitation.FromRtgsGlobalId
 				&& connection.RowKey == AcceptInvitation.ExpectedResponse.Alias)
 			.Should().ContainSingle();
 

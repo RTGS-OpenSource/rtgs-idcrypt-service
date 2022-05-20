@@ -27,7 +27,7 @@ public class ConnectionController : ControllerBase
 		CreateConnectionInvitationRequest createConnectionInvitationRequest,
 		CancellationToken cancellationToken = default)
 	{
-		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(cancellationToken);
+		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(createConnectionInvitationRequest.RtgsGlobalId, cancellationToken);
 
 		var response = createConnectionInvitationResponse.MapToContract();
 
@@ -53,7 +53,8 @@ public class ConnectionController : ControllerBase
 			RecipientKeys = request.RecipientKeys,
 			ServiceEndpoint = request.ServiceEndpoint,
 			Type = request.Type,
-			PublicDid = request.AgentPublicDid
+			PublicDid = request.AgentPublicDid,
+			FromRtgsGlobalId = request.RtgsGlobalId
 		};
 
 		await _connectionService.AcceptInvitationAsync(invitation, cancellationToken);

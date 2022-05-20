@@ -12,4 +12,6 @@ public class ConnectionInvitation
 	public string ImageUrl { get; init; }
 	public string Did { get; init; }
 	public string InvitationUrl { get; init; }
+	public string ToRtgsGlobalId { get; init; }
+	public string FromRtgsGlobalId { get; init; }
 }

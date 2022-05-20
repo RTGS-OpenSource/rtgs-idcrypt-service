@@ -44,7 +44,7 @@ public class AndIdCryptApiUnavailable
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync())
+			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
@@ -54,7 +54,7 @@ public class AndIdCryptApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync())
+			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 

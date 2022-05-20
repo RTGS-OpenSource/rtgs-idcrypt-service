@@ -6,14 +6,15 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenCreateConnectionInvitationResponse;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
 
-public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
+public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private HttpResponseMessage _secondHttpResponse;
 
-	public AndAgentAvailableButInvitationIsADuplicate(ConnectionInvitationFixture testFixture)
+	private HttpResponseMessage _httpResponse;
+
+	public AndAcceptInvitationApiUnavailable(AcceptInvitationEndpointUnavailableFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -43,8 +44,7 @@ public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<Connecti
 			Content = JsonSerializer.Serialize(connectionInvitation)
 		};
 
-		await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
-		_secondHttpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
+		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
 	}
 
 	public Task DisposeAsync() =>
@@ -55,10 +55,10 @@ public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<Connecti
 	{
 		using var _ = new AssertionScope();
 
-		_secondHttpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
-		var content = await _secondHttpResponse.Content.ReadAsStringAsync();
+		var content = await _httpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Contain("{\"error\":\"The specified entity already exists.");
+		content.Should().Be("{\"error\":\"Error accepting invitation\"}");
 	}
 }

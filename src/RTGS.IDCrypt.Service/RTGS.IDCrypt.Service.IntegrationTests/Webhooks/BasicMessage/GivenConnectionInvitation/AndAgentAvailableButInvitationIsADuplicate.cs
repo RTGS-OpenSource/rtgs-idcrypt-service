@@ -6,15 +6,14 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenCreateConnectionInvitationResponse;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
 
-public class AndReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitationEndpointUnavailableFixture>, IAsyncLifetime
+public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
+	private HttpResponseMessage _secondHttpResponse;
 
-	private HttpResponseMessage _httpResponse;
-
-	public AndReceiveInvitationApiUnavailable(ReceiveInvitationEndpointUnavailableFixture testFixture)
+	public AndAgentAvailableButInvitationIsADuplicate(ConnectionInvitationFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -34,7 +33,8 @@ public class AndReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitatio
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
 			PublicDid = "public-did",
-			Type = "type"
+			Type = "type",
+			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
 		var basicMessage = new IdCryptBasicMessage
@@ -44,7 +44,8 @@ public class AndReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitatio
 			Content = JsonSerializer.Serialize(connectionInvitation)
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
+		await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
+		_secondHttpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
 	}
 
 	public Task DisposeAsync() =>
@@ -55,10 +56,10 @@ public class AndReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitatio
 	{
 		using var _ = new AssertionScope();
 
-		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+		_secondHttpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
-		var content = await _httpResponse.Content.ReadAsStringAsync();
+		var content = await _secondHttpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Error receiving invitation\"}");
+		content.Should().Contain("{\"error\":\"The specified entity already exists.");
 	}
 }

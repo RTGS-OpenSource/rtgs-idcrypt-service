@@ -6,15 +6,15 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenCreateConnectionInvitationResponse;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
 
-public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
+public class AndReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 
 	private HttpResponseMessage _httpResponse;
 
-	public AndAcceptInvitationApiUnavailable(AcceptInvitationEndpointUnavailableFixture testFixture)
+	public AndReceiveInvitationApiUnavailable(ReceiveInvitationEndpointUnavailableFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -59,6 +59,6 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 
 		var content = await _httpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Error accepting invitation\"}");
+		content.Should().Be("{\"error\":\"Error receiving invitation\"}");
 	}
 }

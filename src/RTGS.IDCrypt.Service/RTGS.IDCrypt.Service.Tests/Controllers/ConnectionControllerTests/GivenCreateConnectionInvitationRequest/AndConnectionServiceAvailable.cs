@@ -10,12 +10,12 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionService> _connectionServiceMock;
 	private readonly ConnectionController _connectionController;
+	private readonly CreateConnectionInvitationRequest _createConnectionInvitationRequest;
 
 	private const string Alias = "alias";
 	private const string PublicDid = "public-did";
 
 	private IActionResult _response;
-	private CreateConnectionInvitationRequest _createConnectionInvitationRequest;
 
 	public AndConnectionServiceAvailable()
 	{
@@ -61,7 +61,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			Alias = Alias,
 			AgentPublicDid = PublicDid,
 			InvitationUrl = "invitation-url",
-			Invitation = new Contracts.Connection.ConnectionInvitation
+			Invitation = new ConnectionInvitation
 			{
 				Id = "id",
 				Type = "type",
