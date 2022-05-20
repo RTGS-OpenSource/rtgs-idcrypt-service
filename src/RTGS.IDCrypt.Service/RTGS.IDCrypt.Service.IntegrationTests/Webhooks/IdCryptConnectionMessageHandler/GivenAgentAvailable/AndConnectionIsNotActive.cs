@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable;
 
 public class AndConnectionIsNotActive : IClassFixture<ProofExchangeFixture>, IAsyncLifetime
 {
