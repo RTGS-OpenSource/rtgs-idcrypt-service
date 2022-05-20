@@ -15,6 +15,7 @@ public class GivenNoMatchingHandlerExists : IAsyncLifetime
 	private readonly FakeLogger<MessageHandlerResolver> _logger;
 	private readonly Mock<IMessageHandler> _mockMessageHandler;
 	private readonly MessageHandlerResolver _resolver;
+	private DefaultHttpContext _defaultHttpContext;
 
 	public GivenNoMatchingHandlerExists()
 	{
@@ -34,7 +35,7 @@ public class GivenNoMatchingHandlerExists : IAsyncLifetime
 
 	public async Task InitializeAsync()
 	{
-		var defaultHttpContext = new DefaultHttpContext
+		_defaultHttpContext = new DefaultHttpContext
 		{
 			Request =
 			{
@@ -47,7 +48,7 @@ public class GivenNoMatchingHandlerExists : IAsyncLifetime
 			}
 		};
 
-		await _resolver.ResolveAsync(defaultHttpContext);
+		await _resolver.ResolveAsync(_defaultHttpContext);
 	}
 
 	public Task DisposeAsync() =>
@@ -66,4 +67,8 @@ public class GivenNoMatchingHandlerExists : IAsyncLifetime
 			"Handling request...",
 			"No message handler found for message type invalid-message-type"
 		});
+
+	[Fact]
+	public void ThenResponseIsOk() =>
+		_defaultHttpContext.Response.StatusCode.Should().Be(StatusCodes.Status200OK);
 }

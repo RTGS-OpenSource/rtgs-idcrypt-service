@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Text.Json;
+using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -65,10 +66,12 @@ public class AndNoMatchingBankPartnerConnectionExists
 	[InlineData("rtgs-global-id-3", "alias-5")]
 	public async Task ThenMessageIsNotVerified(string rtgsGlobalId, string alias)
 	{
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
+
 		var response = await _controller.Post(new VerifyPrivateSignatureRequest
 		{
 			RtgsGlobalId = rtgsGlobalId,
-			Message = "message",
+			Message = message,
 			PrivateSignature = "signature",
 			Alias = alias
 		});

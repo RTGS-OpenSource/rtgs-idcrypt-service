@@ -9,6 +9,7 @@ public record PendingBankPartnerConnection : ITableEntity
 	public string RowKey { get; set; }
 	public string Alias { get; set; }
 	public string ConnectionId { get; set; }
+	public string PublicDid { get; set; }
 	public DateTimeOffset? Timestamp { get; set; }
 	public ETag ETag { get; set; }
 }

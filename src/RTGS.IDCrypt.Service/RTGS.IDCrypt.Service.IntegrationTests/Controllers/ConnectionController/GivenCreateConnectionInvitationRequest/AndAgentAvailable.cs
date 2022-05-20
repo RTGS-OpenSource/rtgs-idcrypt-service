@@ -6,6 +6,7 @@ using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
+using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationRequest;
 
@@ -89,25 +90,20 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 		var actualResponse = await _httpResponse.Content.ReadFromJsonAsync<CreateConnectionInvitationResponse>();
 
-		var inviteRequestQueryParams = QueryHelpers.ParseQuery(
-			_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].First().RequestUri!.Query);
-		var alias = inviteRequestQueryParams["alias"];
-
-		actualResponse.Should().BeEquivalentTo(new CreateConnectionInvitationResponse()
+		actualResponse.Should().BeEquivalentTo(new CreateConnectionInvitationResponse
 		{
-			Alias = alias,
+			Alias = "alias",
 			AgentPublicDid = GetPublicDid.ExpectedDid,
-			ConnectionId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
 			Invitation = new ConnectionInvitation
 			{
-				Id = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-				Type = "https://didcomm.org/my-family/1.0/my-message-type",
-				Label = "Bob",
+				Id = "id",
+				Type = "type",
+				Label = "label",
 				RecipientKeys = new[]
 				{
-					"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
+					"recipient-key-1"
 				},
-				ServiceEndpoint = "http://192.168.56.101:8020"
+				ServiceEndpoint = "service-endpoint"
 			}
 		});
 	}

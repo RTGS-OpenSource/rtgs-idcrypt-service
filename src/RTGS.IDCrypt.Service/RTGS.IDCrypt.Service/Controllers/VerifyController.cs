@@ -69,7 +69,7 @@ public class VerifyController : ControllerBase
 		bool verified;
 		try
 		{
-			verified = await _jsonSignaturesClient.VerifyJsonDocumentPrivateSignatureAsync(
+			verified = await _jsonSignaturesClient.VerifyPrivateSignatureAsync(
 				verifyPrivateSignatureRequest.Message,
 				verifyPrivateSignatureRequest.PrivateSignature,
 				bankPartnerConnection.ConnectionId,

@@ -8,19 +8,20 @@ public static class CreateInvitation
 {
 	public const string Path = "/connections/create-invitation";
 
-	public static CreateInvitationResponse Response => new()
+	public static CreateConnectionInvitationResponse Response => new()
 	{
-		ConnectionId = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+		ConnectionId = "connection-id",
+		Alias = "alias",
 		Invitation = new ConnectionInvitation
 		{
-			Id = "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-			Type = "https://didcomm.org/my-family/1.0/my-message-type",
-			Label = "Bob",
+			Id = "id",
+			Type = "type",
+			Label = "label",
 			RecipientKeys = new[]
 			{
-				"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
+				"recipient-key-1"
 			},
-			ServiceEndpoint = "http://192.168.56.101:8020"
+			ServiceEndpoint = "service-endpoint"
 		}
 	};
 
