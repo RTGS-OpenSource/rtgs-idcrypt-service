@@ -99,7 +99,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 				Name = pair.Key,
 				Restrictions = new List<RequestedClaimCredentialDefinition>
 				{
-					new RequestedClaimCredentialDefinition { CredentialDefinitionId = pair.Value}
+					new RequestedClaimCredentialDefinition { CredentialDefinitionId = pair.Value }
 				}
 			});
 
