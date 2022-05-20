@@ -39,7 +39,7 @@ public class MessageHandlerResolver
 			using var reader = new StreamReader(context.Request.Body);
 			var message = await reader.ReadToEndAsync();
 
-			await handler.HandleAsync(message);
+			await handler.HandleAsync(message, context.RequestAborted);
 
 			_logger.LogDebug("Finished handling request");
 		}

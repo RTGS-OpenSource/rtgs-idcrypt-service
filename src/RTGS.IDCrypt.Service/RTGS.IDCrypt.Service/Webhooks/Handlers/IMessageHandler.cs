@@ -3,5 +3,5 @@
 public interface IMessageHandler
 {
 	string MessageType { get; }
-	Task HandleAsync(string jsonMessage);
+	Task HandleAsync(string jsonMessage, CancellationToken cancellationToken);
 }

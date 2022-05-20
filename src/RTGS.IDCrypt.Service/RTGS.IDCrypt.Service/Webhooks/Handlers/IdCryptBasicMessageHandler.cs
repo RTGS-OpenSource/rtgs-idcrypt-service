@@ -20,7 +20,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 
 	public string MessageType => "basicmessage";
 
-	public async Task HandleAsync(string jsonMessage)
+	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{
 		var message = JsonSerializer.Deserialize<IdCryptBasicMessage>(jsonMessage);
 
@@ -28,7 +28,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 
 		if (_handlers.TryGetValue(message.MessageType, out var handler))
 		{
-			await handler.HandleAsync(message.Content);
+			await handler.HandleAsync(message.Content, cancellationToken);
 
 			_logger.LogInformation("Handled {MessageType} BasicMessage.", message.MessageType);
 		}
