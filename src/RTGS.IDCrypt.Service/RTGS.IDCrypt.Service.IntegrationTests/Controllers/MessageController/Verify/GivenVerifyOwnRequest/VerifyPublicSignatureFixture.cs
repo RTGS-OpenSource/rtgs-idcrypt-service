@@ -4,7 +4,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.GivenVerifyPublicSignatureRequest;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.GivenVerifyOwnRequest;
 
 public class VerifyPublicSignatureFixture : TestFixtureBase
 {

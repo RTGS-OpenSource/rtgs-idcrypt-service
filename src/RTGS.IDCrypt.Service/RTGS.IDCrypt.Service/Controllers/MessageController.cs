@@ -116,7 +116,8 @@ public class MessageController : ControllerBase
 			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == verifyRequest.RtgsGlobalId
-				&& bankPartnerConnection.RowKey == verifyRequest.Alias)
+				&& bankPartnerConnection.RowKey == verifyRequest.Alias
+				&& bankPartnerConnection.Status == "Active")
 			.ToList();
 
 		if (!bankPartnerConnections.Any())

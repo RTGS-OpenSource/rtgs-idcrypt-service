@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.TestData;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.GivenVerifyPublicSignatureRequest;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.GivenVerifyOwnRequest;
 
 public class WhenCallingIdCryptAgent : IClassFixture<VerifyPublicSignatureFixture>, IAsyncLifetime
 {
