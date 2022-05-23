@@ -19,7 +19,7 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenVer
 public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 {
 	private readonly MessageController _controller;
-	private readonly VerifyPrivateSignatureRequest _verifyPrivateSignatureRequest;
+	private readonly VerifyRequest _verifyRequest;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
@@ -27,7 +27,7 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		_verifyPrivateSignatureRequest = new VerifyPrivateSignatureRequest
+		_verifyRequest = new VerifyRequest
 		{
 			RtgsGlobalId = "rtgs-global-id-1",
 			Message = message,
@@ -42,8 +42,8 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 		_jsonSignaturesClientMock
 			.Setup(client => client.VerifyPrivateSignatureAsync(
-				_verifyPrivateSignatureRequest.Message,
-				_verifyPrivateSignatureRequest.PrivateSignature,
+				_verifyRequest.Message,
+				_verifyRequest.PrivateSignature,
 				"connection-id-1",
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(true)
@@ -82,7 +82,7 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.Verify(_verifyPrivateSignatureRequest);
+		_response = await _controller.Verify(_verifyRequest);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
@@ -94,7 +94,7 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 	[Fact]
 	public void WhenPostingVerifyPrivateSignatureRequest_ThenReturnOkResponseWithVerifiedTrue()
 	{
-		var verifyPrivateSignatureResponse = new VerifyPrivateSignatureResponse
+		var verifyPrivateSignatureResponse = new VerifyResponse
 		{
 			Verified = true
 		};

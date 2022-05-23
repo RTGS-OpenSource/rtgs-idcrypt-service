@@ -26,7 +26,7 @@ public class AndMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchi
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		var request = new VerifyPrivateSignatureRequest
+		var request = new VerifyRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
 			Message = message,
@@ -74,9 +74,9 @@ public class AndMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchi
 
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-		var actualResponse = await _httpResponse.Content.ReadFromJsonAsync<VerifyPrivateSignatureResponse>();
+		var actualResponse = await _httpResponse.Content.ReadFromJsonAsync<VerifyResponse>();
 
-		actualResponse.Should().BeEquivalentTo(new VerifyPrivateSignatureResponse
+		actualResponse.Should().BeEquivalentTo(new VerifyResponse
 		{
 			Verified = true
 		});

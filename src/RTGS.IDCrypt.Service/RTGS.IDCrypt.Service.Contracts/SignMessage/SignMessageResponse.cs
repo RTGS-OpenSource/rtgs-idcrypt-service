@@ -3,7 +3,7 @@
 namespace RTGS.IDCrypt.Service.Contracts.SignMessage;
 
 /// <summary>
-/// Model of the response from /signmessage.
+/// Model of the response from /message/sign.
 /// </summary>
 public record SignMessageResponse
 {

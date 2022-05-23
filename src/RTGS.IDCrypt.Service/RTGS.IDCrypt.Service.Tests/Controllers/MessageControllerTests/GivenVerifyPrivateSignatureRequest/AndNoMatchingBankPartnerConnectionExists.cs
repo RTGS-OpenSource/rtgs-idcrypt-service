@@ -68,7 +68,7 @@ public class AndNoMatchingBankPartnerConnectionExists
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		var response = await _controller.Verify(new VerifyPrivateSignatureRequest
+		var response = await _controller.Verify(new VerifyRequest
 		{
 			RtgsGlobalId = rtgsGlobalId,
 			Message = message,

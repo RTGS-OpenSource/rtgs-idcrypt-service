@@ -18,7 +18,7 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenVer
 
 public class AndIdCryptAgentApiUnavailable
 {
-	private readonly VerifyPrivateSignatureRequest _request;
+	private readonly VerifyRequest _request;
 	private readonly MessageController _verifyController;
 	private readonly FakeLogger<MessageController> _logger = new();
 
@@ -26,7 +26,7 @@ public class AndIdCryptAgentApiUnavailable
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		_request = new VerifyPrivateSignatureRequest
+		_request = new VerifyRequest
 		{
 			RtgsGlobalId = "rtgs-global-id-1",
 			Message = message,

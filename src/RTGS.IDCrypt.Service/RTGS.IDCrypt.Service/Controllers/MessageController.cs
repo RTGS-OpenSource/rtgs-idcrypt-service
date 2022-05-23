@@ -100,12 +100,12 @@ public class MessageController : ControllerBase
 	/// <summary>
 	/// Endpoint to verify a document / signature.
 	/// </summary>
-	/// <param name="verifyPrivateSignatureRequest">The data required to verify a message.</param>
+	/// <param name="verifyRequest">The data required to verify a message.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="VerifyPrivateSignatureResponse"/></returns>
 	[HttpPost("verify")]
 	public async Task<IActionResult> Verify(
-		VerifyPrivateSignatureRequest verifyPrivateSignatureRequest,
+		VerifyRequest verifyRequest,
 		CancellationToken cancellationToken = default)
 	{
 		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(
@@ -114,16 +114,16 @@ public class MessageController : ControllerBase
 		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
 			.Where(bankPartnerConnection =>
-				bankPartnerConnection.PartitionKey == verifyPrivateSignatureRequest.RtgsGlobalId
-				&& bankPartnerConnection.RowKey == verifyPrivateSignatureRequest.Alias)
+				bankPartnerConnection.PartitionKey == verifyRequest.RtgsGlobalId
+				&& bankPartnerConnection.RowKey == verifyRequest.Alias)
 			.ToList();
 
 		if (!bankPartnerConnections.Any())
 		{
 			_logger.LogError(
 				"No bank partner connection found for RTGS Global ID {RtgsGlobalId} and Alias {Alias}",
-				verifyPrivateSignatureRequest.RtgsGlobalId,
-				verifyPrivateSignatureRequest.Alias);
+				verifyRequest.RtgsGlobalId,
+				verifyRequest.Alias);
 
 			return NotFound();
 		}
@@ -134,8 +134,8 @@ public class MessageController : ControllerBase
 		try
 		{
 			verified = await _jsonSignaturesClient.VerifyPrivateSignatureAsync(
-				verifyPrivateSignatureRequest.Message,
-				verifyPrivateSignatureRequest.PrivateSignature,
+				verifyRequest.Message,
+				verifyRequest.PrivateSignature,
 				bankPartnerConnection.ConnectionId,
 				cancellationToken);
 		}
@@ -148,7 +148,7 @@ public class MessageController : ControllerBase
 			throw;
 		}
 
-		var verifyPrivateSignatureResponse = new VerifyPrivateSignatureResponse
+		var verifyPrivateSignatureResponse = new VerifyResponse
 		{
 			Verified = verified
 		};

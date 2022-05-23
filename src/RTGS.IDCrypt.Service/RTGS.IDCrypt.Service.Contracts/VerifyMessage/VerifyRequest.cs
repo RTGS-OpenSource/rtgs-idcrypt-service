@@ -6,7 +6,7 @@ namespace RTGS.IDCrypt.Service.Contracts.VerifyMessage;
 /// <summary>
 /// Represents the data required to verify a signature.
 /// </summary>
-public record VerifyPrivateSignatureRequest
+public record VerifyRequest
 {
 	/// <summary>
 	/// The RTGS.global Id of the connection with which to verify the document.

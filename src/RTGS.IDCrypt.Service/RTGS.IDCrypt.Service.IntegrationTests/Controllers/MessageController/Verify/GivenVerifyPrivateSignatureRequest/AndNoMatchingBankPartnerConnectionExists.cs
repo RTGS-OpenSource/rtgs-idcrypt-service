@@ -25,7 +25,7 @@ public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatching
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		var request = new VerifyPrivateSignatureRequest
+		var request = new VerifyRequest
 		{
 			RtgsGlobalId = "rtgs-global-id-2",
 			Message = message,

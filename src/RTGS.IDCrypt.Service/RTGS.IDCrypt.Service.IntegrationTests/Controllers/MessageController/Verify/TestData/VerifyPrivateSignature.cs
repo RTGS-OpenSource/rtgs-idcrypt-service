@@ -7,7 +7,7 @@ public static class VerifyPrivateSignature
 {
 	public const string Path = "/json-signatures/verify/connection-did";
 
-	private static VerifyPrivateSignatureResponse ExpectedResponse => new()
+	private static VerifyResponse ExpectedResponse => new()
 	{
 		Verified = true
 	};
