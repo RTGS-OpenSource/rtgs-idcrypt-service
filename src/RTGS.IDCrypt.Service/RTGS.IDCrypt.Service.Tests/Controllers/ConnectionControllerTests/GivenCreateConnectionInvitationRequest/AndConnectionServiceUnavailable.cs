@@ -33,7 +33,7 @@ public class AndConnectionServiceUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionController.Post(request, default))
+			.Awaiting(() => _connectionController.Post(request))
 			.Should()
 			.ThrowAsync<Exception>();
 	}

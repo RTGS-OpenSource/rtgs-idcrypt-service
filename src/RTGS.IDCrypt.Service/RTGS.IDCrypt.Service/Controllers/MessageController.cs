@@ -59,7 +59,7 @@ public class MessageController : ControllerBase
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
 				&& bankPartnerConnection.CreatedAt <= dateThreshold
-				&& bankPartnerConnection.Status == "Active").ToList();
+				&& bankPartnerConnection.Status == BankPartnerConnectionStatuses.Active).ToList();
 
 		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.CreatedAt);
 
@@ -103,7 +103,7 @@ public class MessageController : ControllerBase
 	/// </summary>
 	/// <param name="verifyRequest">The data required to verify a message.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
-	/// <returns><see cref="VerifyPrivateSignatureResponse"/></returns>
+	/// <returns><see cref="VerifyResponse"/></returns>
 	[HttpPost("verify")]
 	public async Task<IActionResult> Verify(
 		VerifyRequest verifyRequest,
@@ -117,7 +117,7 @@ public class MessageController : ControllerBase
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == verifyRequest.RtgsGlobalId
 				&& bankPartnerConnection.RowKey == verifyRequest.Alias
-				&& bankPartnerConnection.Status == "Active")
+				&& bankPartnerConnection.Status == BankPartnerConnectionStatuses.Active)
 			.ToList();
 
 		if (!bankPartnerConnections.Any())

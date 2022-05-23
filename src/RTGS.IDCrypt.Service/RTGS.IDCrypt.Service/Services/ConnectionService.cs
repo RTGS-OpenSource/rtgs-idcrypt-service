@@ -64,7 +64,7 @@ public class ConnectionService : IConnectionService
 				ConnectionId = response.ConnectionId,
 				Alias = response.Alias,
 				PublicDid = invitation.PublicDid,
-				Status = "Pending"
+				Status = BankPartnerConnectionStatuses.Pending
 			};
 
 			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);
@@ -102,7 +102,7 @@ public class ConnectionService : IConnectionService
 				RowKey = alias,
 				ConnectionId = createConnectionInvitationResponse.ConnectionId,
 				Alias = alias,
-				Status = "Pending"
+				Status = BankPartnerConnectionStatuses.Pending
 			};
 
 			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);

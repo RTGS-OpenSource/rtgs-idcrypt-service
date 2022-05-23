@@ -85,9 +85,9 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			Status = "Pending"
 		};
 
-		Func<BankPartnerConnection, bool> connectionMatches = connection =>
+		Func<BankPartnerConnection, bool> connectionMatches = actualConnection =>
 		{
-			connection.Should().BeEquivalentTo(expectedConnection, options =>
+			actualConnection.Should().BeEquivalentTo(expectedConnection, options =>
 			{
 				options.Excluding(connection => connection.ETag);
 				options.Excluding(connection => connection.Timestamp);

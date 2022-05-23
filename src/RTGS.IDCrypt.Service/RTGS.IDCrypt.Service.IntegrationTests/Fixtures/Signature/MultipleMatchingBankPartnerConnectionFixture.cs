@@ -38,6 +38,7 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 			ConnectionId = "connection-1",
 			Alias = "alias-1",
 			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3)),
+			PublicDid = "public-did-1",
 			Status = "Active"
 		};
 
@@ -48,6 +49,7 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 			ConnectionId = "connection-2",
 			Alias = "alias-2",
 			CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3)),
+			PublicDid = "public-did-2",
 			Status = "Active"
 		};
 
@@ -58,6 +60,7 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 			ConnectionId = "connection-3",
 			Alias = "alias-3",
 			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1)),
+			PublicDid = "public-did-3",
 			Status = "Active"
 		};
 

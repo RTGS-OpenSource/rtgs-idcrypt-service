@@ -20,6 +20,7 @@ public class ConnectionController : ControllerBase
 	/// <summary>
 	/// Endpoint to create an invitation.
 	/// </summary>
+	/// <param name="request">The data required to create an invitation.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
 	[HttpPost]

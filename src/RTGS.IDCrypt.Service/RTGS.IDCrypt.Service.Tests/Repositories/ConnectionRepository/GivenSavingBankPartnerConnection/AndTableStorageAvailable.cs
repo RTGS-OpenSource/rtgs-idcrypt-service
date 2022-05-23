@@ -22,6 +22,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
 			ConnectionId = "connection-id",
+			PublicDid = "public-did",
 			Alias = "alias"
 		};
 

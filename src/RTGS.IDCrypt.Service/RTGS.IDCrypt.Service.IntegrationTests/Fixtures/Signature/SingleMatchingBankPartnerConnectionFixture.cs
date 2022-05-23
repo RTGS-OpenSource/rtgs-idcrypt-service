@@ -40,6 +40,7 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 				ConnectionId = "connection-id",
 				Alias = "alias",
 				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(6)),
+				PublicDid = "public-did",
 				Status = "Active"
 			},
 			new()
@@ -49,6 +50,7 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 				ConnectionId = "connection-id-1",
 				Alias = "alias",
 				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
+				PublicDid = "public-did-1",
 				Status = "Pending"
 			},
 			new()
@@ -58,6 +60,7 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 				ConnectionId = "connection-id-2",
 				Alias = "alias",
 				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
+				PublicDid = "public-did-2",
 				Status = "Active"
 			}
 		};

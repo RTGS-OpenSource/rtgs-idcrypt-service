@@ -49,7 +49,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _connectionController.Post(_createConnectionInvitationRequest, default);
+		_response = await _connectionController.Post(_createConnectionInvitationRequest);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

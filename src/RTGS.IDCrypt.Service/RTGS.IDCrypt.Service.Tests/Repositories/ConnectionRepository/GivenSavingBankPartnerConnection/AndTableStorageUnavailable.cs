@@ -21,6 +21,7 @@ public class AndTableStorageUnavailable
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
 			ConnectionId = "connection-id",
+			PublicDid = "public-did",
 			Alias = "alias"
 		};
 

@@ -16,8 +16,7 @@ public class GivenConnectionService
 	[InlineData("")]
 	[InlineData(" ")]
 	[InlineData(null)]
-	public void WhenRtgsGlobalIdIsEmpty_ThenThrow(string rtgsGlobalId)
-	{
+	public void WhenRtgsGlobalIdIsEmpty_ThenThrow(string rtgsGlobalId) =>
 		FluentActions.Invoking(() =>
 			new ConnectionService(
 				Mock.Of<IConnectionsClient>(),
@@ -31,5 +30,4 @@ public class GivenConnectionService
 				})))
 			.Should().Throw<ArgumentException>()
 				.Which.Message.Should().Be("RtgsGlobalId configuration option is not set.");
-	}
 }
