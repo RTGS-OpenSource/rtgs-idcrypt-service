@@ -27,7 +27,7 @@ public class AndConnectionServiceUnavailable
 	{
 		var request = new CreateConnectionInvitationRequest
 		{
-			RtgsGlobalId =  "rtgs-global-id"
+			RtgsGlobalId = "rtgs-global-id"
 		};
 
 		using var _ = new AssertionScope();
