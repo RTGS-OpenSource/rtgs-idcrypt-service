@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RTGS.IDCrypt.Service.Contracts.SignMessage;
+namespace RTGS.IDCrypt.Service.Contracts.Message.Sign;
 
 /// <summary>
 ///  Model of the sign message request.

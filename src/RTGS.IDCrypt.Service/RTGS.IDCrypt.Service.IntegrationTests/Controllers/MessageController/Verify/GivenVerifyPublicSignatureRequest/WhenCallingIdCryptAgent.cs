@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
+using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.TestData;
 

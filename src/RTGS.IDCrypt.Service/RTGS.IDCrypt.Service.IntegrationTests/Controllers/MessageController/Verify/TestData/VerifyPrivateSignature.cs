@@ -1,4 +1,4 @@
-﻿using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
+﻿using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.TestData;

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -17,7 +17,7 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenSig
 
 public class AndIdCryptAgentUnavailable
 {
-	private readonly MessageController _messageController;
+	private readonly MessageController _controller;
 	private readonly SignMessageRequest _signMessageRequest;
 	private readonly FakeLogger<MessageController> _logger = new();
 
@@ -81,7 +81,7 @@ public class AndIdCryptAgentUnavailable
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)
 		});
 
-		_messageController = new MessageController(
+		_controller = new MessageController(
 			_logger,
 			options,
 			storageTableResolverMock.Object,
@@ -96,7 +96,7 @@ public class AndIdCryptAgentUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _messageController.Sign(_signMessageRequest, default))
+			.Awaiting(() => _controller.Sign(_signMessageRequest, default))
 			.Should()
 			.ThrowAsync<Exception>();
 

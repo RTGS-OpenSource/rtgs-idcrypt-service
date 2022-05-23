@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RTGS.IDCrypt.Service.Contracts.VerifyMessage;
+namespace RTGS.IDCrypt.Service.Contracts.Message.Verify;
 
 /// <summary>
 /// Represents the data required to verify a signature.

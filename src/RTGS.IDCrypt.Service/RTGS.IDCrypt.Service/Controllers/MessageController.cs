@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
-using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
+using RTGS.IDCrypt.Service.Contracts.Message.Sign;
+using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;

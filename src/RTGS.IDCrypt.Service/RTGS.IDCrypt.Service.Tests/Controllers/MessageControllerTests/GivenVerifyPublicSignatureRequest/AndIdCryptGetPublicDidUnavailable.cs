@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Contracts.VerifyMessage;
+using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
@@ -15,7 +15,7 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenVer
 public class AndIdCryptAgentApiUnavailable
 {
 	private readonly VerifyOwnMessageRequest _request;
-	private readonly MessageController _verifyController;
+	private readonly MessageController _controller;
 	private readonly FakeLogger<MessageController> _logger = new();
 
 	public AndIdCryptAgentApiUnavailable()
@@ -31,7 +31,7 @@ public class AndIdCryptAgentApiUnavailable
 				client.GetPublicDidAsync(It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		_verifyController = new MessageController(
+		_controller = new MessageController(
 			_logger,
 			Mock.Of<IOptions<BankPartnerConnectionsConfig>>(),
 			Mock.Of<IStorageTableResolver>(),
@@ -46,7 +46,7 @@ public class AndIdCryptAgentApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _verifyController.VerifyOwnMessage(_request, default))
+			.Awaiting(() => _controller.VerifyOwnMessage(_request, default))
 			.Should()
 			.ThrowAsync<Exception>();
 
