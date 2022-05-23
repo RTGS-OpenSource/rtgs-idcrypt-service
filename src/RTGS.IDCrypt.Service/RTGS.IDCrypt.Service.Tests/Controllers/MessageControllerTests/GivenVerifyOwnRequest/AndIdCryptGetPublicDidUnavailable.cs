@@ -10,15 +10,15 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenVerifyPublicSignatureRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenVerifyOwnRequest;
 
-public class AndIdCryptVerifyPublicSignatureUnavailable
+public class AndIdCryptAgentApiUnavailable
 {
 	private readonly VerifyOwnMessageRequest _request;
 	private readonly MessageController _controller;
 	private readonly FakeLogger<MessageController> _logger = new();
 
-	public AndIdCryptVerifyPublicSignatureUnavailable()
+	public AndIdCryptAgentApiUnavailable()
 	{
 		_request = new VerifyOwnMessageRequest
 		{
@@ -26,23 +26,18 @@ public class AndIdCryptVerifyPublicSignatureUnavailable
 			PublicSignature = "public-signature"
 		};
 
-		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
-
-		jsonSignaturesClientMock
-			.Setup(client => client.VerifyJsonDocumentPublicSignatureAsync(
-				It.IsAny<string>(),
-				It.IsAny<string>(),
-				It.IsAny<string>(),
-				It.IsAny<CancellationToken>()))
+		var walletClient = new Mock<IWalletClient>();
+		walletClient.Setup(client =>
+				client.GetPublicDidAsync(It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
 		_controller = new MessageController(
 			_logger,
 			Mock.Of<IOptions<BankPartnerConnectionsConfig>>(),
 			Mock.Of<IStorageTableResolver>(),
-			jsonSignaturesClientMock.Object,
+			Mock.Of<IJsonSignaturesClient>(),
 			Mock.Of<IDateTimeProvider>(),
-			Mock.Of<IWalletClient>());
+			walletClient.Object);
 	}
 
 	[Fact]
@@ -57,7 +52,7 @@ public class AndIdCryptVerifyPublicSignatureUnavailable
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 		{
-			"Error occurred when sending VerifyPublicSignature request to ID Crypt Cloud Agent"
+			"Error occurred when sending GetPublicDid request to ID Crypt Cloud Agent"
 		});
 	}
 }

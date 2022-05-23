@@ -1,5 +1,8 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Options;
+using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -12,13 +15,23 @@ namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreate
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
+	private readonly Mock<IConnectionRepository> _connectionRepositoryMock = new();
+
 	private readonly ConnectionService _connectionService;
 	private readonly Models.ConnectionInvitation _expectedResponse;
-	private readonly string _alias = "alias";
+
+	private const string RtgsGlobalId = "rtgs-global-id";
+	private const string Alias = "alias";
+
 	private Models.ConnectionInvitation _actualResponse;
 
 	public AndIdCryptApiAvailable()
 	{
+		var coreOptions = Options.Create(new CoreConfig
+		{
+			RtgsGlobalId = "rtgs-global-id"
+		});
+
 		_expectedResponse = new Models.ConnectionInvitation
 		{
 			InvitationUrl = "invitation-url",
@@ -29,7 +42,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			RecipientKeys = new[] { "recipient-key-1" },
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
-			Type = "type"
+			Type = "type",
+			FromRtgsGlobalId = coreOptions.Value.RtgsGlobalId
 		};
 
 		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
@@ -37,7 +51,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			InvitationUrl = "invitation-url",
-			Invitation = new ConnectionInvitation
+			Invitation = new IDCryptSDK.Connections.Models.ConnectionInvitation
 			{
 				Id = "id",
 				Type = "type",
@@ -54,7 +68,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		_connectionsClientMock
 			.Setup(client => client.CreateConnectionInvitationAsync(
-				_alias,
+				Alias,
 				It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(createConnectionInvitationResponse)
@@ -62,20 +76,47 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		var logger = new FakeLogger<ConnectionService>();
 
+		var expectedConnection = new BankPartnerConnection
+		{
+			PartitionKey = RtgsGlobalId,
+			RowKey = Alias,
+			Alias = Alias,
+			ConnectionId = createConnectionInvitationResponse.ConnectionId,
+			Status = "Pending"
+		};
+
+		Func<BankPartnerConnection, bool> connectionMatches = actualConnection =>
+		{
+			actualConnection.Should().BeEquivalentTo(expectedConnection, options =>
+			{
+				options.Excluding(connection => connection.ETag);
+				options.Excluding(connection => connection.Timestamp);
+
+				return options;
+			});
+
+			return true;
+		};
+
+		_connectionRepositoryMock.Setup(repo => repo.SaveBankPartnerConnectionAsync(
+				It.Is<BankPartnerConnection>(connection => connectionMatches(connection)),
+				It.IsAny<CancellationToken>()))
+			.Verifiable();
+
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(_alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
 
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			logger,
-			Mock.Of<IConnectionRepository>(),
+			_connectionRepositoryMock.Object,
 			aliasProviderMock.Object,
-			Mock.Of<IWalletClient>()
-		);
+			Mock.Of<IWalletClient>(),
+			coreOptions);
 	}
 
 	public async Task InitializeAsync() =>
-		_actualResponse = await _connectionService.CreateConnectionInvitationAsync();
+		_actualResponse = await _connectionService.CreateConnectionInvitationAsync(RtgsGlobalId);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
@@ -84,5 +125,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	public void WhenInvoked_ThenExpectedResponse() => _actualResponse.Should().BeEquivalentTo(_expectedResponse);
 
 	[Fact]
-	public void WhenInvoked_ThenCallReceiveAndAcceptInvitationAsyncWithExpected() => _connectionsClientMock.Verify();
+	public void WhenInvoked_ThenCallCreateConnectionInvitationAsyncWithExpected() => _connectionsClientMock.Verify();
+
+	[Fact]
+	public void WhenInvoked_ThenCallSaveBankPartnerConnectionAsyncWithExpected() => _connectionRepositoryMock.Verify();
 }

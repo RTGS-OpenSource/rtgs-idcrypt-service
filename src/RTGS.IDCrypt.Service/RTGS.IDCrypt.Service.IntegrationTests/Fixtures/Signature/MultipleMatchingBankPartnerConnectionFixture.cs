@@ -37,7 +37,9 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 			RowKey = "alias-1",
 			ConnectionId = "connection-1",
 			Alias = "alias-1",
-			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3))
+			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3)),
+			PublicDid = "public-did-1",
+			Status = "Active"
 		};
 
 		var tooNewConnection = new BankPartnerConnection
@@ -46,7 +48,9 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 			RowKey = "alias-2",
 			ConnectionId = "connection-2",
 			Alias = "alias-2",
-			CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3))
+			CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3)),
+			PublicDid = "public-did-2",
+			Status = "Active"
 		};
 
 		ValidConnection = new BankPartnerConnection
@@ -55,7 +59,9 @@ public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtu
 			RowKey = "alias-3",
 			ConnectionId = "connection-3",
 			Alias = "alias-3",
-			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1))
+			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1)),
+			PublicDid = "public-did-3",
+			Status = "Active"
 		};
 
 		var bankPartnerConnections = new List<BankPartnerConnection>

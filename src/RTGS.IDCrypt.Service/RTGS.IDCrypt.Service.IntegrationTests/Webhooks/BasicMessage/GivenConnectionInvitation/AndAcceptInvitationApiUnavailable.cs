@@ -6,7 +6,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenCreateConnectionInvitationResponse;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
 
 public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
@@ -34,7 +34,8 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
 			PublicDid = "public-did",
-			Type = "type"
+			Type = "type",
+			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
 		var basicMessage = new IdCryptBasicMessage

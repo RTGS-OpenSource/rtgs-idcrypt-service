@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
@@ -18,6 +20,11 @@ public class AndIdCryptApiUnavailable
 
 	public AndIdCryptApiUnavailable()
 	{
+		var coreOptions = Options.Create(new CoreConfig
+		{
+			RtgsGlobalId = "rtgs-global-id"
+		});
+
 		var connectionsClientMock = new Mock<IConnectionsClient>();
 
 		_request = new Models.ConnectionInvitation
@@ -31,27 +38,13 @@ public class AndIdCryptApiUnavailable
 			InvitationUrl = "invitation-url",
 			Did = "did",
 			ImageUrl = "image-url",
-			PublicDid = "public-did"
-		};
-
-		Func<ReceiveAndAcceptInvitationRequest, bool> requestMatches = request =>
-		{
-			request.Should().BeEquivalentTo(_request, options =>
-			{
-				options.Excluding(connection => connection.PublicDid);
-				options.Excluding(connection => connection.ImageUrl);
-				options.Excluding(connection => connection.Did);
-				options.Excluding(connection => connection.InvitationUrl);
-
-				return options;
-			});
-
-			return true;
+			PublicDid = "public-did",
+			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
 		connectionsClientMock
 			.Setup(client => client.ReceiveAndAcceptInvitationAsync(
-				It.Is<ReceiveAndAcceptInvitationRequest>(request => requestMatches(request)),
+				It.IsAny<ReceiveAndAcceptInvitationRequest>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>()
 			.Verifiable();
@@ -63,7 +56,8 @@ public class AndIdCryptApiUnavailable
 			_logger,
 			Mock.Of<IConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
-			Mock.Of<IWalletClient>());
+			Mock.Of<IWalletClient>(),
+			coreOptions);
 	}
 
 	[Fact]

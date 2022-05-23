@@ -13,11 +13,17 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController
 public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
+	private readonly CreateConnectionInvitationRequest _request;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
 	public AndAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
+		_request = new CreateConnectionInvitationRequest
+		{
+			RtgsGlobalId = "rtgs-global-id"
+		};
+
 		_testFixture = testFixture;
 
 		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
@@ -26,7 +32,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 	}
 
 	public async Task InitializeAsync() =>
-		_httpResponse = await _client.PostAsync("api/connection", null);
+		_httpResponse = await _client.PostAsJsonAsync("api/connection", _request);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
@@ -52,7 +58,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 	[Fact]
 	public async Task WhenPostingMultipleTimes_ThenAliasIsAlwaysUnique()
 	{
-		await _client.PostAsync("api/connection", null);
+		await _client.PostAsJsonAsync("api/connection", _request);
 
 		var inviteRequestQueryParams1 = QueryHelpers.ParseQuery(
 			_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].First().RequestUri!.Query);
@@ -116,11 +122,12 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 		var alias = inviteRequestQueryParams["alias"];
 
-		_testFixture.PendingBankPartnerConnectionsTable
-			.Query<PendingBankPartnerConnection>()
+		_testFixture.BankPartnerConnectionsTable
+			.Query<BankPartnerConnection>()
 			.Where(connection =>
-				connection.PartitionKey == CreateInvitation.Response.ConnectionId
-				&& connection.RowKey == alias)
+				connection.PartitionKey == _request.RtgsGlobalId
+				&& connection.RowKey == alias
+				&& connection.Status == "Pending")
 			.Should().ContainSingle();
 	}
 }

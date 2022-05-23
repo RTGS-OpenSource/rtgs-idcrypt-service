@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
 {
 	public static void AddRtgsDependencies(this IServiceCollection services, IConfiguration config)
 	{
+		services.Configure<CoreConfig>(config);
 		services.Configure<BankPartnerConnectionsConfig>(config);
 
 		services.AddSingleton(_ =>
@@ -26,7 +27,6 @@ public static class ServiceCollectionExtensions
 			var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
 			{
 				BankPartnerConnectionsTableName = "bankPartnerConnections",
-				PendingBankPartnerConnectionsTableName = "pendingBankPartnerConnections",
 				MinimumConnectionAge = TimeSpan.FromMinutes(5)
 			};
 

@@ -20,12 +20,15 @@ public class ConnectionController : ControllerBase
 	/// <summary>
 	/// Endpoint to create an invitation.
 	/// </summary>
+	/// <param name="request">The data required to create an invitation.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
 	[HttpPost]
-	public async Task<IActionResult> Post(CancellationToken cancellationToken = default)
+	public async Task<IActionResult> Post(
+		CreateConnectionInvitationRequest request,
+		CancellationToken cancellationToken = default)
 	{
-		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(cancellationToken);
+		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(request.RtgsGlobalId, cancellationToken);
 
 		var response = createConnectionInvitationResponse.MapToContract();
 
@@ -51,7 +54,8 @@ public class ConnectionController : ControllerBase
 			RecipientKeys = request.RecipientKeys,
 			ServiceEndpoint = request.ServiceEndpoint,
 			Type = request.Type,
-			PublicDid = request.AgentPublicDid
+			PublicDid = request.AgentPublicDid,
+			FromRtgsGlobalId = request.RtgsGlobalId
 		};
 
 		await _connectionService.AcceptInvitationAsync(invitation, cancellationToken);

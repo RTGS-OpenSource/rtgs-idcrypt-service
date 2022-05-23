@@ -48,7 +48,7 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 		_jsonSignaturesClientMock
 			.Setup(client => client.SignDocumentAsync(
 				_signMessageRequest.Message,
-				TestBankPartnerConnections.GetConnectionId(_signMessageRequest.RtgsGlobalId),
+				"connection-id-2",
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(signDocumentResponse)
 			.Verifiable();

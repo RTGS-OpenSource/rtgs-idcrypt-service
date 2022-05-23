@@ -6,5 +6,5 @@ public interface IConnectionService
 {
 	Task AcceptInvitationAsync(ConnectionInvitation invitation, CancellationToken cancellationToken = default);
 
-	Task<ConnectionInvitation> CreateConnectionInvitationAsync(CancellationToken cancellationToken = default);
+	Task<ConnectionInvitation> CreateConnectionInvitationAsync(string toRtgsGlobalId, CancellationToken cancellationToken = default);
 }

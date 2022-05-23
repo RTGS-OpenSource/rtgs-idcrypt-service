@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
@@ -17,6 +19,11 @@ public class AndIdCryptApiUnavailable
 
 	public AndIdCryptApiUnavailable()
 	{
+		var coreOptions = Options.Create(new CoreConfig
+		{
+			RtgsGlobalId = "rtgs-global-id"
+		});
+
 		var connectionsClientMock = new Mock<IConnectionsClient>();
 
 		connectionsClientMock
@@ -37,14 +44,15 @@ public class AndIdCryptApiUnavailable
 			_logger,
 			Mock.Of<IConnectionRepository>(),
 			aliasProviderMock.Object,
-			Mock.Of<IWalletClient>()
+			Mock.Of<IWalletClient>(),
+			coreOptions
 		);
 	}
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync())
+			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
@@ -54,7 +62,7 @@ public class AndIdCryptApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync())
+			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
