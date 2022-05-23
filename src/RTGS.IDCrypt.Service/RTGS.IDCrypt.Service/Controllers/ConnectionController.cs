@@ -25,10 +25,10 @@ public class ConnectionController : ControllerBase
 	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
 	[HttpPost]
 	public async Task<IActionResult> Post(
-		CreateConnectionInvitationRequest createConnectionInvitationRequest,
+		CreateConnectionInvitationRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(createConnectionInvitationRequest.RtgsGlobalId, cancellationToken);
+		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(request.RtgsGlobalId, cancellationToken);
 
 		var response = createConnectionInvitationResponse.MapToContract();
 
