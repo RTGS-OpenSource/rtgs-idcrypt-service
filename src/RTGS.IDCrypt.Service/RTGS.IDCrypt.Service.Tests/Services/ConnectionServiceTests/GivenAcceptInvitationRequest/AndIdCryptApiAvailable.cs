@@ -122,5 +122,5 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	public void WhenInvoked_ThenCallReceiveAndAcceptInvitationAsyncWithExpected() => _connectionsClientMock.Verify();
 
 	[Fact]
-	public void WhenInvoked_ThenCallSavePendingBankPartnerConnectionAsyncWithExpected() => _connectionRepositoryMock.Verify();
+	public void WhenInvoked_ThenCallSaveBankPartnerConnectionAsyncWithExpected() => _connectionRepositoryMock.Verify();
 }
