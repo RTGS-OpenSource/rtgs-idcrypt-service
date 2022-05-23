@@ -1,4 +1,6 @@
-﻿using RTGS.IDCrypt.Service.Helpers;
+﻿using Microsoft.Extensions.Options;
+using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCryptSDK.Connections;
@@ -15,19 +17,28 @@ public class ConnectionService : IConnectionService
 	private readonly IConnectionRepository _connectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
+	private readonly string _rtgsGlobalId;
 
 	public ConnectionService(
 		IConnectionsClient connectionsClient,
 		ILogger<ConnectionService> logger,
 		IConnectionRepository connectionRepository,
 		IAliasProvider aliasProvider,
-		IWalletClient walletClient)
+		IWalletClient walletClient,
+		IOptions<CoreConfig> coreOptions)
 	{
 		_connectionsClient = connectionsClient;
 		_logger = logger;
 		_connectionRepository = connectionRepository;
 		_aliasProvider = aliasProvider;
 		_walletClient = walletClient;
+
+		if (string.IsNullOrWhiteSpace(coreOptions.Value.RtgsGlobalId))
+		{
+			throw new ArgumentException("RtgsGlobalId configuration option is not set.");
+		}
+
+		_rtgsGlobalId = coreOptions.Value.RtgsGlobalId;
 	}
 
 	public async Task AcceptInvitationAsync(ConnectionInvitation invitation, CancellationToken cancellationToken = default)
@@ -66,7 +77,7 @@ public class ConnectionService : IConnectionService
 	}
 
 	public async Task<ConnectionInvitation> CreateConnectionInvitationAsync(
-		string rtgsGlobalId,
+		string toRtgsGlobalId,
 		CancellationToken cancellationToken = default)
 	{
 		const bool autoAccept = true;
@@ -86,7 +97,7 @@ public class ConnectionService : IConnectionService
 
 			var connection = new BankPartnerConnection
 			{
-				PartitionKey = rtgsGlobalId,
+				PartitionKey = toRtgsGlobalId,
 				RowKey = alias,
 				ConnectionId = createConnectionInvitationResponse.ConnectionId,
 				Alias = alias
@@ -108,7 +119,7 @@ public class ConnectionService : IConnectionService
 				Did = createConnectionInvitationResponse.Invitation.Did,
 				ImageUrl = createConnectionInvitationResponse.Invitation.ImageUrl,
 				InvitationUrl = createConnectionInvitationResponse.InvitationUrl,
-				ToRtgsGlobalId = rtgsGlobalId
+				FromRtgsGlobalId = _rtgsGlobalId
 			};
 		}
 		catch (Exception ex)

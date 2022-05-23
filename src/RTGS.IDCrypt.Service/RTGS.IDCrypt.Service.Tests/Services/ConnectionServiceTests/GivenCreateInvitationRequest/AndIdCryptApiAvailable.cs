@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Options;
+using Moq;
+using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
@@ -25,6 +27,11 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	public AndIdCryptApiAvailable()
 	{
+		var coreOptions = Options.Create(new CoreConfig
+		{
+			RtgsGlobalId = "rtgs-global-id"
+		});
+
 		_expectedResponse = new Models.ConnectionInvitation
 		{
 			InvitationUrl = "invitation-url",
@@ -35,7 +42,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			RecipientKeys = new[] { "recipient-key-1" },
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
-			Type = "type"
+			Type = "type",
+			FromRtgsGlobalId = coreOptions.Value.RtgsGlobalId
 		};
 
 		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
@@ -102,8 +110,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			logger,
 			_connectionRepositoryMock.Object,
 			aliasProviderMock.Object,
-			Mock.Of<IWalletClient>()
-		);
+			Mock.Of<IWalletClient>(),
+			coreOptions);
 	}
 
 	public async Task InitializeAsync() =>

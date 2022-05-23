@@ -34,7 +34,8 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			RecipientKeys = new[] { "recipient-key-1" },
 			ServiceEndpoint = "service-endpoint",
 			ImageUrl = "image-url",
-			Id = "id"
+			Id = "id",
+			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
 		_connectionServiceMock

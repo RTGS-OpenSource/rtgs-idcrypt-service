@@ -34,7 +34,8 @@ public class AndReceiveInvitationApiUnavailable : IClassFixture<ReceiveInvitatio
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
 			PublicDid = "public-did",
-			Type = "type"
+			Type = "type",
+			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
 		var basicMessage = new IdCryptBasicMessage

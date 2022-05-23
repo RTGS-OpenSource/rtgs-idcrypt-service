@@ -3,5 +3,6 @@
 	"AgentApiAddress": "http://localhost",
 	"AgentApiKey": "AgentApiKey",
 	"AgentServiceEndpointAddress": "http://localhost",
-	"MinimumConnectionAge": "00:05:00" 
+	"MinimumConnectionAge": "00:05:00",
+	"RtgsGlobalId": "rtgs-global-id"
 }

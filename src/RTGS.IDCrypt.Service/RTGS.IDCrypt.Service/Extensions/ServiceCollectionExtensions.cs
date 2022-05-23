@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
 {
 	public static void AddRtgsDependencies(this IServiceCollection services, IConfiguration config)
 	{
+		services.Configure<CoreConfig>(config);
 		services.Configure<BankPartnerConnectionsConfig>(config);
 
 		services.AddSingleton(_ =>

@@ -54,5 +54,4 @@ public class AcceptConnectionInvitationRequest
 	/// </summary>
 	[JsonPropertyName("rtgsGlobalId")]
 	public string RtgsGlobalId { get; init; }
-
 }
