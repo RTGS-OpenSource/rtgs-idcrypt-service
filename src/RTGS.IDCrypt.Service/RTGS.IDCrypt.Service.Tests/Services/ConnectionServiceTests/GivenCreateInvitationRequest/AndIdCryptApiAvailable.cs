@@ -81,7 +81,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			PartitionKey = RtgsGlobalId,
 			RowKey = Alias,
 			Alias = Alias,
-			ConnectionId = createConnectionInvitationResponse.ConnectionId
+			ConnectionId = createConnectionInvitationResponse.ConnectionId,
+			Status = "Pending"
 		};
 
 		Func<BankPartnerConnection, bool> connectionMatches = connection =>

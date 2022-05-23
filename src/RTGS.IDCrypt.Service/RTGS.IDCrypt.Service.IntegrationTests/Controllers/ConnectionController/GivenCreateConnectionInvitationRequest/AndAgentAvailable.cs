@@ -126,7 +126,8 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 			.Query<BankPartnerConnection>()
 			.Where(connection =>
 				connection.PartitionKey == _request.RtgsGlobalId
-				&& connection.RowKey == alias)
+				&& connection.RowKey == alias
+				&& connection.Status == "Pending")
 			.Should().ContainSingle();
 	}
 }

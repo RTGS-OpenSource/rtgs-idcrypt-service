@@ -89,7 +89,8 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 			.Query<BankPartnerConnection>()
 			.Where(connection =>
 				connection.PartitionKey == _request.RtgsGlobalId
-				&& connection.RowKey == AcceptInvitation.ExpectedResponse.Alias)
+				&& connection.RowKey == AcceptInvitation.ExpectedResponse.Alias
+				&& connection.Status == "Pending")
 			.Should().ContainSingle();
 
 	[Fact]

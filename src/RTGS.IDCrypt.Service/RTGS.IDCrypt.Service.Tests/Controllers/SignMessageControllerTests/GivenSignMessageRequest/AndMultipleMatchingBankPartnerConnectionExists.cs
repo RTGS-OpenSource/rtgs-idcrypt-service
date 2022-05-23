@@ -48,7 +48,8 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			PartitionKey = _signMessageRequest.RtgsGlobalId,
 			RowKey = "alias-1",
 			ConnectionId = "connection-1",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(3))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(3)),
+			Status = "Active"
 		};
 
 		var tooNewConnection = new BankPartnerConnection
@@ -56,7 +57,8 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			PartitionKey = _signMessageRequest.RtgsGlobalId,
 			RowKey = "alias-2",
 			ConnectionId = "connection-2",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(3))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(3)),
+			Status = "Active"
 		};
 
 		_validConnection = new BankPartnerConnection
@@ -64,7 +66,8 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			PartitionKey = _signMessageRequest.RtgsGlobalId,
 			RowKey = "alias-3",
 			ConnectionId = "connection-3",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
+			Status = "Active"
 		};
 
 		var matchingBankPartnerConnections = new List<BankPartnerConnection>

@@ -63,7 +63,8 @@ public class ConnectionService : IConnectionService
 				RowKey = response.Alias,
 				ConnectionId = response.ConnectionId,
 				Alias = response.Alias,
-				PublicDid = invitation.PublicDid
+				PublicDid = invitation.PublicDid,
+				Status = "Pending"
 			};
 
 			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);
@@ -100,7 +101,8 @@ public class ConnectionService : IConnectionService
 				PartitionKey = toRtgsGlobalId,
 				RowKey = alias,
 				ConnectionId = createConnectionInvitationResponse.ConnectionId,
-				Alias = alias
+				Alias = alias,
+				Status = "Pending"
 			};
 
 			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);

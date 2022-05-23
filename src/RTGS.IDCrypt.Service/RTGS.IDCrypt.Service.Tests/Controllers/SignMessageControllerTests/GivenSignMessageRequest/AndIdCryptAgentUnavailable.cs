@@ -39,7 +39,8 @@ public class AndIdCryptAgentUnavailable
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
 			ConnectionId = "connection-id",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
+			Status = "Active"
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
