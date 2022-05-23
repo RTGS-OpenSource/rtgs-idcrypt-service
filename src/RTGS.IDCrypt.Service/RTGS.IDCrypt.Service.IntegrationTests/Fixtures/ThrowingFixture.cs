@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using RTGS.IDCrypt.Service.Contracts.SignMessage;
+using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.Storage;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;

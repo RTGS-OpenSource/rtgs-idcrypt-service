@@ -1,7 +1,7 @@
 ﻿using Moq;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
