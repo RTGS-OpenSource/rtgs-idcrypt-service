@@ -37,4 +37,4 @@ https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fidcryptsov
 
 This link can be used to generate a "Deploy to Azure" button as seen below and kick off the deployment through a customized user experience within the Azure portal.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fidcryptsovrin.blob.core.windows.net%2Ftemplates%2Fmain.json/createUIDefinitionUri/https%3A%2F%2Fidcryptsovrin.blob.core.windows.net%2Ftemplates%2Fmain.portal.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FRTGS-OpenSource%2Frtgs-idcrypt-service%2Ffeature%2F3846-deploy-agent%2Fazure-deployment%2Fazure%2Ftemplates%2Fmain.json/createUIDefinitionUri/https%3A%2F%2Fraw.githubusercontent.com%2FRTGS-OpenSource%2Frtgs-idcrypt-service%2Ffeature%2F3846-deploy-agent%2Fazure-deployment%2Fazure%2Ftemplates%2Fmain.portal.json)
