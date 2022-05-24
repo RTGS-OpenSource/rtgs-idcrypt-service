@@ -3,7 +3,7 @@
 namespace RTGS.IDCrypt.Service.Contracts.Connection;
 
 /// <summary>
-/// Model of the request for an invitation.
+/// Model of the request for a bank invitation.
 /// </summary>
 public record CreateConnectionInvitationForBankRequest
 {
