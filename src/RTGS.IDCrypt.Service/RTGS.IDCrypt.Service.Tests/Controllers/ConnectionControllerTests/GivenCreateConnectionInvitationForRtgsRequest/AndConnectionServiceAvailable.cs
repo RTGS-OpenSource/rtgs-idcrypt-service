@@ -10,8 +10,6 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionService> _connectionServiceMock;
 	private readonly ConnectionController _connectionController;
-	private readonly CreateConnectionInvitationForBankRequest _createConnectionInvitationRequest;
-
 	private const string Alias = "alias";
 	private const string PublicDid = "public-did";
 

@@ -48,7 +48,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			InvitationUrl = "invitation-url",
-			Invitation = new IDCryptSDK.Connections.Models.ConnectionInvitation
+			Invitation = new ConnectionInvitation
 			{
 				Id = "id",
 				Type = "type",
