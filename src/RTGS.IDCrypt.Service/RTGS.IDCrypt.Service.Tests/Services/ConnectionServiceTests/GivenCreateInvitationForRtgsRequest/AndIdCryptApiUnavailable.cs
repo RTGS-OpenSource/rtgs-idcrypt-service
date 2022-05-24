@@ -9,7 +9,7 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationForRtgsRequest;
 
 public class AndIdCryptApiUnavailable
 {
@@ -52,7 +52,7 @@ public class AndIdCryptApiUnavailable
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CreateConnectionInvitationForRtgsAsync())
 			.Should()
 			.ThrowAsync<Exception>();
 
@@ -62,10 +62,10 @@ public class AndIdCryptApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CreateConnectionInvitationForRtgsAsync())
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when sending CreateConnectionInvitation request with alias alias to ID Crypt Cloud Agent");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when creating connection invitation for RTGS.global.");
 	}
 }

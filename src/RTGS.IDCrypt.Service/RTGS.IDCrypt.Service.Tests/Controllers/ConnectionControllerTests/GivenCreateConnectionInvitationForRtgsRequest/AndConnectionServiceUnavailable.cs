@@ -1,9 +1,8 @@
 ﻿using Moq;
-using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Services;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationForRtgsRequest;
 
 public class AndConnectionServiceUnavailable
 {
@@ -14,8 +13,7 @@ public class AndConnectionServiceUnavailable
 		var connectionServiceMock = new Mock<IConnectionService>();
 
 		connectionServiceMock
-			.Setup(connectionsClient => connectionsClient.CreateConnectionInvitationAsync(
-				It.IsAny<string>(),
+			.Setup(connectionsClient => connectionsClient.CreateConnectionInvitationForRtgsAsync(
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
@@ -25,15 +23,8 @@ public class AndConnectionServiceUnavailable
 	[Fact]
 	public async Task WhenPosting_ThenThrows()
 	{
-		var request = new CreateConnectionInvitationRequest
-		{
-			RtgsGlobalId = "rtgs-global-id"
-		};
-
-		using var _ = new AssertionScope();
-
 		await FluentActions
-			.Awaiting(() => _connectionController.Post(request))
+			.Awaiting(() => _connectionController.ForRtgs())
 			.Should()
 			.ThrowAsync<Exception>();
 	}
