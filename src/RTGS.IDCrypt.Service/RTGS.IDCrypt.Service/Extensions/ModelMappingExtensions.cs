@@ -23,7 +23,6 @@ public static class ModelMappingExtensions
 				}
 			};
 
-
 	public static Models.ConnectionInvitation MapToConnectionInvitation(
 		this IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse createConnectionInvitationResponse,
 		string publicDid,
