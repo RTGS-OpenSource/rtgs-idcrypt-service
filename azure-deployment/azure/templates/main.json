@@ -1,0 +1,1577 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.6.18.56646",
+      "templateHash": "16248144425248533175"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D4ds_v4"
+    },
+    "deploymentScriptContent": {
+      "type": "string",
+      "defaultValue": "[variables('$fxv#0')]"
+    },
+    "environment": {
+      "type": "string",
+      "allowedValues": [
+        "dev",
+        "prod"
+      ]
+    },
+    "agentLabel": {
+      "type": "secureString"
+    },
+    "agentEndpoint": {
+      "type": "secureString"
+    },
+    "agentAdminApiKey": {
+      "type": "secureString"
+    },
+    "idcryptToken": {
+      "type": "secureString"
+    },
+    "idcryptApiKey": {
+      "type": "secureString"
+    },
+    "idcryptCredentialDefinition": {
+      "type": "secureString"
+    },
+    "idcryptOrganizationId": {
+      "type": "secureString"
+    },
+    "webhookUrl": {
+      "type": "string"
+    },
+    "walletSeed": {
+      "type": "secureString"
+    },
+    "walletName": {
+      "type": "secureString"
+    },
+    "walletKey": {
+      "type": "secureString"
+    }
+  },
+  "variables": {
+    "$fxv#0": "IyEvdXNyL2Jpbi9lbnYgYmFzaApzZXQgLWV1eG8gcGlwZWZhaWwKCm5hbWVzcGFjZT1kZWZhdWx0CiMgaGVsbVZlcnNpb249My44LjIKCiMgZGVjbGFyZSBlbnYgdmFycyB1c2VkIGluIHRoZSBzY3JpcHQgdG8gZmFpbCBmYXN0IGlmIHRoZXkgYXJlIG5vdCBwcm92aWRlZApLVUJFTEVUX0lERU5USVRZX0NMSUVOVF9JRD0ke0tVQkVMRVRfSURFTlRJVFlfQ0xJRU5UX0lEfQpLRVlWQVVMVF9OQU1FPSR7S0VZVkFVTFRfTkFNRX0KVEVOQU5UX0lEPSR7VEVOQU5UX0lEfQoKZWNobyAiQWdlbnQgaW5zdGFsbCBzY3JpcHQiCgpheiB2ZXJzaW9uCk9TPSQoZWNobyBgdW5hbWVgfHRyICdbOnVwcGVyOl0nICdbOmxvd2VyOl0nKQpBUkNIPSQodW5hbWUgLW0pCmVjaG8gIk9TPSRPUyIKZWNobyAiQVJDSD0kQVJDSCIKCmVjaG8gIkluc3RhbGxpbmcga3ViZWN0bC4uLiIKYXogYWtzIGluc3RhbGwtY2xpCgplY2hvICJJbnN0YWxsaW5nIEhlbG0uLi4iCiMgd2dldCAtTyBoZWxtLnRneiAiaHR0cHM6Ly9nZXQuaGVsbS5zaC9oZWxtLXYke2hlbG1WZXJzaW9ufS1saW51eC1hbWQ2NC50YXIuZ3oiCiMgdGFyIC16eGYgaGVsbS50Z3oKIyBtdiAtZiBsaW51eC1hbWQ2NC9oZWxtIC91c3IvbG9jYWwvYmluL2hlbG0KY3VybCAtZnNTTCAtbyBnZXRfaGVsbS5zaCBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vaGVsbS9oZWxtL21haW4vc2NyaXB0cy9nZXQtaGVsbS0zCmNobW9kIDcwMCBnZXRfaGVsbS5zaAouL2dldF9oZWxtLnNoCmhlbG0gdmVyc2lvbgoKZWNobyAiTG9nZ2luZyBpbiB0byBBenVyZS4uLiIKYXogbG9naW4gLS1pZGVudGl0eQoKZWNobyAiR2V0dGluZyBjbHVzdGVyIGNyZWRlbnRpYWxzLi4uIgpheiBha3MgZ2V0LWNyZWRlbnRpYWxzIC0tcmVzb3VyY2UtZ3JvdXAgJHtSRVNPVVJDRV9HUk9VUF9OQU1FfSAtLW5hbWUgJHtDTFVTVEVSX05BTUV9Cmt1YmVjdGwgY29uZmlnIHNldC1jb250ZXh0IC0tY3VycmVudCAtLW5hbWVzcGFjZT0kbmFtZXNwYWNlCgplY2hvICJPYnRhaW5pbmcgYWdlbnQgY29uZmlndXJhdGlvbiBmcm9tIEtleSBWYXVsdC4uLiIKCmZ1bmN0aW9uIGdldF9zZWNyZXQoKSB7CiAgICBheiBrZXl2YXVsdCBzZWNyZXQgc2hvdyAtLW5hbWUgJDEgLS12YXVsdC1uYW1lICRLRVlWQVVMVF9OQU1FIC0tcXVlcnkgInZhbHVlIiAtbyB0c3YKfQoKZW52aXJvbm1lbnQ9JChnZXRfc2VjcmV0IGVudmlyb25tZW50KQphZ2VudExhYmVsPSQoZ2V0X3NlY3JldCBhZ2VudExhYmVsKQphZ2VudEVuZHBvaW50PSQoZ2V0X3NlY3JldCBhZ2VudEVuZHBvaW50KQphZ2VudEFkbWluQXBpS2V5PSQoZ2V0X3NlY3JldCBhZ2VudEFkbWluQXBpS2V5KQppZGNyeXB0QXBpS2V5PSQoZ2V0X3NlY3JldCBpZGNyeXB0QXBpS2V5KQppZGNyeXB0VG9rZW49JChnZXRfc2VjcmV0IGlkY3J5cHRUb2tlbikKaWRjcnlwdENyZWRlbnRpYWxEZWZpbml0aW9uPSQoZ2V0X3NlY3JldCBpZGNyeXB0Q3JlZGVudGlhbERlZmluaXRpb24pCmlkY3J5cHRPcmdhbml6YXRpb25JZD0kKGdldF9zZWNyZXQgaWRjcnlwdE9yZ2FuaXphdGlvbklkKQp3YWxsZXROYW1lPSQoZ2V0X3NlY3JldCB3YWxsZXROYW1lKQp3YWxsZXRLZXk9JChnZXRfc2VjcmV0IHdhbGxldEtleSkKd2FsbGV0U2VlZD0kKGdldF9zZWNyZXQgd2FsbGV0U2VlZCkKcG9zdGdyZXNVcmw9JChnZXRfc2VjcmV0IHBvc3RncmVzVXJsKQpwb3N0Z3Jlc1VzZXI9JChnZXRfc2VjcmV0IHBvc3RncmVzVXNlcikKcG9zdGdyZXNQYXNzd29yZD0kKGdldF9zZWNyZXQgcG9zdGdyZXNQYXNzd29yZCkKCgplY2hvICJJbnN0YWxsaW5nIElEIENyeXB0IGFnZW50Li4uIgoKaGVsbSByZXBvIGFkZCBpZGNyeXB0c292cmluIGh0dHBzOi8vaWRjcnlwdHNvdnJpbi5henVyZWNyLmlvL2hlbG0vdjEvcmVwbwpoZWxtIHJlcG8gdXBkYXRlCgpjYXQgPDxFT0YgPj52YWx1ZXMueWFtbAppbmdyZXNzOgogICMgSW5ncmVzcyBmb3IgdGhlIGFnZW50J3MgY29tbXVuaWNhdGlvbiBwcm90b2NvbCAoRElEY29tbSkKICBkaWRjb21tOgogICAgZW5hYmxlZDogdHJ1ZQogICAgY2xhc3NOYW1lOiAiIgogICAgYW5ub3RhdGlvbnM6CiAgICAgIGt1YmVybmV0ZXMuaW8vaW5ncmVzcy5jbGFzczogYXp1cmUvYXBwbGljYXRpb24tZ2F0ZXdheQogICAgICBhcHBndy5pbmdyZXNzLmt1YmVybmV0ZXMuaW8vaGVhbHRoLXByb2JlLXBvcnQ6ICI0MDAwIgogICAgICBhcHBndy5pbmdyZXNzLmt1YmVybmV0ZXMuaW8vaGVhbHRoLXByb2JlLXBhdGg6ICIvIgogICAgICBhcHBndy5pbmdyZXNzLmt1YmVybmV0ZXMuaW8vYmFja2VuZC1wcm90b2NvbDogaHR0cAogICAgICAjIGFwcGd3LmluZ3Jlc3Mua3ViZXJuZXRlcy5pby9hcHBndy1zc2wtY2VydGlmaWNhdGU6IGt2c3NsY2VydAogICAgaG9zdHM6CiAgICAgIC0gaG9zdDogIiRQVUJMSUNfRlFETiIKICAgICAgICBwYXRoczoKICAgICAgICAgIC0gcGF0aDogLwogICAgICAgICAgICBwYXRoVHlwZTogUHJlZml4CiAgIyBJbmdyZXNzIGZvciB0aGUgYWdlbnQncyBhZG1pbiBBUEkKICBhZG1pbjoKICAgIGVuYWJsZWQ6IHRydWUKICAgIGNsYXNzTmFtZTogIiIKICAgIGFubm90YXRpb25zOgogICAgICBrdWJlcm5ldGVzLmlvL2luZ3Jlc3MuY2xhc3M6IGF6dXJlL2FwcGxpY2F0aW9uLWdhdGV3YXkKICAgICAgYXBwZ3cuaW5ncmVzcy5rdWJlcm5ldGVzLmlvL2hlYWx0aC1wcm9iZS1wb3J0OiAiMTEwMDAiCiAgICAgIGFwcGd3LmluZ3Jlc3Mua3ViZXJuZXRlcy5pby9oZWFsdGgtcHJvYmUtcGF0aDogIi9hcGkvZG9jIgogICAgICBhcHBndy5pbmdyZXNzLmt1YmVybmV0ZXMuaW8vYmFja2VuZC1wcm90b2NvbDogaHR0cAogICAgICBhcHBndy5pbmdyZXNzLmt1YmVybmV0ZXMuaW8vdXNlLXByaXZhdGUtaXA6ICJ0cnVlIgogICAgICAjIEFwcCBHYXRld2F5IGRvZXNuJ3Qgc3VwcG9ydCBtdWx0aXBsZSBJUHMgb24gdGhlIHNhbWUgcG9ydCAoZS5nLiA0NDMpCiAgICAgICMgVGhlcmVmb3JlLCB3ZSB3aWxsIGxpc3RlbiBvbiBwb3J0IDg0NDMgZm9yIHRoZSBBZ2VudCBBUEkuCiAgICAgICMgaHR0cHM6Ly9naXRodWIuY29tL0F6dXJlL2FwcGxpY2F0aW9uLWdhdGV3YXkta3ViZXJuZXRlcy1pbmdyZXNzL2lzc3Vlcy85NDgKICAgICAgIyBhcHBndy5pbmdyZXNzLmt1YmVybmV0ZXMuaW8vb3ZlcnJpZGUtZnJvbnRlbmQtcG9ydDogIjg0NDMiCiAgICAgICMgYXBwZ3cuaW5ncmVzcy5rdWJlcm5ldGVzLmlvL2FwcGd3LXNzbC1jZXJ0aWZpY2F0ZToga3Zzc2xjZXJ0CiAgICBob3N0czoKICAgICAgLSBob3N0OiAiJFBVQkxJQ19GUUROIgogICAgICAgIHBhdGhzOgogICAgICAgICAgLSBwYXRoOiAvCiAgICAgICAgICAgIHBhdGhUeXBlOiBQcmVmaXgKRU9GCgoKaGVsbSB1cGdyYWRlIC0taW5zdGFsbCBhZ2VudCBcCiAgICBpZGNyeXB0c292cmluL2lkY3J5cHQtYWdlbnQgXAogICAgLS13YWl0IC0tdGltZW91dD00bSBcCiAgICAtLW5hbWVzcGFjZSBkZWZhdWx0IFwKICAgIC0tc2V0LXN0cmluZyBwb2RBbm5vdGF0aW9ucy5kYXRlPSQoZGF0ZSArJyVzJykgXAogICAgLS1zZXQgcmVwbGljYUNvdW50PTMgXAogICAgLS1zZXQgZW52aXJvbm1lbnQ9IiR7ZW52aXJvbm1lbnR9IiBcCiAgICAtLXNldCBpZGNyeXB0PW51bGwgXAogICAgLS1zZXQgYWdlbnQubGFiZWw9IiR7YWdlbnRMYWJlbH0iIFwKICAgIC0tc2V0IGFnZW50LmVuZHBvaW50PSIke2FnZW50RW5kcG9pbnR9IiBcCiAgICAtLXNldCBhZ2VudC5hZG1pbkFwaUtleT0iJHthZ2VudEFkbWluQXBpS2V5fSIgXAogICAgLS1zZXQgd2FsbGV0LnNlZWQ9IiR7d2FsbGV0U2VlZH0iIFwKICAgIC0tc2V0IHdhbGxldC5uYW1lPSIke3dhbGxldE5hbWV9IiBcCiAgICAtLXNldCB3YWxsZXQua2V5PSIke3dhbGxldEtleX0iIFwKICAgIC0tc2V0IHdhbGxldC5hdXRvUHJvdmlzaW9uPXRydWUgXAogICAgLS1zZXQgc3RvcmFnZS50eXBlPSJwb3N0Z3JlcyIgXAogICAgLS1zZXQgc3RvcmFnZS5wb3N0Z3Jlcy51cmw9IiR7cG9zdGdyZXNVcmx9IiBcCiAgICAtLXNldCBzdG9yYWdlLnBvc3RncmVzLnVzZXI9IiR7cG9zdGdyZXNVc2VyfSIgXAogICAgLS1zZXQgc3RvcmFnZS5wb3N0Z3Jlcy5wYXNzd29yZD0iJHtwb3N0Z3Jlc1Bhc3N3b3JkfSIgXAogICAgLWYgdmFsdWVzLnlhbWwKIyAtLXNldCBpZGNyeXB0Lm9yZ2FuaXphdGlvbklkPSIke2lkY3J5cHRPcmdhbml6YXRpb25JZH0iIFwKIyAtLXNldCBpZGNyeXB0LnRva2VuPSIke2lkY3J5cHRUb2tlbn0iIFwKIyAtLXNldCBpZGNyeXB0LmFwaUtleT0iJHtpZGNyeXB0QXBpS2V5fSIgXAojIC0tc2V0IGlkY3J5cHQuY3JlZGVudGlhbERlZmluaXRpb249IiR7aWRjcnlwdENyZWRlbnRpYWxEZWZpbml0aW9ufSIgXAoKCmV4aXQgMAo=",
+    "appName": "IdCryptAgent",
+    "uniqueAppName": "[format('{0}{1}', toLower(variables('appName')), uniqueString(resourceGroup().id))]",
+    "uniqueTruncatedAppName": "[if(greater(length(variables('uniqueAppName')), 24), substring(variables('uniqueAppName'), 0, 24), variables('uniqueAppName'))]",
+    "aksNodeResouceGroup": "[format('{0}-aks', resourceGroup().name)]",
+    "postgresUser": "pgadmin",
+    "postgresPassword": "Passw0rd",
+    "dnsPrefix": "[variables('uniqueAppName')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}Analytics', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[format('{0}LogAnalyticsWorkspace', variables('appName'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "3915413241923902063"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "logAnalyticsWorkspaceName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2021-06-01",
+              "name": "[parameters('logAnalyticsWorkspaceName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "retentionInDays": 60
+              }
+            }
+          ],
+          "outputs": {
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}Storage', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "storageAccountName": {
+            "value": "[variables('uniqueTruncatedAppName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "7315723807158981875"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "storageAccountName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2021-08-01",
+              "name": "[parameters('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}Identity', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "deploymentScriptIdentityName": {
+            "value": "[format('{0}DeploymentScriptIdentity', variables('appName'))]"
+          },
+          "aksIdentityName": {
+            "value": "[format('{0}AksIdentity', variables('appName'))]"
+          },
+          "appGatewayIdentityName": {
+            "value": "[format('{0}AppGatewayIdentity', variables('appName'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "18173416205156633727"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "aksIdentityName": {
+              "type": "string"
+            },
+            "deploymentScriptIdentityName": {
+              "type": "string"
+            },
+            "appGatewayIdentityName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2018-11-30",
+              "name": "[parameters('aksIdentityName')]",
+              "location": "[parameters('location')]"
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2018-11-30",
+              "name": "[parameters('deploymentScriptIdentityName')]",
+              "location": "[parameters('location')]"
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2018-11-30",
+              "name": "[parameters('appGatewayIdentityName')]",
+              "location": "[parameters('location')]"
+            }
+          ],
+          "outputs": {
+            "aksIdentityObjectId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('aksIdentityName'))).principalId]"
+            },
+            "aksIdentityTenantId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('aksIdentityName'))).tenantId]"
+            },
+            "aksIdentityResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('aksIdentityName'))]"
+            },
+            "deploymentScriptIdentityObjectId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('deploymentScriptIdentityName'))).principalId]"
+            },
+            "deploymentScriptIdentityTenantId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('deploymentScriptIdentityName'))).tenantId]"
+            },
+            "deploymentScriptIdentityResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('deploymentScriptIdentityName'))]"
+            },
+            "appGatewayIdentityName": {
+              "type": "string",
+              "value": "[parameters('appGatewayIdentityName')]"
+            },
+            "appGatewayIdentityObjectId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('appGatewayIdentityName'))).principalId]"
+            },
+            "appGatewayIdentityClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('appGatewayIdentityName'))).clientId]"
+            },
+            "appGatewayIdentityResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('appGatewayIdentityName'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}KeyVault', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "keyVaultName": {
+            "value": "[variables('uniqueTruncatedAppName')]"
+          },
+          "identityObjectId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.deploymentScriptIdentityObjectId.value]"
+          },
+          "identityTenantId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.deploymentScriptIdentityTenantId.value]"
+          },
+          "environment": {
+            "value": "[parameters('environment')]"
+          },
+          "agentLabel": {
+            "value": "[parameters('agentLabel')]"
+          },
+          "agentEndpoint": {
+            "value": "[parameters('agentEndpoint')]"
+          },
+          "agentAdminApiKey": {
+            "value": "[parameters('agentAdminApiKey')]"
+          },
+          "idcryptToken": {
+            "value": "[parameters('idcryptToken')]"
+          },
+          "idcryptApiKey": {
+            "value": "[parameters('idcryptApiKey')]"
+          },
+          "idcryptCredentialDefinition": {
+            "value": "[parameters('idcryptCredentialDefinition')]"
+          },
+          "idcryptOrganizationId": {
+            "value": "[parameters('idcryptOrganizationId')]"
+          },
+          "walletSeed": {
+            "value": "[parameters('walletSeed')]"
+          },
+          "walletName": {
+            "value": "[parameters('walletName')]"
+          },
+          "walletKey": {
+            "value": "[parameters('walletKey')]"
+          },
+          "postgresUrl": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Postgres', variables('appName')))).outputs.url.value]"
+          },
+          "postgresUser": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Postgres', variables('appName')))).outputs.user.value]"
+          },
+          "postgresPassword": {
+            "value": "[variables('postgresPassword')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "3277880816670517146"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "keyVaultName": {
+              "type": "string"
+            },
+            "identityTenantId": {
+              "type": "string"
+            },
+            "identityObjectId": {
+              "type": "string"
+            },
+            "environment": {
+              "type": "secureString"
+            },
+            "agentLabel": {
+              "type": "secureString"
+            },
+            "agentEndpoint": {
+              "type": "secureString"
+            },
+            "agentAdminApiKey": {
+              "type": "secureString"
+            },
+            "idcryptToken": {
+              "type": "secureString"
+            },
+            "idcryptApiKey": {
+              "type": "secureString"
+            },
+            "idcryptCredentialDefinition": {
+              "type": "secureString"
+            },
+            "idcryptOrganizationId": {
+              "type": "secureString"
+            },
+            "walletSeed": {
+              "type": "secureString"
+            },
+            "walletName": {
+              "type": "secureString"
+            },
+            "walletKey": {
+              "type": "secureString"
+            },
+            "postgresUrl": {
+              "type": "secureString"
+            },
+            "postgresUser": {
+              "type": "secureString"
+            },
+            "postgresPassword": {
+              "type": "secureString"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'environment')]",
+              "properties": {
+                "value": "[parameters('environment')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'agentLabel')]",
+              "properties": {
+                "value": "[parameters('agentLabel')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'agentEndpoint')]",
+              "properties": {
+                "value": "[parameters('agentEndpoint')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'agentAdminApiKey')]",
+              "properties": {
+                "value": "[parameters('agentAdminApiKey')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'idcryptToken')]",
+              "properties": {
+                "value": "[parameters('idcryptToken')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'idcryptApiKey')]",
+              "properties": {
+                "value": "[parameters('idcryptApiKey')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'idcryptCredentialDefinition')]",
+              "properties": {
+                "value": "[parameters('idcryptCredentialDefinition')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'idcryptOrganizationId')]",
+              "properties": {
+                "value": "[parameters('idcryptOrganizationId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'walletSeed')]",
+              "properties": {
+                "value": "[parameters('walletSeed')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'walletName')]",
+              "properties": {
+                "value": "[parameters('walletName')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'walletKey')]",
+              "properties": {
+                "value": "[parameters('walletKey')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'postgresUrl')]",
+              "properties": {
+                "value": "[parameters('postgresUrl')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'postgresUser')]",
+              "properties": {
+                "value": "[parameters('postgresUser')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-10-01",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), 'postgresPassword')]",
+              "properties": {
+                "value": "[parameters('postgresPassword')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2021-10-01",
+              "name": "[parameters('keyVaultName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": [
+                  {
+                    "objectId": "[parameters('identityObjectId')]",
+                    "tenantId": "[parameters('identityTenantId')]",
+                    "permissions": {
+                      "keys": [
+                        "get"
+                      ],
+                      "secrets": [
+                        "get"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "outputs": {
+            "keyVaultName": {
+              "type": "string",
+              "value": "[parameters('keyVaultName')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Postgres', variables('appName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}Network', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetName": {
+            "value": "[format('{0}Vnet', variables('appName'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "2936875950792904280"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "vnetName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2021-05-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "10.220.0.0/16"
+                  ]
+                },
+                "enableDdosProtection": false,
+                "enableVmProtection": false,
+                "subnets": [
+                  {
+                    "name": "AksSubnet",
+                    "properties": {
+                      "addressPrefix": "10.220.0.0/21",
+                      "privateEndpointNetworkPolicies": "Disabled",
+                      "privateLinkServiceNetworkPolicies": "Enabled"
+                    }
+                  },
+                  {
+                    "name": "DbSubnet",
+                    "properties": {
+                      "addressPrefix": "10.220.8.0/24",
+                      "privateEndpointNetworkPolicies": "Disabled",
+                      "privateLinkServiceNetworkPolicies": "Enabled"
+                    }
+                  },
+                  {
+                    "name": "AppGwSubnet",
+                    "properties": {
+                      "addressPrefix": "10.220.10.0/24",
+                      "privateEndpointNetworkPolicies": "Disabled",
+                      "privateLinkServiceNetworkPolicies": "Enabled"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "outputs": {
+            "aksSubnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'AksSubnet')]"
+            },
+            "dbSubnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'DbSubnet')]"
+            },
+            "appGwSubnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'AppGwSubnet')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}Postgres', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "serverName": {
+            "value": "[variables('uniqueTruncatedAppName')]"
+          },
+          "administratorLogin": {
+            "value": "[variables('postgresUser')]"
+          },
+          "administratorLoginPassword": {
+            "value": "[variables('postgresPassword')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "6052696899399846543"
+            }
+          },
+          "parameters": {
+            "administratorLogin": {
+              "type": "string"
+            },
+            "administratorLoginPassword": {
+              "type": "secureString"
+            },
+            "location": {
+              "type": "string"
+            },
+            "serverName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DBforPostgreSQL/servers/databases",
+              "apiVersion": "2017-12-01",
+              "name": "[format('{0}/{1}', parameters('serverName'), 'pgadmin')]",
+              "properties": {
+                "charset": "utf8",
+                "collation": "English_United States.1252"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DBforPostgreSQL/servers/firewallRules",
+              "apiVersion": "2017-12-01",
+              "name": "[format('{0}/{1}', parameters('serverName'), 'allow-all')]",
+              "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "255.255.255.255"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DBforPostgreSQL/servers",
+              "apiVersion": "2017-12-01",
+              "name": "[parameters('serverName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "createMode": "Default",
+                "version": "11",
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                "sslEnforcement": "Disabled",
+                "storageProfile": {
+                  "storageMB": 51200,
+                  "backupRetentionDays": 7,
+                  "geoRedundantBackup": "Disabled",
+                  "storageAutogrow": "Disabled"
+                },
+                "infrastructureEncryption": "Disabled"
+              },
+              "sku": {
+                "name": "B_Gen5_1",
+                "tier": "Basic",
+                "capacity": 1,
+                "size": "51200",
+                "family": "Gen5"
+              }
+            }
+          ],
+          "outputs": {
+            "connectionString": {
+              "type": "string",
+              "value": "[format('Server=tcp:{0},1433;Initial Catalog={1};Persist Security Info=False;User ID={2};Password={3};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;', reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))).fullyQualifiedDomainName, parameters('serverName'), parameters('administratorLogin'), parameters('administratorLoginPassword'))]"
+            },
+            "url": {
+              "type": "string",
+              "value": "[format('{0}:5432', reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))).fullyQualifiedDomainName)]"
+            },
+            "user": {
+              "type": "string",
+              "value": "[format('{0}@{1}', parameters('administratorLogin'), parameters('serverName'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}AppGateway', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "appGatewayName": {
+            "value": "[format('{0}AppGateway', variables('appName'))]"
+          },
+          "subnetId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Network', variables('appName')))).outputs.appGwSubnetId.value]"
+          },
+          "managedIdentityResourceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.appGatewayIdentityResourceId.value]"
+          },
+          "logAnalyticsWorkspaceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Analytics', variables('appName')))).outputs.logAnalyticsWorkspaceId.value]"
+          },
+          "dnsPrefix": {
+            "value": "[variables('dnsPrefix')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "7827997079751609215"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "appGatewayName": {
+              "type": "string"
+            },
+            "subnetId": {
+              "type": "string"
+            },
+            "managedIdentityResourceId": {
+              "type": "string"
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string"
+            },
+            "dnsPrefix": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "privateIpAddress": "10.220.10.4"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2021-05-01",
+              "name": "[format('{0}PublicIp', parameters('appGatewayName'))]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "properties": {
+                "publicIPAllocationMethod": "Static",
+                "dnsSettings": {
+                  "domainNameLabel": "[parameters('dnsPrefix')]"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Network/applicationGateways",
+              "apiVersion": "2021-05-01",
+              "name": "[parameters('appGatewayName')]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', parameters('managedIdentityResourceId'))]": {}
+                }
+              },
+              "properties": {
+                "sku": {
+                  "name": "Standard_v2",
+                  "tier": "Standard_v2"
+                },
+                "gatewayIPConfigurations": [
+                  {
+                    "name": "appGatewayIPConfiguration",
+                    "properties": {
+                      "subnet": {
+                        "id": "[parameters('subnetId')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendIPConfigurations": [
+                  {
+                    "name": "publicFrontendIPConfiguration",
+                    "properties": {
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}PublicIp', parameters('appGatewayName')))]"
+                      }
+                    }
+                  },
+                  {
+                    "name": "privateFrontendIPConfiguration",
+                    "properties": {
+                      "privateIPAllocationMethod": "Static",
+                      "privateIPAddress": "[variables('privateIpAddress')]",
+                      "subnet": {
+                        "id": "[parameters('subnetId')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendPorts": [
+                  {
+                    "name": "publicFrontendPort",
+                    "properties": {
+                      "port": 80
+                    }
+                  },
+                  {
+                    "name": "privateFrontendPort",
+                    "properties": {
+                      "port": 8080
+                    }
+                  }
+                ],
+                "backendAddressPools": [
+                  {
+                    "name": "appGatewayBackendAddressPool"
+                  }
+                ],
+                "backendHttpSettingsCollection": [
+                  {
+                    "name": "appGatewayBackendHttpSettings",
+                    "properties": {
+                      "port": 80,
+                      "protocol": "Http"
+                    }
+                  }
+                ],
+                "httpListeners": [
+                  {
+                    "name": "publicHttpListener",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('appGatewayName'), 'publicFrontendIPConfiguration')]"
+                      },
+                      "frontendPort": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('appGatewayName'), 'publicFrontendPort')]"
+                      },
+                      "protocol": "Http"
+                    }
+                  },
+                  {
+                    "name": "privateHttpListener",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('appGatewayName'), 'privateFrontendIPConfiguration')]"
+                      },
+                      "frontendPort": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('appGatewayName'), 'privateFrontendPort')]"
+                      },
+                      "protocol": "Http"
+                    }
+                  }
+                ],
+                "requestRoutingRules": [
+                  {
+                    "name": "appGatewayRequestRoutingRule",
+                    "properties": {
+                      "ruleType": "Basic",
+                      "httpListener": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('appGatewayName'), 'publicHttpListener')]"
+                      },
+                      "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), 'appGatewayBackendAddressPool')]"
+                      },
+                      "backendHttpSettings": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('appGatewayName'), 'appGatewayBackendHttpSettings')]"
+                      }
+                    }
+                  }
+                ],
+                "autoscaleConfiguration": {
+                  "minCapacity": 1,
+                  "maxCapacity": 3
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', format('{0}PublicIp', parameters('appGatewayName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Network/applicationGateways/{0}', parameters('appGatewayName'))]",
+              "name": "writeToLogAnalytics",
+              "properties": {
+                "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
+                "logs": [
+                  {
+                    "category": "ApplicationGatewayAccessLog",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "enabled": true,
+                      "days": 20
+                    }
+                  },
+                  {
+                    "category": "ApplicationGatewayPerformanceLog",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "enabled": true,
+                      "days": 20
+                    }
+                  },
+                  {
+                    "category": "ApplicationGatewayFirewallLog",
+                    "enabled": true,
+                    "retentionPolicy": {
+                      "enabled": true,
+                      "days": 20
+                    }
+                  }
+                ],
+                "metrics": [
+                  {
+                    "enabled": true,
+                    "timeGrain": "PT1M",
+                    "retentionPolicy": {
+                      "enabled": true,
+                      "days": 20
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/applicationGateways', parameters('appGatewayName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "appGatewayName": {
+              "type": "string",
+              "value": "[parameters('appGatewayName')]"
+            },
+            "appGatewayResourceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/applicationGateways', parameters('appGatewayName'))]"
+            },
+            "publicFqdn": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', format('{0}PublicIp', parameters('appGatewayName')))).dnsSettings.fqdn]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Analytics', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Network', variables('appName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}Aks', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "clusterName": {
+            "value": "[format('{0}AksCluster', variables('appName'))]"
+          },
+          "logAnalyticsWorkspaceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Analytics', variables('appName')))).outputs.logAnalyticsWorkspaceId.value]"
+          },
+          "managedIdentityResourceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.aksIdentityResourceId.value]"
+          },
+          "nodeResourceGroup": {
+            "value": "[variables('aksNodeResouceGroup')]"
+          },
+          "subnetId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Network', variables('appName')))).outputs.aksSubnetId.value]"
+          },
+          "vmSize": {
+            "value": "[parameters('vmSize')]"
+          },
+          "appGatewayResourceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}AppGateway', variables('appName')))).outputs.appGatewayResourceId.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "13788896445362053825"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "clusterName": {
+              "type": "string"
+            },
+            "vmSize": {
+              "type": "string"
+            },
+            "nodeResourceGroup": {
+              "type": "string"
+            },
+            "managedIdentityResourceId": {
+              "type": "string"
+            },
+            "subnetId": {
+              "type": "string"
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string"
+            },
+            "appGatewayResourceId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "kubernetesVersion": "1.22.6",
+            "clusterSize": 1,
+            "dnsPrefix": "[toLower(parameters('clusterName'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ContainerService/managedClusters",
+              "apiVersion": "2022-01-01",
+              "name": "[parameters('clusterName')]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', parameters('managedIdentityResourceId'))]": {}
+                }
+              },
+              "properties": {
+                "kubernetesVersion": "[variables('kubernetesVersion')]",
+                "nodeResourceGroup": "[parameters('nodeResourceGroup')]",
+                "dnsPrefix": "[variables('dnsPrefix')]",
+                "agentPoolProfiles": [
+                  {
+                    "name": "system",
+                    "count": "[variables('clusterSize')]",
+                    "enableAutoScaling": false,
+                    "vmSize": "[parameters('vmSize')]",
+                    "mode": "System",
+                    "type": "VirtualMachineScaleSets",
+                    "availabilityZones": [
+                      "1",
+                      "2",
+                      "3"
+                    ],
+                    "vnetSubnetID": "[parameters('subnetId')]"
+                  }
+                ],
+                "addonProfiles": {
+                  "omsagent": {
+                    "enabled": true,
+                    "config": {
+                      "logAnalyticsWorkspaceResourceID": "[parameters('logAnalyticsWorkspaceId')]"
+                    }
+                  },
+                  "ingressApplicationGateway": {
+                    "config": {
+                      "applicationGatewayId": "[parameters('appGatewayResourceId')]"
+                    },
+                    "enabled": true
+                  }
+                },
+                "enableRBAC": true,
+                "networkProfile": {
+                  "networkPlugin": "azure",
+                  "loadBalancerSku": "standard"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "clusterName": {
+              "type": "string",
+              "value": "[parameters('clusterName')]"
+            },
+            "nodeResourceGroup": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))).nodeResourceGroup]"
+            },
+            "kubeletIdentityObjectId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))).identityProfile.kubeletidentity.objectId]"
+            },
+            "kubeletIdentityClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))).identityProfile.kubeletidentity.clientId]"
+            },
+            "kubeletIdentityResourceId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))).identityProfile.kubeletidentity.resourceId]"
+            },
+            "agicIdentityObjectId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))).addonProfiles.ingressApplicationGateway.identity.objectId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Analytics', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}AppGateway', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Network', variables('appName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}RoleAssignments', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "appGatewayName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}AppGateway', variables('appName')))).outputs.appGatewayName.value]"
+          },
+          "appGatewayIdentityName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.appGatewayIdentityName.value]"
+          },
+          "deploymentScriptIdentityObjectId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.deploymentScriptIdentityObjectId.value]"
+          },
+          "agicIdentityObjectId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Aks', variables('appName')))).outputs.agicIdentityObjectId.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "8505631840731224938"
+            }
+          },
+          "parameters": {
+            "appGatewayName": {
+              "type": "string"
+            },
+            "appGatewayIdentityName": {
+              "type": "string"
+            },
+            "deploymentScriptIdentityObjectId": {
+              "type": "string"
+            },
+            "agicIdentityObjectId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "aksClusterUserRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4abbcc35-e782-43d8-92c5-2d3f1bd2253f')]",
+            "managedIdentityOperatorRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f1a07417-d97a-45cb-824c-7a7467783830')]",
+            "contributorRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+            "readerRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "name": "[guid('deploymentScriptIdentityAksClusterUserRole', resourceGroup().id)]",
+              "properties": {
+                "principalId": "[parameters('deploymentScriptIdentityObjectId')]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('aksClusterUserRole')]"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-04-01-preview",
+              "name": "[guid('deploymentScriptIdentityReader', resourceGroup().id)]",
+              "properties": {
+                "principalId": "[parameters('deploymentScriptIdentityObjectId')]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('readerRole')]"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.Network/applicationGateways/{0}', parameters('appGatewayName'))]",
+              "name": "[guid('agicIdentityContributorRole', resourceGroup().id)]",
+              "properties": {
+                "principalId": "[parameters('agicIdentityObjectId')]",
+                "roleDefinitionId": "[variables('contributorRole')]"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "name": "[guid('agicIdentityReaderRole', resourceGroup().id)]",
+              "properties": {
+                "principalId": "[parameters('agicIdentityObjectId')]",
+                "roleDefinitionId": "[variables('readerRole')]"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.ManagedIdentity/userAssignedIdentities/{0}', parameters('appGatewayIdentityName'))]",
+              "name": "[guid('agicIdentityManagedIdentityOperatorRole', resourceGroup().id)]",
+              "properties": {
+                "principalId": "[parameters('agicIdentityObjectId')]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('managedIdentityOperatorRole')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Aks', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}AppGateway', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}RoleAssignmentsAksGroup', variables('appName'))]",
+      "resourceGroup": "[variables('aksNodeResouceGroup')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "deploymentScriptIdentityObjectId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.deploymentScriptIdentityObjectId.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "14013293118796358194"
+            }
+          },
+          "parameters": {
+            "deploymentScriptIdentityObjectId": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "networkContributorRole": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4d97b98b-1d4f-4787-a291-c67834d212e7')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-04-01-preview",
+              "name": "[guid('deploymentScriptIdentityNetworkContributor', resourceGroup().id)]",
+              "properties": {
+                "roleDefinitionId": "[variables('networkContributorRole')]",
+                "principalId": "[parameters('deploymentScriptIdentityObjectId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Aks', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[format('{0}DeploymentScript', variables('appName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "deploymentScriptName": {
+            "value": "[format('{0}DeploymentScript', variables('appName'))]"
+          },
+          "managedIdentityResourceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))).outputs.deploymentScriptIdentityResourceId.value]"
+          },
+          "deploymentScriptContent": {
+            "value": "[parameters('deploymentScriptContent')]"
+          },
+          "clusterName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Aks', variables('appName')))).outputs.clusterName.value]"
+          },
+          "keyVaultName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}KeyVault', variables('appName')))).outputs.keyVaultName.value]"
+          },
+          "kubeletIdentityClientId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}Aks', variables('appName')))).outputs.kubeletIdentityClientId.value]"
+          },
+          "publicFqdn": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}AppGateway', variables('appName')))).outputs.publicFqdn.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.6.18.56646",
+              "templateHash": "679475919795761995"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "deploymentScriptName": {
+              "type": "string"
+            },
+            "deploymentScriptContent": {
+              "type": "string"
+            },
+            "managedIdentityResourceId": {
+              "type": "string"
+            },
+            "clusterName": {
+              "type": "string"
+            },
+            "keyVaultName": {
+              "type": "string"
+            },
+            "kubeletIdentityClientId": {
+              "type": "string"
+            },
+            "publicFqdn": {
+              "type": "string"
+            },
+            "utcValue": {
+              "type": "string",
+              "defaultValue": "[utcNow()]"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2020-10-01",
+              "name": "[parameters('deploymentScriptName')]",
+              "location": "[parameters('location')]",
+              "kind": "AzureCLI",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', parameters('managedIdentityResourceId'))]": {}
+                }
+              },
+              "properties": {
+                "azCliVersion": "2.34.1",
+                "retentionInterval": "P1D",
+                "timeout": "PT60M",
+                "cleanupPreference": "OnExpiration",
+                "forceUpdateTag": "[parameters('utcValue')]",
+                "scriptContent": "[base64ToString(parameters('deploymentScriptContent'))]",
+                "environmentVariables": [
+                  {
+                    "name": "TENANT_ID",
+                    "value": "[subscription().tenantId]"
+                  },
+                  {
+                    "name": "RESOURCE_GROUP_NAME",
+                    "value": "[resourceGroup().name]"
+                  },
+                  {
+                    "name": "CLUSTER_NAME",
+                    "value": "[parameters('clusterName')]"
+                  },
+                  {
+                    "name": "KUBELET_IDENTITY_CLIENT_ID",
+                    "value": "[parameters('kubeletIdentityClientId')]"
+                  },
+                  {
+                    "name": "KEYVAULT_NAME",
+                    "value": "[parameters('keyVaultName')]"
+                  },
+                  {
+                    "name": "PUBLIC_FQDN",
+                    "value": "[parameters('publicFqdn')]"
+                  }
+                ],
+                "arguments": ""
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Aks', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}AppGateway', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}Identity', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}KeyVault', variables('appName')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}RoleAssignments', variables('appName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('aksNodeResouceGroup')), 'Microsoft.Resources/deployments', format('{0}RoleAssignmentsAksGroup', variables('appName')))]"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - name: storageAccountName
+    value: idcryptsovrin
+  - name: containerName
+    value: templates
+stages:
+  - stage: Build
+    displayName: Build
+    jobs:
+      - job: Build
+        steps:
+          - bash: |
+              set -euo pipefail
+              mkdir out
+              az bicep build --file main.bicep --outdir out
+            workingDirectory: "azure/templates"
+
+          - task: ArchiveFiles@2
+            displayName: Package build output
+            inputs:
+              rootFolderOrFile: "azure/templates/out"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+              replaceExistingArchive: true
+              verbose: true
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+              ArtifactName: "templates"
+              publishLocation: "Container"
+            displayName: Publish as pipelineartifact
+
+  - stage: Publish
+    displayName: Publish
+    jobs:
+      - job: Publish
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: Download pipeline artifact
+            inputs:
+              buildType: "current"
+              artifactName: "templates"
+              itemPattern: "**/*.zip"
+              targetPath: "$(Build.SourcesDirectory)/artifact"
+
+          - task: ExtractFiles@1
+            displayName: Unzip files
+            inputs:
+              archiveFilePatterns: "$(Build.SourcesDirectory)/artifact/$(Build.BuildId).zip"
+              destinationFolder: "$(Build.SourcesDirectory)/publish"
+              cleanDestinationFolder: true
+              overwriteExistingFiles: false
+
+          - task: AzureCLI@1
+            displayName: Upload files to storage account
+            inputs:
+              azureSubscription: "sovrin-common"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                az upgrade -y
+                az storage blob upload \
+                  --account-name "$(storageAccountName)" \
+                  --container-name "$(containerName)"  \
+                  --name "main.json" \
+                  --file "$(Build.SourcesDirectory)/publish/main.json" \
+                  --overwrite

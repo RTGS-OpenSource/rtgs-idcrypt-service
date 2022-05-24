@@ -355,3 +355,5 @@ MigrationBackup/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+/azure-deployment/azure/templates/main.local.parameters.json

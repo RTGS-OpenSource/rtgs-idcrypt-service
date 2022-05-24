@@ -1,0 +1,242 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "config": {
+            "isWizard": true,
+            "basics": {
+                "resourceGroup": {
+                    "allowExisting": false
+                }
+            }
+        },
+        "basics": [
+            {}
+        ],
+        "steps": [
+            {
+                "name": "idcryptConfig",
+                "label": "ID Crypt",
+                "elements": [
+                    {
+                        "name": "idcryptInfoBox",
+                        "type": "Microsoft.Common.InfoBox",
+                        "visible": true,
+                        "options": {
+                            "icon": "Info",
+                            "text": "Nullam eros mi, mollis in sollicitudin non, tincidunt sed enim. Sed et felis metus, rhoncus ornare nibh. Ut at magna leo."
+                        }
+                    },
+                    {
+                        "name": "environment",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Environment",
+                        "toolTip": "Specifies the ID Crypt's environment the agent will connect to.",
+                        "defaultValue": "dev",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "Development",
+                                    "value": "dev"
+                                },
+                                {
+                                    "label": "Production",
+                                    "value": "prod"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "idcryptOrganizationId",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Organization ID",
+                        "toolTip": "Organization ID used to interact with the ID Crypt API.",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "idcryptToken",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Token",
+                        "toolTip": "Agent's token provided by ID Crypt.",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "idcryptApiKey",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "ID Crypt subscription API key",
+                        "toolTip": "Use only allowed characters",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "agentConfig",
+                "label": "Agent",
+                "elements": [
+                    {
+                        "name": "agentInfoBox",
+                        "type": "Microsoft.Common.InfoBox",
+                        "visible": true,
+                        "options": {
+                            "icon": "Info",
+                            "text": "Nullam eros mi, mollis in sollicitudin non, tincidunt sed enim. Sed et felis metus, rhoncus ornare nibh. Ut at magna leo."
+                        }
+                    },
+                    {
+                        "name": "agentLabel",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Agent label",
+                        "toolTip": "The agent label is publicized (self-attested) to other agents as part of forming a connection.",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "agentEndpoint",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Agent endpoint",
+                        "toolTip": "Use only allowed characters",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "walletConfig",
+                "label": "Wallet",
+                "elements": [
+                    {
+                        "name": "walletInfoBox",
+                        "type": "Microsoft.Common.InfoBox",
+                        "visible": true,
+                        "options": {
+                            "icon": "Info",
+                            "text": "Nullam eros mi, mollis in sollicitudin non, tincidunt sed enim. Sed et felis metus, rhoncus ornare nibh. Ut at magna leo."
+                        }
+                    },
+                    {
+                        "name": "walletName",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Wallet name",
+                        "toolTip": "Use only allowed characters",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "walletSeed",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Wallet seed",
+                        "toolTip": "Use only allowed characters",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "walletKey",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Wallet key",
+                        "toolTip": "Seed to use for the creation of a public DID for the agent to use with a Hyperledger Indy ledger",
+                        "multiLine": false,
+                        "constraints": {
+                            "required": true,
+                            "validations": [
+                                {
+                                    "regex": "^[a-z0-9A-Z]{1,30}$",
+                                    "message": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long."
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "tags",
+                "label": "Tags",
+                "elements": [
+                    {
+                        "name": "tagsByResource",
+                        "type": "Microsoft.Common.TagsByResource",
+                        "resources": [
+                            "Microsoft.Storage/storageAccounts",
+                            "Microsoft.Compute/virtualMachines"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "outputs": {
+            "location": "[location()]",
+            "environment": "[steps('idcryptConfig').environment]",
+            "idcryptOrganizationId": "[steps('idcryptConfig').idcryptOrganizationId]",
+            "idcryptToken": "[steps('idcryptConfig').idcryptToken]",
+            "idcryptApiKey": "[steps('idcryptConfig').idcryptApiKey]",
+            "idcryptCredentialDefinition": "21315435",
+            "agentLabel": "[steps('agentConfig').agentLabel]",
+            "agentEndpoint": "[steps('agentConfig').agentEndpoint]",
+            "agentAdminApiKey": "12345678",
+            "walletName": "[steps('walletConfig').walletName]",
+            "walletKey": "[steps('walletConfig').walletKey]",
+            "walletSeed": "[steps('walletConfig').walletSeed]",
+            "webhookUrl": "",
+            "tagsByResource": "[steps('tags').tagsByResource]"
+        }
+    }
+}
