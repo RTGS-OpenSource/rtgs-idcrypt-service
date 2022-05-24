@@ -22,4 +22,24 @@ public static class ModelMappingExtensions
 					Id = model.Id
 				}
 			};
+
+
+	public static Models.ConnectionInvitation MapToConnectionInvitation(
+		this IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse createConnectionInvitationResponse,
+		string publicDid,
+		string fromRtgsGlobalId) =>
+			new()
+			{
+				Type = createConnectionInvitationResponse.Invitation.Type,
+				Alias = createConnectionInvitationResponse.Alias,
+				Label = createConnectionInvitationResponse.Invitation.Label,
+				RecipientKeys = createConnectionInvitationResponse.Invitation.RecipientKeys,
+				ServiceEndpoint = createConnectionInvitationResponse.Invitation.ServiceEndpoint,
+				Id = createConnectionInvitationResponse.Invitation.Id,
+				PublicDid = publicDid,
+				Did = createConnectionInvitationResponse.Invitation.Did,
+				ImageUrl = createConnectionInvitationResponse.Invitation.ImageUrl,
+				InvitationUrl = createConnectionInvitationResponse.InvitationUrl,
+				FromRtgsGlobalId = fromRtgsGlobalId
+			};
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
@@ -101,20 +102,9 @@ public class ConnectionService : IConnectionService
 
 			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);
 
-			return new ConnectionInvitation
-			{
-				Type = createConnectionInvitationResponse.Invitation.Type,
-				Alias = createConnectionInvitationResponse.Alias,
-				Label = createConnectionInvitationResponse.Invitation.Label,
-				RecipientKeys = createConnectionInvitationResponse.Invitation.RecipientKeys,
-				ServiceEndpoint = createConnectionInvitationResponse.Invitation.ServiceEndpoint,
-				Id = createConnectionInvitationResponse.Invitation.Id,
-				PublicDid = publicDid,
-				Did = createConnectionInvitationResponse.Invitation.Did,
-				ImageUrl = createConnectionInvitationResponse.Invitation.ImageUrl,
-				InvitationUrl = createConnectionInvitationResponse.InvitationUrl,
-				FromRtgsGlobalId = _rtgsGlobalId
-			};
+			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
+
+			return connectionInvitation;
 		}
 		catch (Exception ex)
 		{
@@ -138,20 +128,9 @@ public class ConnectionService : IConnectionService
 
 			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
 
-			return new ConnectionInvitation
-			{
-				Type = createConnectionInvitationResponse.Invitation.Type,
-				Alias = createConnectionInvitationResponse.Alias,
-				Label = createConnectionInvitationResponse.Invitation.Label,
-				RecipientKeys = createConnectionInvitationResponse.Invitation.RecipientKeys,
-				ServiceEndpoint = createConnectionInvitationResponse.Invitation.ServiceEndpoint,
-				Id = createConnectionInvitationResponse.Invitation.Id,
-				PublicDid = publicDid,
-				Did = createConnectionInvitationResponse.Invitation.Did,
-				ImageUrl = createConnectionInvitationResponse.Invitation.ImageUrl,
-				InvitationUrl = createConnectionInvitationResponse.InvitationUrl,
-				FromRtgsGlobalId = _rtgsGlobalId
-			};
+			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
+
+			return connectionInvitation;
 		}
 		catch (Exception ex)
 		{
