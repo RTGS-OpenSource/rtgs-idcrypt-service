@@ -235,7 +235,7 @@
             "walletName": "[steps('walletConfig').walletName]",
             "walletKey": "[steps('walletConfig').walletKey]",
             "walletSeed": "[steps('walletConfig').walletSeed]",
-            "webhookUrl": "",
+            "webhookUrl": "x",
             "tagsByResource": "[steps('tags').tagsByResource]"
         }
     }
