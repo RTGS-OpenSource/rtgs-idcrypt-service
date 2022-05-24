@@ -9,12 +9,12 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationForBankRequest;
 
 public class AndIdCryptApiUnavailable
 {
 	private readonly ConnectionService _connectionService;
-	private readonly string _alias = "alias";
+	private const string Alias = "alias";
 	private readonly FakeLogger<ConnectionService> _logger;
 
 	public AndIdCryptApiUnavailable()
@@ -28,7 +28,7 @@ public class AndIdCryptApiUnavailable
 
 		connectionsClientMock
 			.Setup(client => client.CreateConnectionInvitationAsync(
-				_alias,
+				Alias,
 				It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>()
@@ -37,7 +37,7 @@ public class AndIdCryptApiUnavailable
 		_logger = new FakeLogger<ConnectionService>();
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(_alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
 
 		_connectionService = new ConnectionService(
 			connectionsClientMock.Object,
@@ -52,7 +52,7 @@ public class AndIdCryptApiUnavailable
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CreateConnectionInvitationForBankAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
@@ -62,10 +62,10 @@ public class AndIdCryptApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CreateConnectionInvitationForBankAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when sending CreateConnectionInvitation request with alias alias to ID Crypt Cloud Agent");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when creating connection invitation for bank rtgs-global-id");
 	}
 }

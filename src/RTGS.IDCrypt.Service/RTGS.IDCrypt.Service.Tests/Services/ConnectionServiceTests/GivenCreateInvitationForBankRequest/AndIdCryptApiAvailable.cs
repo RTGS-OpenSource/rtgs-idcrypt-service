@@ -10,7 +10,7 @@ using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationForBankRequest;
 
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
@@ -116,7 +116,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		_actualResponse = await _connectionService.CreateConnectionInvitationAsync(RtgsGlobalId);
+		_actualResponse = await _connectionService.CreateConnectionInvitationForBankAsync(RtgsGlobalId);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

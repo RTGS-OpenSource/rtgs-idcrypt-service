@@ -18,19 +18,35 @@ public class ConnectionController : ControllerBase
 	}
 
 	/// <summary>
-	/// Endpoint to create an invitation.
+	/// Endpoint to create an invitation for RTGS.global.
+	/// </summary>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
+	[HttpPost("for-rtgs")]
+	public async Task<IActionResult> ForRtgs(
+		CancellationToken cancellationToken = default)
+	{
+		var connectionInvitation = await _connectionService.CreateConnectionInvitationForRtgsAsync(cancellationToken);
+
+		var response = connectionInvitation.MapToContract();
+
+		return Ok(response);
+	}
+
+	/// <summary>
+	/// Endpoint to create an invitation for a bank.
 	/// </summary>
 	/// <param name="request">The data required to create an invitation.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="CreateConnectionInvitationResponse"/></returns>
-	[HttpPost]
-	public async Task<IActionResult> Post(
-		CreateConnectionInvitationRequest request,
+	[HttpPost("for-bank")]
+	public async Task<IActionResult> ForBank(
+		CreateConnectionInvitationForBankRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		var createConnectionInvitationResponse = await _connectionService.CreateConnectionInvitationAsync(request.RtgsGlobalId, cancellationToken);
+		var connectionInvitation = await _connectionService.CreateConnectionInvitationForBankAsync(request.RtgsGlobalId, cancellationToken);
 
-		var response = createConnectionInvitationResponse.MapToContract();
+		var response = connectionInvitation.MapToContract();
 
 		return Ok(response);
 	}
@@ -41,7 +57,7 @@ public class ConnectionController : ControllerBase
 	/// <param name="request">The data required to accept an invitation.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="AcceptedResult"/></returns>
-	[HttpPost("Accept")]
+	[HttpPost("accept")]
 	public async Task<IActionResult> Accept(
 		AcceptConnectionInvitationRequest request,
 		CancellationToken cancellationToken = default)

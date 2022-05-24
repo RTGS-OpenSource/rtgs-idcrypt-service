@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationRequest;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationForRtgsRequest;
 
 public class AndCreateInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
@@ -21,12 +21,12 @@ public class AndCreateInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 
 	public async Task InitializeAsync()
 	{
-		var request = new CreateConnectionInvitationRequest
+		var request = new CreateConnectionInvitationForBankRequest
 		{
 			RtgsGlobalId = "rtgs-global-id"
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/connection", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/connection/for-rtgs", request);
 	}
 
 	public Task DisposeAsync() =>

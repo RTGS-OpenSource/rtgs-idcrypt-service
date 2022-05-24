@@ -3,9 +3,9 @@
 namespace RTGS.IDCrypt.Service.Contracts.Connection;
 
 /// <summary>
-/// Model of the request for an invitation.
+/// Model of the request for a bank invitation.
 /// </summary>
-public record CreateConnectionInvitationRequest
+public record CreateConnectionInvitationForBankRequest
 {
 	/// <summary>
 	/// The RTGS.Global ID of the bank to invite.

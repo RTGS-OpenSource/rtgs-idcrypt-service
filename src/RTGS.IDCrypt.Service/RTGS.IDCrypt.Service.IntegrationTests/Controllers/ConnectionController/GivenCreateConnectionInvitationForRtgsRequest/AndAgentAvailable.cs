@@ -5,21 +5,20 @@ using Microsoft.AspNetCore.WebUtilities;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
-using RTGS.IDCrypt.Service.Models;
 using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationRequest;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationForRtgsRequest;
 
 public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly CreateConnectionInvitationRequest _request;
+	private readonly CreateConnectionInvitationForBankRequest _request;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
 	public AndAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
-		_request = new CreateConnectionInvitationRequest
+		_request = new CreateConnectionInvitationForBankRequest
 		{
 			RtgsGlobalId = "rtgs-global-id"
 		};
@@ -32,7 +31,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 	}
 
 	public async Task InitializeAsync() =>
-		_httpResponse = await _client.PostAsJsonAsync("api/connection", _request);
+		_httpResponse = await _client.PostAsJsonAsync("api/connection/for-rtgs", _request);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
@@ -58,7 +57,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 	[Fact]
 	public async Task WhenPostingMultipleTimes_ThenAliasIsAlwaysUnique()
 	{
-		await _client.PostAsJsonAsync("api/connection", _request);
+		await _client.PostAsJsonAsync("api/connection/for-bank", _request);
 
 		var inviteRequestQueryParams1 = QueryHelpers.ParseQuery(
 			_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].First().RequestUri!.Query);
@@ -112,22 +111,5 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 				ServiceEndpoint = "service-endpoint"
 			}
 		});
-	}
-
-	[Fact]
-	public void WhenPosting_ThenWriteToTableStorage()
-	{
-		var inviteRequestQueryParams = QueryHelpers.ParseQuery(
-			_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].First().RequestUri!.Query);
-
-		var alias = inviteRequestQueryParams["alias"];
-
-		_testFixture.BankPartnerConnectionsTable
-			.Query<BankPartnerConnection>()
-			.Where(connection =>
-				connection.PartitionKey == _request.RtgsGlobalId
-				&& connection.RowKey == alias
-				&& connection.Status == "Pending")
-			.Should().ContainSingle();
 	}
 }
