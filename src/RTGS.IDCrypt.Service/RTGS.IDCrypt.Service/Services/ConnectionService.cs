@@ -110,7 +110,7 @@ public class ConnectionService : IConnectionService
 		{
 			_logger.LogError(
 				ex,
-				"Error occurred when creating connection invitation for bank {RtgsGlobalId}.",
+				"Error occurred when creating connection invitation for bank {RtgsGlobalId}",
 				toRtgsGlobalId);
 
 			throw;
@@ -136,7 +136,7 @@ public class ConnectionService : IConnectionService
 		{
 			_logger.LogError(
 				ex,
-				"Error occurred when creating connection invitation for RTGS.global.");
+				"Error occurred when creating connection invitation for RTGS.global");
 
 			throw;
 		}

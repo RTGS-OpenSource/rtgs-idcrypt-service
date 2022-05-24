@@ -21,11 +21,9 @@ public class AndConnectionServiceUnavailable
 	}
 
 	[Fact]
-	public async Task WhenPosting_ThenThrows()
-	{
+	public async Task WhenPosting_ThenThrows() =>
 		await FluentActions
 			.Awaiting(() => _connectionController.ForRtgs())
 			.Should()
 			.ThrowAsync<Exception>();
-	}
 }

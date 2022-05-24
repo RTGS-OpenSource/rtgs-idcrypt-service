@@ -14,7 +14,7 @@ namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreate
 public class AndIdCryptApiUnavailable
 {
 	private readonly ConnectionService _connectionService;
-	private readonly string _alias = "alias";
+	private const string Alias = "alias";
 	private readonly FakeLogger<ConnectionService> _logger;
 
 	public AndIdCryptApiUnavailable()
@@ -28,7 +28,7 @@ public class AndIdCryptApiUnavailable
 
 		connectionsClientMock
 			.Setup(client => client.CreateConnectionInvitationAsync(
-				_alias,
+				Alias,
 				It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>()
@@ -37,7 +37,7 @@ public class AndIdCryptApiUnavailable
 		_logger = new FakeLogger<ConnectionService>();
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(_alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
 
 		_connectionService = new ConnectionService(
 			connectionsClientMock.Object,
@@ -66,6 +66,6 @@ public class AndIdCryptApiUnavailable
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when creating connection invitation for RTGS.global.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when creating connection invitation for RTGS.global");
 	}
 }
