@@ -27,8 +27,16 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 
 		if (connection!.State is not "active")
 		{
-			_logger.LogDebug("Ignoring {RequestType} with alias {Alias} because state is {State}",
-				MessageType, connection.Alias, connection.State);
+			_logger.LogDebug("Ignoring connection with alias {Alias} because state is {State}",
+				connection.Alias, connection.State);
+
+			return;
+		}
+
+		if (!connection.TheirLabel.StartsWith("RTGS_Bank_Agent"))
+		{
+			_logger.LogDebug("Ignoring connection with alias {Alias} because it is not a bank connection",
+				connection.Alias);
 
 			return;
 		}
