@@ -24,7 +24,8 @@ public class AndConnectionIsNotActive : IClassFixture<ProofExchangeFixture>, IAs
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
-			State = "not-active"
+			State = "not-active",
+			TheirLabel = "RTGS_Bank_Agent"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/connections", request);

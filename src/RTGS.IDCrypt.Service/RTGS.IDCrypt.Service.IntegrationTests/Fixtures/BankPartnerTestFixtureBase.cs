@@ -8,7 +8,6 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
 {
-	private TableClient _bankPartnerConnectionsTable;
 	private string _bankPartnerConnectionsTableName;
 
 	protected BankPartnerTestFixtureBase()
@@ -19,6 +18,8 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
+
+	public TableClient BankPartnerConnectionsTable { get; private set; }
 
 	private void LoadConfig() =>
 		Configuration = new ConfigurationBuilder()
@@ -32,13 +33,14 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 
 		var storageTableResolver = new StorageTableResolver(Configuration);
 
-		_bankPartnerConnectionsTable = storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
+		BankPartnerConnectionsTable = storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
 	}
 
 	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
-		await _bankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
+		await BankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
 
-	protected abstract Task Seed();
+	protected virtual Task Seed() =>
+		Task.CompletedTask;
 
 	protected override IHost CreateHost(IHostBuilder builder)
 	{

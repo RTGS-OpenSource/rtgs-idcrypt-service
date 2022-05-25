@@ -33,6 +33,14 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 			return;
 		}
 
+		if (!connection.TheirLabel.StartsWith("RTGS_Bank_Agent"))
+		{
+			_logger.LogDebug("Ignoring connection with alias {Alias} because it is not a bank connection",
+				connection.Alias);
+
+			return;
+		}
+
 		var request = new SendProofRequestRequest
 		{
 			ConnectionId = connection.ConnectionId,

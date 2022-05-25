@@ -21,16 +21,15 @@ public class GivenStatusIsNotActive
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
-			State = "not-active"
+			State = "not-active",
+			TheirLabel = "RTGS_Bank_Agent"
 		};
 
 		var message = JsonSerializer.Serialize(notActiveConnection);
 
 		await handler.HandleAsync(message, default);
 
-		logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(new List<string>
-		{
-			"Ignoring connection with alias alias because state is not-active"
-		});
+		logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(
+			"Ignoring connection with alias alias because state is not-active");
 	}
 }

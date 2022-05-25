@@ -23,7 +23,8 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 			Label = "label",
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
-			Type = "type"
+			Type = "type",
+			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
 		Func<ConnectionInvitation, bool> invitationMatches = invitation =>

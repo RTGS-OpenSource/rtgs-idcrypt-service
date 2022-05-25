@@ -20,17 +20,19 @@ public class ConnectionRepository : IConnectionRepository
 		_logger = logger;
 	}
 
-	public async Task SavePendingBankPartnerConnectionAsync(PendingBankPartnerConnection pendingConnection, CancellationToken cancellationToken = default)
+	public async Task SaveBankPartnerConnectionAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.PendingBankPartnerConnectionsTableName);
+			connection.CreatedAt = DateTime.UtcNow;
 
-			await tableClient.AddEntityAsync(pendingConnection, cancellationToken);
+			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+
+			await tableClient.AddEntityAsync(connection, cancellationToken);
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when saving pending bank partner connection");
+			_logger.LogError(ex, "Error occurred when saving bank partner connection");
 
 			throw;
 		}

@@ -48,4 +48,10 @@ public class AcceptConnectionInvitationRequest
 	/// </summary>
 	[JsonPropertyName("agentPublicDid")]
 	public string AgentPublicDid { get; init; }
+
+	/// <summary>
+	/// The RTGS.Global ID of the inviting bank.
+	/// </summary>
+	[JsonPropertyName("rtgsGlobalId")]
+	public string RtgsGlobalId { get; init; }
 }

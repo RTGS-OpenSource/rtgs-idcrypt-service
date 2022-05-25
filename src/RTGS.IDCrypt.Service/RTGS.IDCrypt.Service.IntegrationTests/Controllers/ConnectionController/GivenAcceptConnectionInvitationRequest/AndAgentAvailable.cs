@@ -12,6 +12,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionInvitationFixture _testFixture;
+	private AcceptConnectionInvitationRequest _request;
 	private HttpResponseMessage _httpResponse;
 
 	public AndAgentAvailable(ConnectionInvitationFixture testFixture)
@@ -28,7 +29,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 	public async Task InitializeAsync()
 	{
-		var request = new AcceptConnectionInvitationRequest
+		_request = new AcceptConnectionInvitationRequest
 		{
 			Id = "id",
 			Type = "type",
@@ -36,10 +37,11 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 			Label = "label",
 			RecipientKeys = new[] { "recipient-key" },
 			ServiceEndpoint = "service-endpoint",
-			AgentPublicDid = "agent-public-did"
+			AgentPublicDid = "agent-public-did",
+			RtgsGlobalId = "rtgs-global-id"
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/connection/accept", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/connection/accept", _request);
 	}
 
 	public Task DisposeAsync() =>
@@ -83,11 +85,12 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 	[Fact]
 	public void WhenPosting_ThenWriteToTableStorage() =>
-		_testFixture.PendingBankPartnerConnectionsTable
-			.Query<PendingBankPartnerConnection>()
+		_testFixture.BankPartnerConnectionsTable
+			.Query<BankPartnerConnection>()
 			.Where(connection =>
-				connection.PartitionKey == AcceptInvitation.ExpectedResponse.ConnectionId
-				&& connection.RowKey == AcceptInvitation.ExpectedResponse.Alias)
+				connection.PartitionKey == _request.RtgsGlobalId
+				&& connection.RowKey == AcceptInvitation.ExpectedResponse.Alias
+				&& connection.Status == "Pending")
 			.Should().ContainSingle();
 
 	[Fact]

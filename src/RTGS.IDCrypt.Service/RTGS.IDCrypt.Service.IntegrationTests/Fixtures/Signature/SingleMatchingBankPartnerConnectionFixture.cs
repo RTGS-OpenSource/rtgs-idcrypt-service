@@ -1,7 +1,7 @@
 ﻿using Moq;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.SignMessageController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.VerifyControllerTests.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -39,15 +39,29 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 				RowKey = "alias",
 				ConnectionId = "connection-id",
 				Alias = "alias",
-				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5))
+				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(6)),
+				PublicDid = "public-did",
+				Status = "Active"
+			},
+			new()
+			{
+				PartitionKey = "rtgs-global-id",
+				RowKey = "alias",
+				ConnectionId = "connection-id-1",
+				Alias = "alias",
+				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
+				PublicDid = "public-did-1",
+				Status = "Pending"
 			},
 			new()
 			{
 				PartitionKey = "rtgs-global-id-1",
 				RowKey = "alias",
-				ConnectionId = "connection-id-1",
+				ConnectionId = "connection-id-2",
 				Alias = "alias",
-				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5))
+				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
+				PublicDid = "public-did-2",
+				Status = "Active"
 			}
 		};
 

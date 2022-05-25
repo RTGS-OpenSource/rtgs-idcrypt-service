@@ -1,4 +1,7 @@
-﻿using RTGS.IDCrypt.Service.Helpers;
+﻿using Microsoft.Extensions.Options;
+using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Extensions;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCryptSDK.Connections;
@@ -15,19 +18,28 @@ public class ConnectionService : IConnectionService
 	private readonly IConnectionRepository _connectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
+	private readonly string _rtgsGlobalId;
 
 	public ConnectionService(
 		IConnectionsClient connectionsClient,
 		ILogger<ConnectionService> logger,
 		IConnectionRepository connectionRepository,
 		IAliasProvider aliasProvider,
-		IWalletClient walletClient)
+		IWalletClient walletClient,
+		IOptions<CoreConfig> coreOptions)
 	{
 		_connectionsClient = connectionsClient;
 		_logger = logger;
 		_connectionRepository = connectionRepository;
 		_aliasProvider = aliasProvider;
 		_walletClient = walletClient;
+
+		if (string.IsNullOrWhiteSpace(coreOptions.Value.RtgsGlobalId))
+		{
+			throw new ArgumentException("RtgsGlobalId configuration option is not set.");
+		}
+
+		_rtgsGlobalId = coreOptions.Value.RtgsGlobalId;
 	}
 
 	public async Task AcceptInvitationAsync(ConnectionInvitation invitation, CancellationToken cancellationToken = default)
@@ -46,16 +58,17 @@ public class ConnectionService : IConnectionService
 
 			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
 
-			var pendingConnection = new PendingBankPartnerConnection
+			var connection = new BankPartnerConnection
 			{
-				PartitionKey = response.ConnectionId,
+				PartitionKey = invitation.FromRtgsGlobalId,
 				RowKey = response.Alias,
 				ConnectionId = response.ConnectionId,
 				Alias = response.Alias,
-				PublicDid = invitation.PublicDid
+				PublicDid = invitation.PublicDid,
+				Status = BankPartnerConnectionStatuses.Pending
 			};
 
-			await _connectionRepository.SavePendingBankPartnerConnectionAsync(pendingConnection, cancellationToken);
+			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -65,56 +78,83 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task<ConnectionInvitation> CreateConnectionInvitationAsync(CancellationToken cancellationToken = default)
+	public async Task<ConnectionInvitation> CreateConnectionInvitationForBankAsync(
+		string toRtgsGlobalId,
+		CancellationToken cancellationToken = default)
 	{
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
 		var alias = _aliasProvider.Provide();
 
 		try
 		{
-			var createConnectionInvitationResponse = await _connectionsClient.CreateConnectionInvitationAsync(
+			var createConnectionInvitationResponse = await CreateConnectionInvitationAsync(alias, cancellationToken);
+
+			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+
+			var connection = new BankPartnerConnection
+			{
+				PartitionKey = toRtgsGlobalId,
+				RowKey = alias,
+				Alias = alias,
+				ConnectionId = createConnectionInvitationResponse.ConnectionId,
+				Status = BankPartnerConnectionStatuses.Pending,
+				PublicDid = publicDid
+			};
+
+			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);
+
+			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
+
+			return connectionInvitation;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when creating connection invitation for bank {RtgsGlobalId}",
+				toRtgsGlobalId);
+
+			throw;
+		}
+	}
+
+	public async Task<ConnectionInvitation> CreateConnectionInvitationForRtgsAsync(
+		CancellationToken cancellationToken = default)
+	{
+		var alias = _aliasProvider.Provide();
+
+		try
+		{
+			var createConnectionInvitationResponse = await CreateConnectionInvitationAsync(alias, cancellationToken);
+
+			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+
+			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
+
+			return connectionInvitation;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when creating connection invitation for RTGS.global");
+
+			throw;
+		}
+	}
+
+	private async Task<CreateConnectionInvitationResponse> CreateConnectionInvitationAsync(string alias, CancellationToken cancellationToken)
+	{
+		const bool autoAccept = true;
+		const bool multiUse = false;
+		const bool usePublicDid = false;
+
+		var createConnectionInvitationResponse = await _connectionsClient.CreateConnectionInvitationAsync(
 				alias,
 				autoAccept,
 				multiUse,
 				usePublicDid,
 				cancellationToken);
 
-			var pendingConnection = new PendingBankPartnerConnection
-			{
-				PartitionKey = createConnectionInvitationResponse.ConnectionId,
-				RowKey = alias,
-				ConnectionId = createConnectionInvitationResponse.ConnectionId,
-				Alias = alias
-			};
-
-			await _connectionRepository.SavePendingBankPartnerConnectionAsync(pendingConnection, cancellationToken);
-
-			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
-
-			return new ConnectionInvitation
-			{
-				Type = createConnectionInvitationResponse.Invitation.Type,
-				Alias = createConnectionInvitationResponse.Alias,
-				Label = createConnectionInvitationResponse.Invitation.Label,
-				RecipientKeys = createConnectionInvitationResponse.Invitation.RecipientKeys,
-				ServiceEndpoint = createConnectionInvitationResponse.Invitation.ServiceEndpoint,
-				Id = createConnectionInvitationResponse.Invitation.Id,
-				PublicDid = publicDid,
-				Did = createConnectionInvitationResponse.Invitation.Did,
-				ImageUrl = createConnectionInvitationResponse.Invitation.ImageUrl,
-				InvitationUrl = createConnectionInvitationResponse.InvitationUrl
-			};
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(
-				ex,
-				"Error occurred when sending CreateConnectionInvitation request with alias {Alias} to ID Crypt Cloud Agent",
-				alias);
-
-			throw;
-		}
+		return createConnectionInvitationResponse;
 	}
 }

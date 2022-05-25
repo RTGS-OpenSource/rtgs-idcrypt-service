@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Moq;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
@@ -8,25 +9,16 @@ using RTGS.IDCryptSDK.Proof.Models;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenStatusIsActive;
 
-public class AndAgentAvailable : IAsyncLifetime
+public class AndAgentAvailable
 {
-	private readonly IdCryptConnection _activeConnection;
 	private readonly Mock<IProofClient> _proofClientMock;
+	private readonly FakeLogger<IdCryptConnectionMessageHandler> _logger;
 	private readonly IdCryptConnectionMessageHandler _handler;
 	private SendProofRequestRequest _expectedRequest;
 
 	public AndAgentAvailable()
 	{
-		_activeConnection = new IdCryptConnection
-		{
-			Alias = "alias",
-			ConnectionId = "connection-id",
-			State = "active"
-		};
-
 		_proofClientMock = new Mock<IProofClient>();
-
-		SetupExpectedRequest();
 
 		Func<SendProofRequestRequest, bool> requestMatches = request =>
 		{
@@ -41,30 +33,80 @@ public class AndAgentAvailable : IAsyncLifetime
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
+		_logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
-		_handler = new IdCryptConnectionMessageHandler(logger, _proofClientMock.Object);
+		_handler = new IdCryptConnectionMessageHandler(_logger, _proofClientMock.Object);
 	}
-
-	public async Task InitializeAsync()
-	{
-		var message = JsonSerializer.Serialize(_activeConnection);
-
-		await _handler.HandleAsync(message, default);
-	}
-
-	public Task DisposeAsync() =>
-		Task.CompletedTask;
 
 	[Fact]
-	public void WhenPosting_ThenRequestProofAsyncWithExpected() =>
-		_proofClientMock.Verify();
+	public async Task WhenPostingFromBank_ThenRequestProofAsyncWithExpected()
+	{
+		var activeBankConnection = new IdCryptConnection
+		{
+			Alias = "alias",
+			ConnectionId = "connection-id",
+			State = "active",
+			TheirLabel = "RTGS_Bank_Agent_Test"
+		};
 
-	private void SetupExpectedRequest()
+		SetupExpectedRequest(activeBankConnection.ConnectionId);
+
+		var message = JsonSerializer.Serialize(activeBankConnection);
+
+		await _handler.HandleAsync(message, default);
+
+		_proofClientMock.Verify();
+	}
+
+	[Fact]
+	public async Task WhenPostingFromRtgs_ThenProofNotRequested()
+	{
+		var activeRtgsConnection = new IdCryptConnection
+		{
+			Alias = "alias",
+			ConnectionId = "connection-id",
+			State = "active",
+			TheirLabel = "RTGS_Jurisdiction_Agent_Test"
+		};
+
+		SetupExpectedRequest(activeRtgsConnection.ConnectionId);
+
+		var message = JsonSerializer.Serialize(activeRtgsConnection);
+
+		await _handler.HandleAsync(message, default);
+
+		_proofClientMock.Verify(client => client.SendProofRequestAsync(
+			It.IsAny<SendProofRequestRequest>(),
+			It.IsAny<CancellationToken>()), Times.Never);
+	}
+
+
+	[Fact]
+	public async Task WhenPostingFromRtgs_ThenLog()
+	{
+		var activeRtgsConnection = new IdCryptConnection
+		{
+			Alias = "alias",
+			ConnectionId = "connection-id",
+			State = "active",
+			TheirLabel = "RTGS_Jurisdiction_Agent_Test"
+		};
+
+		SetupExpectedRequest(activeRtgsConnection.ConnectionId);
+
+		var message = JsonSerializer.Serialize(activeRtgsConnection);
+
+		await _handler.HandleAsync(message, default);
+
+		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(
+			"Ignoring connection with alias alias because it is not a bank connection");
+	}
+
+	private void SetupExpectedRequest(string connectionId)
 	{
 		_expectedRequest = new SendProofRequestRequest()
 		{
-			ConnectionId = _activeConnection.ConnectionId,
+			ConnectionId = connectionId,
 			Comment = "Requesting identification",
 			RequestedProofDetails = new()
 			{
