@@ -76,7 +76,7 @@ public class AndAgentAvailable
 		await _handler.HandleAsync(message, default);
 
 		_proofClientMock.Verify(client => client.SendProofRequestAsync(
-			It.IsAny<SendProofRequestRequest>(), 
+			It.IsAny<SendProofRequestRequest>(),
 			It.IsAny<CancellationToken>()), Times.Never);
 	}
 
