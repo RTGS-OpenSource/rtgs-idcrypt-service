@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
@@ -20,9 +21,10 @@ public class AndIdCryptAgentApiUnavailable
 
 	public AndIdCryptAgentApiUnavailable()
 	{
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 		_request = new VerifyOwnMessageRequest
 		{
-			Message = @"{ ""Message"": ""I am the walrus"" }",
+			Message = message,
 			PublicSignature = "public-signature"
 		};
 

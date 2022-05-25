@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
@@ -23,9 +24,10 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 
 	public AndIdCryptAgentAvailable()
 	{
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 		_verifyOwnMessageRequest = new VerifyOwnMessageRequest
 		{
-			Message = "message",
+			Message = message,
 			PublicSignature = "signature",
 		};
 
@@ -33,7 +35,7 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 		_walletClient = new Mock<IWalletClient>();
 
 		_jsonSignaturesClientMock
-			.Setup(client => client.VerifyJsonDocumentPublicSignatureAsync(
+			.Setup(client => client.VerifyPublicSignatureAsync(
 				_verifyOwnMessageRequest.Message,
 				_verifyOwnMessageRequest.PublicSignature,
 				_publicDid,

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RTGS.IDCrypt.Service.Contracts.Message.Verify;
 
@@ -11,7 +12,8 @@ public record VerifyOwnMessageRequest
 	/// The message to verify.
 	/// </summary>
 	[JsonPropertyName("message")]
-	public string Message { get; init; }
+	public JsonElement Message { get; init; }
+
 	/// <summary>
 	/// The public signature of the signed message.
 	/// </summary>
