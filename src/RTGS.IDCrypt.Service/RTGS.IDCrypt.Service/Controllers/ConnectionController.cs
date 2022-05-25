@@ -78,4 +78,20 @@ public class ConnectionController : ControllerBase
 
 		return Accepted();
 	}
+
+	/// <summary>
+	/// Endpoint to delete a connection.
+	/// </summary>
+	/// <param name="connectionId">The identifier of the connection to delete.</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="AcceptedResult"/></returns>
+	[HttpDelete("{connectionId}")]
+	public async Task<IActionResult> Delete(
+		string connectionId,
+		CancellationToken cancellationToken = default)
+	{
+		await _connectionService.DeleteAsync(connectionId, cancellationToken);
+
+		return NoContent();
+	}
 }

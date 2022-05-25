@@ -68,7 +68,7 @@ public class ConnectionService : IConnectionService
 				Status = BankPartnerConnectionStatuses.Pending
 			};
 
-			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);
+			await _connectionRepository.SaveAsync(connection, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -100,7 +100,7 @@ public class ConnectionService : IConnectionService
 				PublicDid = publicDid
 			};
 
-			await _connectionRepository.SaveBankPartnerConnectionAsync(connection, cancellationToken);
+			await _connectionRepository.SaveAsync(connection, cancellationToken);
 
 			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
 
@@ -139,6 +139,27 @@ public class ConnectionService : IConnectionService
 				"Error occurred when creating connection invitation for RTGS.global");
 
 			throw;
+		}
+	}
+
+	public async Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default)
+	{
+		Task aggregateTask = null;
+
+		try
+		{
+			aggregateTask = Task.WhenAll(
+				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
+				_connectionRepository.DeleteAsync(connectionId, cancellationToken));
+
+			await aggregateTask;
+		}
+		catch (Exception)
+		{
+			aggregateTask.Exception.InnerExceptions.ToList()
+				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection."));
+
+			throw aggregateTask.Exception;
 		}
 	}
 

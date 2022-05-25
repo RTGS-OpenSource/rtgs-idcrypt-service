@@ -6,7 +6,7 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenSavingBankPartnerConnection;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenSaveAsyncRequest;
 
 public class AndTableStorageUnavailable
 {
@@ -41,7 +41,7 @@ public class AndTableStorageUnavailable
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _connectionRepository.SaveBankPartnerConnectionAsync(_connection))
+		.Awaiting(() => _connectionRepository.SaveAsync(_connection))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -51,7 +51,7 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionRepository.SaveBankPartnerConnectionAsync(_connection))
+			.Awaiting(() => _connectionRepository.SaveAsync(_connection))
 			.Should()
 			.ThrowAsync<Exception>();
 

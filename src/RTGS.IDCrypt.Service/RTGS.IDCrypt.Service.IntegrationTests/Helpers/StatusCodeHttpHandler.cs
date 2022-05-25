@@ -27,10 +27,12 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 
 		var responseMock = _mockHttpResponses[requestPath];
 
-		var response = new HttpResponseMessage(responseMock.HttpStatusCode)
+		var response = new HttpResponseMessage(responseMock.HttpStatusCode);
+
+		if (responseMock.GetContent != null)
 		{
-			Content = new StringContent(responseMock.GetContent())
-		};
+			response.Content = new StringContent(responseMock.GetContent());
+		}
 
 		response.RequestMessage = request;
 
@@ -47,6 +49,9 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 
 		public Builder WithServiceUnavailableResponse(string path) =>
 			WithResponse(path, null, HttpStatusCode.ServiceUnavailable);
+
+		public Builder WithNotFoundResponse(string path) =>
+			WithResponse(path, null, HttpStatusCode.NotFound);
 
 		public Builder WithOkResponse(HttpRequestResponseContext httpRequestResponseContext) =>
 			WithResponse(
