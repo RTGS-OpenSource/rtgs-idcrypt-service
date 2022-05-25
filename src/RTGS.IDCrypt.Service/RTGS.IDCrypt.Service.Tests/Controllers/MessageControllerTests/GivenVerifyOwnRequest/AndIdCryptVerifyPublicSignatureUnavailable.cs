@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
@@ -20,17 +21,18 @@ public class AndIdCryptVerifyPublicSignatureUnavailable
 
 	public AndIdCryptVerifyPublicSignatureUnavailable()
 	{
+		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 		_request = new VerifyOwnMessageRequest
 		{
-			Message = @"{ ""Message"": ""I am the walrus"" }",
+			Message = message,
 			PublicSignature = "public-signature"
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 
 		jsonSignaturesClientMock
-			.Setup(client => client.VerifyJsonDocumentPublicSignatureAsync(
-				It.IsAny<string>(),
+			.Setup(client => client.VerifyPublicSignatureAsync(
+				It.IsAny<JsonElement>(),
 				It.IsAny<string>(),
 				It.IsAny<string>(),
 				It.IsAny<CancellationToken>()))

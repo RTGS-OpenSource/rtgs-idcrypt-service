@@ -184,9 +184,11 @@ public class MessageController : ControllerBase
 		bool verified;
 		try
 		{
-			verified = await _jsonSignaturesClient.VerifyJsonDocumentPublicSignatureAsync(
+			verified = await _jsonSignaturesClient.VerifyPublicSignatureAsync(
 				verifyOwnMessageRequest.Message,
-				verifyOwnMessageRequest.PublicSignature, publicDid, cancellationToken);
+				verifyOwnMessageRequest.PublicSignature,
+				publicDid,
+				cancellationToken);
 		}
 		catch (Exception ex)
 		{
