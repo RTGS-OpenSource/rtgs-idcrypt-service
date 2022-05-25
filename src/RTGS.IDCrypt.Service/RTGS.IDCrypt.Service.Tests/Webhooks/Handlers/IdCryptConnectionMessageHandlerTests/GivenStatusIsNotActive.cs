@@ -21,7 +21,8 @@ public class GivenStatusIsNotActive
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
-			State = "not-active"
+			State = "not-active",
+			TheirLabel = "RTGS_Bank_Agent"
 		};
 
 		var message = JsonSerializer.Serialize(notActiveConnection);

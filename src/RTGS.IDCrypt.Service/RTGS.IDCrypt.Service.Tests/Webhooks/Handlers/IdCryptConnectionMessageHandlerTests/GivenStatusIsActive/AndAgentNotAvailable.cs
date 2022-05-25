@@ -31,7 +31,8 @@ public class AndAgentNotAvailable
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
-			State = "active"
+			State = "active",
+			TheirLabel = "RTGS_Bank_Agent"
 		};
 
 		_message = JsonSerializer.Serialize(activeConnection);

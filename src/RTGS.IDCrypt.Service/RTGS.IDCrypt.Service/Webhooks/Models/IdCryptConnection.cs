@@ -12,4 +12,7 @@ public record IdCryptConnection
 
 	[JsonPropertyName("state")]
 	public string State { get; init; }
+
+	[JsonPropertyName("their_label")]
+	public string TheirLabel { get; init; }
 }
