@@ -20,6 +20,8 @@ public class ConnectionRepository : IConnectionRepository
 		_logger = logger;
 	}
 
+	public Task ActivateBankPartnerConnectionAsync(string connectionId) => throw new NotImplementedException();
+
 	public async Task SaveBankPartnerConnectionAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
 	{
 		try
