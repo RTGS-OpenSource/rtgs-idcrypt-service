@@ -98,10 +98,8 @@ public class AndAgentAvailable
 
 		await _handler.HandleAsync(message, default);
 
-		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(new List<string>
-		{
-			"Ignoring connection with alias alias because it is not a bank connection"
-		});
+		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(
+			"Ignoring connection with alias alias because it is not a bank connection");
 	}
 
 	private void SetupExpectedRequest(string connectionId)

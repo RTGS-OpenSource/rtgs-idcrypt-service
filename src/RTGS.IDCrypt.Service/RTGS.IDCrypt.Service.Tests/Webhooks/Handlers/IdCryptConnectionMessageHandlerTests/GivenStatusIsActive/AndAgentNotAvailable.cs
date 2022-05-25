@@ -57,9 +57,7 @@ public class AndAgentNotAvailable
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-			{
-				"Error occurred requesting proof"
-			});
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(
+			"Error occurred requesting proof");
 	}
 }
