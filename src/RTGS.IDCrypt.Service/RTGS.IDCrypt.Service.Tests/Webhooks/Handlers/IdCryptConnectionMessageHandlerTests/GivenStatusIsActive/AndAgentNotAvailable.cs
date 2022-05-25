@@ -31,7 +31,8 @@ public class AndAgentNotAvailable
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
-			State = "active"
+			State = "active",
+			TheirLabel = "RTGS_Bank_Agent"
 		};
 
 		_message = JsonSerializer.Serialize(activeConnection);
@@ -56,9 +57,7 @@ public class AndAgentNotAvailable
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-			{
-				"Error occurred requesting proof"
-			});
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(
+			"Error occurred requesting proof");
 	}
 }
