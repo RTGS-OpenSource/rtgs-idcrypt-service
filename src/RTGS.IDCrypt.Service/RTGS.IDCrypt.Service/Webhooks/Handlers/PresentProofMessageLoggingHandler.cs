@@ -8,6 +8,7 @@ public class PresentProofMessageLoggingHandler : IMessageHandler
 	{
 		_logger = logger;
 	}
+
 	public string MessageType => "present_proof";
 
 	public Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
