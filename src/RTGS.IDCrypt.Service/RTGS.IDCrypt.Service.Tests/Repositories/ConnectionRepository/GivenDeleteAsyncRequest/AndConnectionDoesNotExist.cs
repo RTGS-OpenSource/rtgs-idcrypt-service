@@ -26,7 +26,11 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		_tableClientMock = new Mock<TableClient>();
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+				tableClient.Query<BankPartnerConnection>(
+					It.IsAny<string>(),
+					It.IsAny<int?>(),
+					It.IsAny<IEnumerable<string>>(),
+					It.IsAny<CancellationToken>()))
 			.Returns(bankPartnerConnectionMock.Object);
 
 		_storageTableResolverMock = new Mock<IStorageTableResolver>();

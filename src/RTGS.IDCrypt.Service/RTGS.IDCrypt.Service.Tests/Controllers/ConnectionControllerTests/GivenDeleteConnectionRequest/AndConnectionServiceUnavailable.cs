@@ -15,7 +15,7 @@ public class AndConnectionServiceUnavailable
 		connectionServiceMock
 			.Setup(service => service.DeleteAsync(It.IsAny<string>(),
 				It.IsAny<CancellationToken>()))
-			.Throws<Exception>();
+			.ThrowsAsync(new Exception());
 
 		_connectionController = new ConnectionController(connectionServiceMock.Object);
 	}

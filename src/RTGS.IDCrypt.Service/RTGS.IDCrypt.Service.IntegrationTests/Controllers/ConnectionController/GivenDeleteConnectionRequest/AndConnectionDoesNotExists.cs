@@ -2,7 +2,6 @@
 using System.Net.Http;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
-using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenDeleteConnectionRequest;
 
@@ -12,7 +11,6 @@ public class AndConnectionDoesNotExists : IClassFixture<MissingDeleteConnectionF
 	private readonly MissingDeleteConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 	private const string ConnectionId = "connection-id-1";
-
 
 	public AndConnectionDoesNotExists(MissingDeleteConnectionFixture testFixture)
 	{
@@ -45,13 +43,6 @@ public class AndConnectionDoesNotExists : IClassFixture<MissingDeleteConnectionF
 			.Headers.GetValues("X-API-Key")
 			.Should().ContainSingle()
 			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
-
-	[Fact]
-	public void WhenDeleting_ThenDeleteFromTableStorage() =>
-		_testFixture.BankPartnerConnectionsTable
-			.Query<BankPartnerConnection>()
-			.Where(connection => connection.ConnectionId == ConnectionId)
-			.Should().BeEmpty();
 
 	[Fact]
 	public void ThenReturnNoContent() =>

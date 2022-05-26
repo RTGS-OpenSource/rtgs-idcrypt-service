@@ -154,12 +154,12 @@ public class ConnectionService : IConnectionService
 
 			await aggregateTask;
 		}
-		catch (Exception)
+		catch (Exception e)
 		{
-			aggregateTask.Exception.InnerExceptions.ToList()
+			aggregateTask?.Exception?.InnerExceptions.ToList()
 				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection."));
 
-			throw aggregateTask.Exception;
+			throw aggregateTask?.Exception ?? e;
 		}
 	}
 

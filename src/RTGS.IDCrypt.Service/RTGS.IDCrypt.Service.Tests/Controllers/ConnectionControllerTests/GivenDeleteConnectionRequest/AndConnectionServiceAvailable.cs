@@ -26,12 +26,11 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 
 	public async Task InitializeAsync() => _response = await _connectionController.Delete(ConnectionId);
 
-	public Task DisposeAsync() =>
-		Task.CompletedTask;
+	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void WhenDeleting_ThenReturnAccepted() => _response.Should().BeOfType<NoContentResult>();
+	public void WhenDeleting_ThenReturnNoContent() => _response.Should().BeOfType<NoContentResult>();
 
 	[Fact]
-	public void WhenPDeleting_ThenCallReceiveAndAcceptInvitationAsyncWithExpected() => _connectionServiceMock.Verify();
+	public void WhenPDeleting_ThenCallSericeDeleteAsync() => _connectionServiceMock.Verify();
 }

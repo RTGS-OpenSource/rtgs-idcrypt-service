@@ -46,9 +46,9 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 			new()
 			{
 				PartitionKey = "rtgs-global-id",
-				RowKey = "alias",
+				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Alias = "alias",
+				Alias = "alias-1",
 				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
 				PublicDid = "public-did-1",
 				Status = "Pending"
@@ -56,9 +56,9 @@ public class SingleMatchingBankPartnerConnectionFixture : BankPartnerTestFixture
 			new()
 			{
 				PartitionKey = "rtgs-global-id-1",
-				RowKey = "alias",
+				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Alias = "alias",
+				Alias = "alias-2",
 				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
 				PublicDid = "public-did-2",
 				Status = "Active"

@@ -36,9 +36,9 @@ public class DeleteConnectionFixture : BankPartnerTestFixtureBase
 			new()
 			{
 				PartitionKey = "rtgs-global-id",
-				RowKey = "alias",
+				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
-				Alias = "alias",
+				Alias = "alias-1",
 				CreatedAt = aDate,
 				PublicDid = "public-did-1",
 				Status = "Pending"
@@ -46,9 +46,9 @@ public class DeleteConnectionFixture : BankPartnerTestFixtureBase
 			new()
 			{
 				PartitionKey = "rtgs-global-id-1",
-				RowKey = "alias",
+				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
-				Alias = "alias",
+				Alias = "alias-2",
 				CreatedAt = aDate,
 				PublicDid = "public-did-2",
 				Status = "Active"
