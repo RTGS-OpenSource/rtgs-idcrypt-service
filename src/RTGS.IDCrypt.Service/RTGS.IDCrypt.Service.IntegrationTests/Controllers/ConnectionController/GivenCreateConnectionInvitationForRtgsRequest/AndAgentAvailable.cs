@@ -97,6 +97,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 		actualResponse.Should().BeEquivalentTo(new CreateConnectionInvitationResponse
 		{
+			FromRtgsGlobalId = _testFixture.Configuration["RtgsGlobalId"],
 			Alias = "alias",
 			AgentPublicDid = GetPublicDid.ExpectedDid,
 			Invitation = new ConnectionInvitation
