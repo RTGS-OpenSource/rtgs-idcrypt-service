@@ -4,5 +4,6 @@ namespace RTGS.IDCrypt.Service.Repositories;
 
 public interface IConnectionRepository
 {
-	Task SaveBankPartnerConnectionAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default);
+	Task SaveAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default);
+	Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default);
 }

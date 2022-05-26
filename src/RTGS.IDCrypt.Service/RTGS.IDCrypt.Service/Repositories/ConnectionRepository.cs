@@ -20,7 +20,7 @@ public class ConnectionRepository : IConnectionRepository
 		_logger = logger;
 	}
 
-	public async Task SaveBankPartnerConnectionAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
+	public async Task SaveAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
 	{
 		try
 		{
@@ -33,6 +33,32 @@ public class ConnectionRepository : IConnectionRepository
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error occurred when saving bank partner connection");
+
+			throw;
+		}
+	}
+
+	public async Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+
+			var connection = tableClient
+				.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
+				.SingleOrDefault(bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId);
+
+			if (connection is null)
+			{
+				_logger.LogWarning("Unable to delete connection from table storage as the connection was not found");
+				return;
+			}
+
+			await tableClient.DeleteEntityAsync(connection.PartitionKey, connection.RowKey, connection.ETag, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when deleting connection");
 
 			throw;
 		}

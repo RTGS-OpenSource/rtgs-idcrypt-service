@@ -5,46 +5,33 @@ using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCrypt.Service.Tests.TestData;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenSavingBankPartnerConnection;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenDeleteAsyncRequest;
 
-public class AndTableStorageAvailable : IAsyncLifetime
+public class AndConnectionDoesNotExist : IAsyncLifetime
 {
 	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
-	private readonly BankPartnerConnection _connection;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
+	private const string ConnectionId = "connection-id-999";
 
-	public AndTableStorageAvailable()
+	public AndConnectionDoesNotExist()
 	{
-		_connection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
-			ConnectionId = "connection-id",
-			PublicDid = "public-did",
-			Alias = "alias"
-		};
-
-		Func<BankPartnerConnection, bool> connectionMatches = request =>
-		{
-			request.Should().BeEquivalentTo(_connection, options =>
-			{
-				options.Excluding(connection => connection.ETag);
-				options.Excluding(connection => connection.Timestamp);
-
-				return options;
-			});
-
-			return true;
-		};
+		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
+		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
+			TestBankPartnerConnections.Connections
+				.GetEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
-		_tableClientMock
-			.Setup(tableClient => tableClient.AddEntityAsync(
-				It.Is<BankPartnerConnection>(connection => connectionMatches(connection)),
-				It.IsAny<CancellationToken>()))
-			.Verifiable();
+
+		_tableClientMock.Setup(tableClient =>
+				tableClient.Query<BankPartnerConnection>(
+					It.IsAny<string>(),
+					It.IsAny<int?>(),
+					It.IsAny<IEnumerable<string>>(),
+					It.IsAny<CancellationToken>()))
+			.Returns(bankPartnerConnectionMock.Object);
 
 		_storageTableResolverMock = new Mock<IStorageTableResolver>();
 		_storageTableResolverMock
@@ -63,7 +50,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.SaveBankPartnerConnectionAsync(_connection);
+	public async Task InitializeAsync() => await _connectionRepository.DeleteAsync(ConnectionId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
@@ -71,5 +58,13 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
 
 	[Fact]
-	public void ThenConnectionIsWritten() => _tableClientMock.Verify();
+	public void ThenQueryIsPerformed() => _tableClientMock.Verify();
+
+	[Fact]
+	public void ThenNoDeleteAttemptIsMade() => _tableClientMock
+		.Verify(client => client.DeleteEntityAsync(
+			It.IsAny<string>(),
+			It.IsAny<string>(),
+			It.IsAny<Azure.ETag>(),
+			It.IsAny<CancellationToken>()), Times.Never);
 }

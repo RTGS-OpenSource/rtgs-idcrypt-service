@@ -96,7 +96,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		};
 
 		_connectionRepositoryMock
-			.Setup(service => service.SaveBankPartnerConnectionAsync(
+			.Setup(service => service.SaveAsync(
 				It.Is<BankPartnerConnection>(connection => connectionMatches(connection)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
