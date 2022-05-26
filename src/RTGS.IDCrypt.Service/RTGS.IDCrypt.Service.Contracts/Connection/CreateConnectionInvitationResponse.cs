@@ -26,6 +26,12 @@ public record CreateConnectionInvitationResponse
 	public string AgentPublicDid { get; init; }
 
 	/// <summary>
+	/// The RTGS.global ID of the inviting bank.
+	/// </summary>
+	[JsonPropertyName("fromRtgsGlobalId")]
+	public string FromRtgsGlobalId { get; init; }
+
+	/// <summary>
 	/// Invitation URL.
 	/// </summary>
 	[JsonPropertyName("invitationUrl")]

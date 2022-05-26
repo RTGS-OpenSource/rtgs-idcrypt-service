@@ -59,6 +59,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	{
 		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
 		{
+			FromRtgsGlobalId = "rtgs-global-id",
 			Alias = Alias,
 			AgentPublicDid = PublicDid,
 			InvitationUrl = "invitation-url",
