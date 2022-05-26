@@ -32,5 +32,5 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	public void WhenDeleting_ThenReturnNoContent() => _response.Should().BeOfType<NoContentResult>();
 
 	[Fact]
-	public void WhenPDeleting_ThenCallSericeDeleteAsync() => _connectionServiceMock.Verify();
+	public void WhenDeleting_AndCallServiceDeleteAsync() => _connectionServiceMock.Verify();
 }

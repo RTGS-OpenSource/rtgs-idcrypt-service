@@ -36,7 +36,6 @@ public class AndRepositoryCallFails
 			.ThrowsAsync(new Exception("Something went wrong"))
 			.Verifiable();
 
-
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			_logger,

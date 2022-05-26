@@ -13,7 +13,6 @@ public class AndConnectionExists : IClassFixture<DeleteConnectionFixture>, IAsyn
 	private HttpResponseMessage _httpResponse;
 	private const string ConnectionId = "connection-id-1";
 
-
 	public AndConnectionExists(DeleteConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;

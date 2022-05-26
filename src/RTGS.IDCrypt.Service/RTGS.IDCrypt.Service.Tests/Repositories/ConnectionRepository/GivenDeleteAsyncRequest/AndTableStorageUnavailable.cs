@@ -35,7 +35,6 @@ public class AndTableStorageUnavailable
 		.Should()
 		.ThrowAsync<Exception>();
 
-
 	[Fact]
 	public async Task WhenInvoked_ThenLogs()
 	{

@@ -36,7 +36,6 @@ public class AndIdCryptApiCallFails
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			_logger,

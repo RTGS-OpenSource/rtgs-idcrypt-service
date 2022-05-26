@@ -84,7 +84,7 @@ public class ConnectionController : ControllerBase
 	/// </summary>
 	/// <param name="connectionId">The identifier of the connection to delete.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
-	/// <returns><see cref="AcceptedResult"/></returns>
+	/// <returns><see cref="NoContentResult"/></returns>
 	[HttpDelete("{connectionId}")]
 	public async Task<IActionResult> Delete(
 		string connectionId,
