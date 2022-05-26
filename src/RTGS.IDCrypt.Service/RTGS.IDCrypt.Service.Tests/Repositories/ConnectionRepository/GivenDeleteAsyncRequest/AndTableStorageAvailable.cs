@@ -16,7 +16,6 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	private readonly Mock<TableClient> _tableClientMock;
 	private const string ConnectionId = "connection-id-1";
 
-
 	public AndTableStorageAvailable()
 	{
 		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
@@ -29,7 +28,11 @@ public class AndTableStorageAvailable : IAsyncLifetime
 		var expectedConnection = TestBankPartnerConnections.Connections.Single(x => x.ConnectionId == ConnectionId);
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+				tableClient.Query<BankPartnerConnection>(
+					It.IsAny<string>(),
+					It.IsAny<int?>(),
+					It.IsAny<IEnumerable<string>>(),
+					It.IsAny<CancellationToken>()))
 			.Returns(bankPartnerConnectionMock.Object);
 
 		_tableClientMock
@@ -65,5 +68,5 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
 
 	[Fact]
-	public void ThenConnectionIsWritten() => _tableClientMock.Verify();
+	public void ThenConnectionDeleted() => _tableClientMock.Verify();
 }
