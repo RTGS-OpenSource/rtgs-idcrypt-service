@@ -13,7 +13,7 @@ public class PresentProofMessageHandler : IMessageHandler
 		_connectionRepository = connectionRepository;
 	}
 
-	public string MessageType => throw new NotImplementedException();
+	public string MessageType => "present_proof";
 
 	public Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{
