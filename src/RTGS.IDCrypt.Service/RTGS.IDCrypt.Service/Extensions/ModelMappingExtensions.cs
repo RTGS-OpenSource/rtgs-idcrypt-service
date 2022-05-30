@@ -8,6 +8,7 @@ public static class ModelMappingExtensions
 		this Models.ConnectionInvitation model) =>
 			new()
 			{
+				FromRtgsGlobalId = model.FromRtgsGlobalId,
 				AgentPublicDid = model.PublicDid,
 				Alias = model.Alias,
 				InvitationUrl = model.InvitationUrl,

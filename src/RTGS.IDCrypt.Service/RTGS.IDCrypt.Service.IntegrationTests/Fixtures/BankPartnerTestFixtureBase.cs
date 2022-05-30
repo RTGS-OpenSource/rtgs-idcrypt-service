@@ -14,7 +14,8 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 	{
 		LoadConfig();
 		CreateTable();
-		Seed();
+		// need to await the seed method! Flaky tests if we don't.
+		Task.Run(async () => await Seed()).Wait();
 	}
 
 	public IConfigurationRoot Configuration { get; private set; }
