@@ -18,7 +18,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 		_handlers = handlers.ToDictionary(handler => handler.MessageType, handler => handler);
 	}
 
-	public string MessageType => "basicmessage";
+	public string MessageType => "basicmessages";
 
 	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{

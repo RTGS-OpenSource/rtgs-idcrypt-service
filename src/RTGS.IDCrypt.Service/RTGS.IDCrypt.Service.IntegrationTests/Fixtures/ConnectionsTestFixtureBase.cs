@@ -70,5 +70,7 @@ public abstract class ConnectionsTestFixtureBase : WebApplicationFactory<Program
 		return base.CreateHost(builder);
 	}
 
-	protected abstract void CustomiseHost(IHostBuilder builder);
+	protected virtual void CustomiseHost(IHostBuilder builder)
+	{
+	}
 }

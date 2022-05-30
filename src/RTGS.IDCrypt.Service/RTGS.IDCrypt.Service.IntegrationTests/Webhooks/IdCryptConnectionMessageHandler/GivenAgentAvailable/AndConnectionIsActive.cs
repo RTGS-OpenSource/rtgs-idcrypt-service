@@ -35,7 +35,7 @@ public class AndConnectionIsActive : IClassFixture<ProofExchangeFixture>, IAsync
 			TheirLabel = "RTGS_Bank_Agent"
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/connection", request);
+		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/connections", request);
 	}
 
 	public Task DisposeAsync() =>
