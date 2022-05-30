@@ -19,7 +19,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 		_proofClient = proofClient;
 	}
 
-	public string MessageType => "connection";
+	public string MessageType => "connections";
 
 	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{

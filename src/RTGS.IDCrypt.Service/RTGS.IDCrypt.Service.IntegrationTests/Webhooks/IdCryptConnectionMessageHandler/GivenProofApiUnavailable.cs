@@ -28,7 +28,7 @@ public class GivenProofApiUnavailable : IClassFixture<SendProofRequestEndpointUn
 			TheirLabel = "RTGS_Bank_Agent"
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/connection", request);
+		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/connections", request);
 	}
 
 	public Task DisposeAsync() =>

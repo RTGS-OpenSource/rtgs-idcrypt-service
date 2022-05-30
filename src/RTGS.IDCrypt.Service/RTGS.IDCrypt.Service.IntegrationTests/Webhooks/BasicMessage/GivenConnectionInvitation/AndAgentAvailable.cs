@@ -52,7 +52,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 			Content = JsonSerializer.Serialize(_connectionInvitation)
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessage", basicMessage);
+		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);
 	}
 
 	public Task DisposeAsync() => Task.CompletedTask;

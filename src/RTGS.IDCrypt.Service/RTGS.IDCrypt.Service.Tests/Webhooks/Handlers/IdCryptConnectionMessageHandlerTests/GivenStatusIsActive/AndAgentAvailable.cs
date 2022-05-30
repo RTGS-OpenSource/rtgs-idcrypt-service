@@ -80,7 +80,6 @@ public class AndAgentAvailable
 			It.IsAny<CancellationToken>()), Times.Never);
 	}
 
-
 	[Fact]
 	public async Task WhenPostingFromRtgs_ThenLog()
 	{
