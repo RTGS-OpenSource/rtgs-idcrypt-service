@@ -10,13 +10,13 @@ using VerifyXunit;
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable;
 
 [UsesVerify]
-public class AndConnectionIsActive : IClassFixture<ProofExchangeFixture>, IAsyncLifetime
+public class AndFromBank : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly ProofExchangeFixture _testFixture;
+	private readonly ConnectionsWebhookFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public AndConnectionIsActive(ProofExchangeFixture testFixture)
+	public AndFromBank(ConnectionsWebhookFixture testFixture)
 	{
 		_testFixture = testFixture;
 

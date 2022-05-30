@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using Azure;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
@@ -6,28 +7,53 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.GivenCreateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.GivenActivateAsyncRequest;
 
 public class AndTableStorageAvailable : IAsyncLifetime
 {
-	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
-	private readonly RtgsConnection _connection;
+	private readonly Service.Repositories.RtgsConnectionRepository _connectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
+	private readonly RtgsConnection _retrievedConnection;
 
 	public AndTableStorageAvailable()
 	{
-		_connection = new RtgsConnection
+		_retrievedConnection = new RtgsConnection
 		{
 			PartitionKey = "alias",
 			RowKey = "connection-id",
 			ConnectionId = "connection-id",
-			Alias = "alias"
+			Alias = "alias",
+			Status = "Pending"
+		};
+
+		var rtgsConnectionMock = new Mock<Pageable<RtgsConnection>>();
+
+		rtgsConnectionMock.Setup(rtgsConnections => rtgsConnections.GetEnumerator())
+			.Returns(new List<RtgsConnection> { _retrievedConnection }.GetEnumerator());
+
+		_tableClientMock = new Mock<TableClient>();
+
+		_tableClientMock.Setup(tableClient =>
+				tableClient.Query<RtgsConnection>(
+					It.IsAny<string>(),
+					It.IsAny<int?>(),
+					It.IsAny<IEnumerable<string>>(),
+					It.IsAny<CancellationToken>()))
+			.Returns(rtgsConnectionMock.Object);
+
+		var updatedConnection = new RtgsConnection
+		{
+			PartitionKey = "alias",
+			RowKey = "connection-id",
+			ConnectionId = "connection-id",
+			Alias = "alias",
+			Status = "Active"
 		};
 
 		Func<RtgsConnection, bool> connectionMatches = request =>
 		{
-			request.Should().BeEquivalentTo(_connection, options =>
+			request.Should().BeEquivalentTo(updatedConnection, options =>
 			{
 				options.Excluding(connection => connection.ETag);
 				options.Excluding(connection => connection.Timestamp);
@@ -38,14 +64,16 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_tableClientMock = new Mock<TableClient>();
 		_tableClientMock
-			.Setup(tableClient => tableClient.AddEntityAsync(
+			.Setup(tableClient => tableClient.UpdateEntityAsync(
 				It.Is<RtgsConnection>(connection => connectionMatches(connection)),
+				It.IsAny<ETag>(),
+				TableUpdateMode.Merge,
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		_storageTableResolverMock = new Mock<IStorageTableResolver>();
+
 		_storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("rtgsConnections"))
 			.Returns(_tableClientMock.Object)
@@ -58,11 +86,11 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_rtgsConnectionRepository =
+		_connectionRepository =
 			new Service.Repositories.RtgsConnectionRepository(_storageTableResolverMock.Object, options, logger);
 	}
 
-	public async Task InitializeAsync() => await _rtgsConnectionRepository.CreateAsync(_connection);
+	public async Task InitializeAsync() => await _connectionRepository.ActivateAsync(_retrievedConnection.ConnectionId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
@@ -70,5 +98,5 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
 
 	[Fact]
-	public void ThenConnectionIsWritten() => _tableClientMock.Verify();
+	public void ThenConnectionActivated() => _tableClientMock.Verify();
 }

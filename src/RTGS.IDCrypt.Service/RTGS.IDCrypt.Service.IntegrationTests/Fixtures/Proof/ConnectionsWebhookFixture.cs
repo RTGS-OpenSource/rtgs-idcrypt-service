@@ -1,12 +1,13 @@
 ﻿using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.TestData;
+using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
 
-public class ProofExchangeFixture : TestFixtureBase
+public class ConnectionsWebhookFixture : ConnectionsTestFixtureBase
 {
-	public ProofExchangeFixture()
+	public ConnectionsWebhookFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
@@ -20,4 +21,15 @@ public class ProofExchangeFixture : TestFixtureBase
 		builder.ConfigureServices(services =>
 			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler)
 		);
+
+	protected override async Task Seed() =>
+		await InsertRtgsConnectionAsync(new RtgsConnection
+		{
+			PartitionKey = "alias",
+			RowKey = "connection-id",
+			Alias = "alias",
+			ConnectionId = "connection-id",
+			CreatedAt = DateTime.UtcNow,
+			Status = "Pending"
+		});
 }

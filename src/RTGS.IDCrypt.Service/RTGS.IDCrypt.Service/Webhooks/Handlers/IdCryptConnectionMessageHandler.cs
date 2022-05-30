@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.Proof;
 using RTGS.IDCryptSDK.Proof.Models;
@@ -10,13 +11,16 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 {
 	private readonly ILogger<IdCryptConnectionMessageHandler> _logger;
 	private readonly IProofClient _proofClient;
+	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 
 	public IdCryptConnectionMessageHandler(
 		ILogger<IdCryptConnectionMessageHandler> logger,
-		IProofClient proofClient)
+		IProofClient proofClient,
+		IRtgsConnectionRepository rtgsConnectionRepository)
 	{
 		_logger = logger;
 		_proofClient = proofClient;
+		_rtgsConnectionRepository = rtgsConnectionRepository;
 	}
 
 	public string MessageType => "connections";
@@ -33,14 +37,26 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 			return;
 		}
 
-		if (!connection.TheirLabel.StartsWith("RTGS_Bank_Agent"))
+		if (connection.TheirLabel.StartsWith("RTGS_Jurisdiction_Agent"))
 		{
-			_logger.LogDebug("Ignoring connection with alias {Alias} because it is not a bank connection",
-				connection.Alias);
+			await HandleJurisidctionConnection(connection, cancellationToken);
 
 			return;
 		}
 
+		if (connection.TheirLabel.StartsWith("RTGS_Bank_Agent"))
+		{
+			await HandleBankConnection(connection, cancellationToken);
+
+			return;
+		}
+	}
+
+	private async Task HandleJurisidctionConnection(IdCryptConnection connection, CancellationToken cancellationToken) => 
+		await _rtgsConnectionRepository.ActivateAsync(connection.ConnectionId, cancellationToken);
+
+	private async Task HandleBankConnection(IdCryptConnection connection, CancellationToken cancellationToken)
+	{
 		var request = new SendProofRequestRequest
 		{
 			ConnectionId = connection.ConnectionId,

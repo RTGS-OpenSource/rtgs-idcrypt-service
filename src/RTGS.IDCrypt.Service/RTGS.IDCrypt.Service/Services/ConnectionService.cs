@@ -68,7 +68,7 @@ public class ConnectionService : IConnectionService
 				ConnectionId = response.ConnectionId,
 				Alias = response.Alias,
 				PublicDid = invitation.PublicDid,
-				Status = BankPartnerConnectionStatuses.Pending
+				Status = ConnectionStatuses.Pending
 			};
 
 			await _connectionRepository.CreateAsync(connection, cancellationToken);
@@ -99,7 +99,7 @@ public class ConnectionService : IConnectionService
 				RowKey = alias,
 				Alias = alias,
 				ConnectionId = createConnectionInvitationResponse.ConnectionId,
-				Status = BankPartnerConnectionStatuses.Pending,
+				Status = ConnectionStatuses.Pending,
 				PublicDid = publicDid
 			};
 
@@ -137,7 +137,7 @@ public class ConnectionService : IConnectionService
 				RowKey = createConnectionInvitationResponse.ConnectionId,
 				Alias = alias,
 				ConnectionId = createConnectionInvitationResponse.ConnectionId,
-				Status = BankPartnerConnectionStatuses.Pending
+				Status = ConnectionStatuses.Pending
 			};
 
 			await _rtgsConnectionRepository.CreateAsync(connection, cancellationToken);

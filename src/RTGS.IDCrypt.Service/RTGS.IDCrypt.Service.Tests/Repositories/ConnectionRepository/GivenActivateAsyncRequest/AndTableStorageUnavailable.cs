@@ -20,7 +20,7 @@ public class AndTableStorageUnavailable
 			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
 			.Throws<Exception>();
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});

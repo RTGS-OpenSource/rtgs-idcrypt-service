@@ -45,6 +45,9 @@ public abstract class ConnectionsTestFixtureBase : WebApplicationFactory<Program
 	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
 		await BankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
 
+	protected async Task InsertRtgsConnectionAsync(RtgsConnection rtgsConnection) =>
+		await RtgsConnectionsTable.AddEntityAsync(rtgsConnection);
+
 	protected virtual Task Seed() =>
 		Task.CompletedTask;
 

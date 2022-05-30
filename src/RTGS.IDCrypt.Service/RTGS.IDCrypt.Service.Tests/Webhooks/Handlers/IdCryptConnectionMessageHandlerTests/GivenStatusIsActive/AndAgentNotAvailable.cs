@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
@@ -37,7 +38,10 @@ public class AndAgentNotAvailable
 
 		_message = JsonSerializer.Serialize(activeConnection);
 
-		_handler = new IdCryptConnectionMessageHandler(_logger, proofClientMock.Object);
+		_handler = new IdCryptConnectionMessageHandler(
+			_logger, 
+			proofClientMock.Object, 
+			Mock.Of<IRtgsConnectionRepository>());
 	}
 
 	[Fact]

@@ -8,61 +8,60 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenActivateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.GivenActivateAsyncRequest;
 
 public class AndConnectionDoesNotExist : IAsyncLifetime
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
-	private readonly FakeLogger<Service.Repositories.ConnectionRepository> _logger;
+	private readonly FakeLogger<Service.Repositories.RtgsConnectionRepository> _logger;
 
 	public AndConnectionDoesNotExist()
 	{
-		var retrievedConnection = new BankPartnerConnection
+		var retrievedConnection = new RtgsConnection
 		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
+			PartitionKey = "alias",
+			RowKey = "connection-id",
 			ConnectionId = "connection-id",
 			Alias = "alias",
-			PublicDid = "public-did",
 			Status = "Pending"
 		};
 
-		var bankPartnerConnectionMock = new Mock<Pageable<BankPartnerConnection>>();
+		var rtgsConnectionMock = new Mock<Pageable<RtgsConnection>>();
 
-		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator())
-			.Returns(new List<BankPartnerConnection> { retrievedConnection }.GetEnumerator());
+		rtgsConnectionMock.Setup(rtgsConnections => rtgsConnections.GetEnumerator())
+			.Returns(new List<RtgsConnection> { retrievedConnection }.GetEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(
+				tableClient.Query<RtgsConnection>(
 					It.IsAny<string>(),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnectionMock.Object);
+			.Returns(rtgsConnectionMock.Object);
 
 		_storageTableResolverMock = new Mock<IStorageTableResolver>();
 
 		_storageTableResolverMock
-			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
+			.Setup(resolver => resolver.GetTable("rtgsConnections"))
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
-		_logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
+		_logger = new FakeLogger<Service.Repositories.RtgsConnectionRepository>();
 
 		var options = Options.Create(new ConnectionsConfig
 		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
+			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, _logger);
+		_rtgsConnectionRepository =
+			new Service.Repositories.RtgsConnectionRepository(_storageTableResolverMock.Object, options, _logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.ActivateAsync("non-existent-connection-id");
+	public async Task InitializeAsync() => await _rtgsConnectionRepository.ActivateAsync("non-existent-connection-id");
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

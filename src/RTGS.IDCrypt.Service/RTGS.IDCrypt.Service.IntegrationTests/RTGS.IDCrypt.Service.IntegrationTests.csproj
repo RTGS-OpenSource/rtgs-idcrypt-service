@@ -33,8 +33,12 @@
     <None Update="testsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailable\AndConnectionIsActive.WhenCallingIdCryptAgent_ThenBodyIsExpected.verified.txt">
-      <DependentUpon>AndConnectionIsActive.cs</DependentUpon>
+    <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailable\AndConnectionIsActive\AndFromRtgs.WhenCallingIdCryptAgent_ThenBodyIsExpected.verified.txt">
+      <ParentFile>$([System.String]::Copy('%(FileName)').Split('.')[0])</ParentFile>
+      <DependentUpon>AndFromRtgs.cs</DependentUpon>
+    </None>
+    <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailable\AndConnectionIsActive\AndFromBank.WhenCallingIdCryptAgent_ThenBodyIsExpected.verified.txt">
+      <DependentUpon>AndFromBank.cs</DependentUpon>
     </None>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

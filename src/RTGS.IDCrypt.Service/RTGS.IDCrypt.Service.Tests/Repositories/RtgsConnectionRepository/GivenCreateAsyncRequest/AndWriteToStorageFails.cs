@@ -20,7 +20,7 @@ public class AndWriteToStorageFails
 		_connection = new RtgsConnection
 		{
 			PartitionKey = "alias",
-			RowKey = "rtgs-global-id",
+			RowKey = "connection-id",
 			ConnectionId = "connection-id",
 			Alias = "alias"
 		};

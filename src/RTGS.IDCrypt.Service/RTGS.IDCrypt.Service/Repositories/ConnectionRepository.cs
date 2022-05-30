@@ -9,15 +9,15 @@ namespace RTGS.IDCrypt.Service.Repositories;
 public class ConnectionRepository : IConnectionRepository
 {
 	private readonly IStorageTableResolver _storageTableResolver;
-	private readonly ConnectionsConfig _bankPartnerConnectionsConfig;
+	private readonly ConnectionsConfig _connectionsConfig;
 	private readonly ILogger<ConnectionRepository> _logger;
 
 	public ConnectionRepository(IStorageTableResolver storageTableResolver,
-		IOptions<ConnectionsConfig> bankPartnerConnectionsOptions,
+		IOptions<ConnectionsConfig> connectionsOptions,
 		ILogger<ConnectionRepository> logger)
 	{
 		_storageTableResolver = storageTableResolver;
-		_bankPartnerConnectionsConfig = bankPartnerConnectionsOptions.Value;
+		_connectionsConfig = connectionsOptions.Value;
 		_logger = logger;
 	}
 
@@ -25,7 +25,7 @@ public class ConnectionRepository : IConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			var connection = tableClient
 				.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
@@ -37,7 +37,7 @@ public class ConnectionRepository : IConnectionRepository
 				return;
 			}
 
-			connection.Status = "Active";
+			connection.Status = ConnectionStatuses.Active; 
 
 			await tableClient.UpdateEntityAsync(
 				connection,
@@ -59,7 +59,7 @@ public class ConnectionRepository : IConnectionRepository
 		{
 			connection.CreatedAt = DateTime.UtcNow;
 
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			await tableClient.AddEntityAsync(connection, cancellationToken);
 		}
@@ -75,7 +75,7 @@ public class ConnectionRepository : IConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			var connection = tableClient
 				.Query<BankPartnerConnection>(cancellationToken: cancellationToken)

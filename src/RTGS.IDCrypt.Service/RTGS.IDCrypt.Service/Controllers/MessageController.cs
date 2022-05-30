@@ -59,7 +59,7 @@ public class MessageController : ControllerBase
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
 				&& bankPartnerConnection.CreatedAt <= dateThreshold
-				&& bankPartnerConnection.Status == BankPartnerConnectionStatuses.Active).ToList();
+				&& bankPartnerConnection.Status == ConnectionStatuses.Active).ToList();
 
 		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.CreatedAt);
 
@@ -117,7 +117,7 @@ public class MessageController : ControllerBase
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == verifyRequest.RtgsGlobalId
 				&& bankPartnerConnection.RowKey == verifyRequest.Alias
-				&& bankPartnerConnection.Status == BankPartnerConnectionStatuses.Active)
+				&& bankPartnerConnection.Status == ConnectionStatuses.Active)
 			.ToList();
 
 		if (!bankPartnerConnections.Any())

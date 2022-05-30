@@ -83,7 +83,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 		var logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});

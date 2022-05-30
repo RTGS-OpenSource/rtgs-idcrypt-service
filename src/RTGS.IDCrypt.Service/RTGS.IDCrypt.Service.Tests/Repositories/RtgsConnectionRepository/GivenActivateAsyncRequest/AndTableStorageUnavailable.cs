@@ -2,29 +2,20 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.GivenCreateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.GivenActivateAsyncRequest;
 
 public class AndTableStorageUnavailable
 {
-	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
-	private readonly RtgsConnection _connection;
+	private readonly Service.Repositories.RtgsConnectionRepository _connectionRepository;
 	private readonly FakeLogger<Service.Repositories.RtgsConnectionRepository> _logger = new();
 
 	public AndTableStorageUnavailable()
 	{
-		_connection = new RtgsConnection
-		{
-			PartitionKey = "alias",
-			RowKey = "connection-id",
-			ConnectionId = "connection-id",
-			Alias = "alias"
-		};
-
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+
 		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("rtgsConnections"))
 			.Throws<Exception>();
@@ -34,13 +25,13 @@ public class AndTableStorageUnavailable
 			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_rtgsConnectionRepository =
+		_connectionRepository =
 			new Service.Repositories.RtgsConnectionRepository(storageTableResolverMock.Object, options, _logger);
 	}
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _rtgsConnectionRepository.CreateAsync(_connection))
+		.Awaiting(() => _connectionRepository.ActivateAsync("connection-id"))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -50,13 +41,11 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _rtgsConnectionRepository.CreateAsync(_connection))
+			.Awaiting(() => _connectionRepository.ActivateAsync("connection-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-		{
-			"Error occurred when saving RTGS connection"
-		});
+		_logger.Logs[LogLevel.Error]
+			.Should().BeEquivalentTo("Error occurred when activating connection");
 	}
 }

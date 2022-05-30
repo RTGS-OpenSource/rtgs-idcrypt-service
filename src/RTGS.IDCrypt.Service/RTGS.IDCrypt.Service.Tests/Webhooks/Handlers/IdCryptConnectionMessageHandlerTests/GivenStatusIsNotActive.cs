@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
@@ -15,7 +16,10 @@ public class GivenStatusIsNotActive
 	{
 		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
-		var handler = new IdCryptConnectionMessageHandler(logger, Mock.Of<IProofClient>());
+		var handler = new IdCryptConnectionMessageHandler(
+			logger, 
+			Mock.Of<IProofClient>(), 
+			Mock.Of<IRtgsConnectionRepository>());
 
 		var notActiveConnection = new IdCryptConnection
 		{
