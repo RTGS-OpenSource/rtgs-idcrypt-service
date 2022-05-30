@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using Moq;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -79,8 +78,8 @@ public class AndAgentAvailable
 
 		await _handler.HandleAsync(message, default);
 
-		_rtgsConnectionsRepository.Verify(repo => 
-			repo.ActivateAsync("connection-id", It.IsAny<CancellationToken>()), 
+		_rtgsConnectionsRepository.Verify(repo =>
+			repo.ActivateAsync("connection-id", It.IsAny<CancellationToken>()),
 			Times.Once);
 	}
 

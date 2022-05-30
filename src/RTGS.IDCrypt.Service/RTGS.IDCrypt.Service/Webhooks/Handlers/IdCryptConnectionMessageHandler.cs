@@ -52,7 +52,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 		}
 	}
 
-	private async Task HandleJurisidctionConnection(IdCryptConnection connection, CancellationToken cancellationToken) => 
+	private async Task HandleJurisidctionConnection(IdCryptConnection connection, CancellationToken cancellationToken) =>
 		await _rtgsConnectionRepository.ActivateAsync(connection.ConnectionId, cancellationToken);
 
 	private async Task HandleBankConnection(IdCryptConnection connection, CancellationToken cancellationToken)

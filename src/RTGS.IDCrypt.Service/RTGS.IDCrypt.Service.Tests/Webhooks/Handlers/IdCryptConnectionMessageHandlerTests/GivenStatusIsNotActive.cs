@@ -17,8 +17,8 @@ public class GivenStatusIsNotActive
 		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
 		var handler = new IdCryptConnectionMessageHandler(
-			logger, 
-			Mock.Of<IProofClient>(), 
+			logger,
+			Mock.Of<IProofClient>(),
 			Mock.Of<IRtgsConnectionRepository>());
 
 		var notActiveConnection = new IdCryptConnection

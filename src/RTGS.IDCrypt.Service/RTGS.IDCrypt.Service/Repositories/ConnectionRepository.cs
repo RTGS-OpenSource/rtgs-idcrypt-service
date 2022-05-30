@@ -37,7 +37,7 @@ public class ConnectionRepository : IConnectionRepository
 				return;
 			}
 
-			connection.Status = ConnectionStatuses.Active; 
+			connection.Status = ConnectionStatuses.Active;
 
 			await tableClient.UpdateEntityAsync(
 				connection,

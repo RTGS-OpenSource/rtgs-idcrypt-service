@@ -39,8 +39,8 @@ public class AndAgentNotAvailable
 		_message = JsonSerializer.Serialize(activeConnection);
 
 		_handler = new IdCryptConnectionMessageHandler(
-			_logger, 
-			proofClientMock.Object, 
+			_logger,
+			proofClientMock.Object,
 			Mock.Of<IRtgsConnectionRepository>());
 	}
 
