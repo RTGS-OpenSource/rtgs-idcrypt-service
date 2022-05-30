@@ -15,12 +15,10 @@ public class PresentProofMessageHandler : IMessageHandler
 
 	public string MessageType => "present_proof";
 
-	public Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
+	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{
 		var proof = JsonSerializer.Deserialize<Proof>(jsonMessage);
 
-		_connectionRepository.ActivateBankPartnerConnectionAsync(proof.ConnectionId);
-
-		return Task.CompletedTask;
+		await _connectionRepository.ActivateAsync(proof.ConnectionId, cancellationToken);
 	}
 }

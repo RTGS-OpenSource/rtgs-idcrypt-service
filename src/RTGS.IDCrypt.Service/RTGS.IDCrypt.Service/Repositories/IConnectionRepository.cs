@@ -6,5 +6,5 @@ public interface IConnectionRepository
 {
 	Task SaveAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default);
 	Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default);
-	Task ActivateBankPartnerConnectionAsync(string connectionId);
+	Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default(global::System.Threading.CancellationToken));
 }

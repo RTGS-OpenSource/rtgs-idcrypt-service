@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<MessageHandlerResolver>();
 		services.AddSingleton<IMessageHandler, IdCryptConnectionMessageHandler>();
 		services.AddSingleton<IMessageHandler, IdCryptBasicMessageHandler>();
-		services.AddSingleton<IMessageHandler, CatchAllProofHandler>();
+		services.AddSingleton<IMessageHandler, PresentProofMessageHandler>();
 
 		services.AddSingleton<IBasicMessageHandler, ConnectionInvitationBasicMessageHandler>();
 
