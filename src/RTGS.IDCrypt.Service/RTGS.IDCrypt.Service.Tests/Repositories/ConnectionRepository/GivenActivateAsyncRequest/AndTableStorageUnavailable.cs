@@ -10,7 +10,6 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenActi
 public class AndTableStorageUnavailable
 {
 	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
-	private const string ConnectionId = "connection-id-1";
 	private readonly FakeLogger<Service.Repositories.ConnectionRepository> _logger = new();
 
 	public AndTableStorageUnavailable()
@@ -32,7 +31,7 @@ public class AndTableStorageUnavailable
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _connectionRepository.ActivateAsync(ConnectionId))
+		.Awaiting(() => _connectionRepository.ActivateAsync("connection-id"))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -42,13 +41,11 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionRepository.ActivateAsync(ConnectionId))
+			.Awaiting(() => _connectionRepository.ActivateAsync("connection-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-		{
-			"Error occurred when activating connection"
-		});
+		_logger.Logs[LogLevel.Error]
+			.Should().BeEquivalentTo("Error occurred when activating connection");
 	}
 }

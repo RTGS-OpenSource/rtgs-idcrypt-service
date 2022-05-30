@@ -25,6 +25,6 @@ public class GivenPresentProof
 		await handler.HandleAsync(serialisedProof, default);
 
 		connectionRepositoryMock.Verify(repo =>
-		repo.ActivateAsync(proof.ConnectionId, It.IsAny<CancellationToken>()), Times.Once);
+			repo.ActivateAsync(proof.ConnectionId, It.IsAny<CancellationToken>()), Times.Once);
 	}
 }

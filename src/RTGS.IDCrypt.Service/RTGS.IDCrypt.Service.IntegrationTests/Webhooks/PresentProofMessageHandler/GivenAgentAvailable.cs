@@ -6,10 +6,12 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.PresentProofMessageHandler;
+
 public class AndConnectionIsActive : IClassFixture<PendingConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly PendingConnectionFixture _testFixture;
+
 	private HttpResponseMessage _httpResponse;
 
 	public AndConnectionIsActive(PendingConnectionFixture testFixture)

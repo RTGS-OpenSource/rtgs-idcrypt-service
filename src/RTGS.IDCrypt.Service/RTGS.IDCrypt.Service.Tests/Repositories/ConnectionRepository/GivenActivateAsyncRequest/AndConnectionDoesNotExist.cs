@@ -16,7 +16,6 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private readonly FakeLogger<Service.Repositories.ConnectionRepository> _logger;
-	private const string ConnectionId = "connection-id-999";
 
 	public AndConnectionDoesNotExist()
 	{
@@ -63,7 +62,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, _logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.ActivateAsync(ConnectionId);
+	public async Task InitializeAsync() => await _connectionRepository.ActivateAsync("non-existent-connection-id");
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
