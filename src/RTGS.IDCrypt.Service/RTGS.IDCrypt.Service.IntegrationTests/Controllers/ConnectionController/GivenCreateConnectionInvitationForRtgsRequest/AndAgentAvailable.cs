@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+using RTGS.IDCrypt.Service.Models;
 using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCreateConnectionInvitationForRtgsRequest;
@@ -112,5 +113,22 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 				ServiceEndpoint = "service-endpoint"
 			}
 		});
+	}
+
+	[Fact]
+	public void WhenPosting_ThenWriteToTableStorage()
+	{
+		var inviteRequestQueryParams = QueryHelpers.ParseQuery(
+			_testFixture.IdCryptStatusCodeHttpHandler.Requests[CreateInvitation.Path].First().RequestUri!.Query);
+
+		var alias = inviteRequestQueryParams["alias"];
+
+		_testFixture.RtgsConnectionsTable
+			.Query<RtgsConnection>()
+			.Where(connection =>
+				connection.PartitionKey == alias
+				&& connection.RowKey == CreateInvitation.Response.ConnectionId
+				&& connection.Status == "Pending")
+			.Should().ContainSingle();
 	}
 }

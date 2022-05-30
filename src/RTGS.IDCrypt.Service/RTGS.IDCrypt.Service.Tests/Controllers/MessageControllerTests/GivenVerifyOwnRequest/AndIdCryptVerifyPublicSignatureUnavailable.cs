@@ -40,7 +40,7 @@ public class AndIdCryptVerifyPublicSignatureUnavailable
 
 		_controller = new MessageController(
 			_logger,
-			Mock.Of<IOptions<BankPartnerConnectionsConfig>>(),
+			Mock.Of<IOptions<ConnectionsConfig>>(),
 			Mock.Of<IStorageTableResolver>(),
 			jsonSignaturesClientMock.Object,
 			Mock.Of<IDateTimeProvider>(),

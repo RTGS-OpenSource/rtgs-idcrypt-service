@@ -35,7 +35,7 @@ public class AndIdCryptAgentApiUnavailable
 
 		_controller = new MessageController(
 			_logger,
-			Mock.Of<IOptions<BankPartnerConnectionsConfig>>(),
+			Mock.Of<IOptions<ConnectionsConfig>>(),
 			Mock.Of<IStorageTableResolver>(),
 			Mock.Of<IJsonSignaturesClient>(),
 			Mock.Of<IDateTimeProvider>(),

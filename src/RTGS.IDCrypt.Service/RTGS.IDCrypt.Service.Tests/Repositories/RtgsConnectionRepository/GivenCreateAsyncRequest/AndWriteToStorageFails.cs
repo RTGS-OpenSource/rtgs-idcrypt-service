@@ -7,50 +7,49 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenSaveAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.GivenCreateAsyncRequest;
 
 public class AndWriteToStorageFails
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
-	private readonly BankPartnerConnection _connection;
-	private readonly FakeLogger<Service.Repositories.ConnectionRepository> _logger = new();
+	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
+	private readonly RtgsConnection _connection;
+	private readonly FakeLogger<Service.Repositories.RtgsConnectionRepository> _logger = new();
 
 	public AndWriteToStorageFails()
 	{
-		_connection = new BankPartnerConnection
+		_connection = new RtgsConnection
 		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
+			PartitionKey = "alias",
+			RowKey = "rtgs-global-id",
 			ConnectionId = "connection-id",
-			PublicDid = "public-did",
 			Alias = "alias"
 		};
 
 		var tableClientMock = new Mock<TableClient>();
 		tableClientMock
 			.Setup(tableClient => tableClient.AddEntityAsync(
-				It.IsAny<BankPartnerConnection>(),
+				It.IsAny<RtgsConnection>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 		storageTableResolverMock
-			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
+			.Setup(resolver => resolver.GetTable("rtgsConnections"))
 			.Returns(tableClientMock.Object)
 			.Verifiable();
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
+			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(storageTableResolverMock.Object, options, _logger);
+		_rtgsConnectionRepository =
+			new Service.Repositories.RtgsConnectionRepository(storageTableResolverMock.Object, options, _logger);
 	}
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _connectionRepository.SaveAsync(_connection))
+		.Awaiting(() => _rtgsConnectionRepository.CreateAsync(_connection))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -60,13 +59,13 @@ public class AndWriteToStorageFails
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionRepository.SaveAsync(_connection))
+			.Awaiting(() => _rtgsConnectionRepository.CreateAsync(_connection))
 			.Should()
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 		{
-			"Error occurred when saving bank partner connection"
+			"Error occurred when saving RTGS connection"
 		});
 	}
 }

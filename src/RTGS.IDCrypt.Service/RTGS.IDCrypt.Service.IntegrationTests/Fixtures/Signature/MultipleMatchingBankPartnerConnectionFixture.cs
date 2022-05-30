@@ -8,7 +8,7 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-public class MultipleMatchingBankPartnerConnectionFixture : BankPartnerTestFixtureBase
+public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtureBase
 {
 	private readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new();
 

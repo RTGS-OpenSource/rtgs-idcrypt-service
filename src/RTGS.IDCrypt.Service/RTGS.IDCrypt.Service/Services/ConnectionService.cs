@@ -16,6 +16,7 @@ public class ConnectionService : IConnectionService
 	private readonly IConnectionsClient _connectionsClient;
 	private readonly ILogger<ConnectionService> _logger;
 	private readonly IConnectionRepository _connectionRepository;
+	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
 	private readonly string _rtgsGlobalId;
@@ -24,6 +25,7 @@ public class ConnectionService : IConnectionService
 		IConnectionsClient connectionsClient,
 		ILogger<ConnectionService> logger,
 		IConnectionRepository connectionRepository,
+		IRtgsConnectionRepository rtgsConnectionRepository,
 		IAliasProvider aliasProvider,
 		IWalletClient walletClient,
 		IOptions<CoreConfig> coreOptions)
@@ -31,6 +33,7 @@ public class ConnectionService : IConnectionService
 		_connectionsClient = connectionsClient;
 		_logger = logger;
 		_connectionRepository = connectionRepository;
+		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_aliasProvider = aliasProvider;
 		_walletClient = walletClient;
 
@@ -68,7 +71,7 @@ public class ConnectionService : IConnectionService
 				Status = BankPartnerConnectionStatuses.Pending
 			};
 
-			await _connectionRepository.SaveAsync(connection, cancellationToken);
+			await _connectionRepository.CreateAsync(connection, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -100,7 +103,7 @@ public class ConnectionService : IConnectionService
 				PublicDid = publicDid
 			};
 
-			await _connectionRepository.SaveAsync(connection, cancellationToken);
+			await _connectionRepository.CreateAsync(connection, cancellationToken);
 
 			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
 
@@ -127,6 +130,17 @@ public class ConnectionService : IConnectionService
 			var createConnectionInvitationResponse = await CreateConnectionInvitationAsync(alias, cancellationToken);
 
 			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
+
+			var connection = new RtgsConnection
+			{
+				PartitionKey = alias,
+				RowKey = createConnectionInvitationResponse.ConnectionId,
+				Alias = alias,
+				ConnectionId = createConnectionInvitationResponse.ConnectionId,
+				Status = BankPartnerConnectionStatuses.Pending
+			};
+
+			await _rtgsConnectionRepository.CreateAsync(connection, cancellationToken);
 
 			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
 

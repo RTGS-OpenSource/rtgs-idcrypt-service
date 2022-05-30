@@ -5,41 +5,44 @@ using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCrypt.Service.Tests.TestData;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenDeleteAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenCreateAsyncRequest;
 
 public class AndTableStorageAvailable : IAsyncLifetime
 {
 	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly BankPartnerConnection _connection;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
-	private const string ConnectionId = "connection-id-1";
 
 	public AndTableStorageAvailable()
 	{
-		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
-		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			TestBankPartnerConnections.Connections
-				.GetEnumerator());
+		_connection = new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias",
+			ConnectionId = "connection-id",
+			PublicDid = "public-did",
+			Alias = "alias"
+		};
+
+		Func<BankPartnerConnection, bool> connectionMatches = request =>
+		{
+			request.Should().BeEquivalentTo(_connection, options =>
+			{
+				options.Excluding(connection => connection.ETag);
+				options.Excluding(connection => connection.Timestamp);
+
+				return options;
+			});
+
+			return true;
+		};
 
 		_tableClientMock = new Mock<TableClient>();
-
-		var expectedConnection = TestBankPartnerConnections.Connections.Single(x => x.ConnectionId == ConnectionId);
-
-		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(
-					It.IsAny<string>(),
-					It.IsAny<int?>(),
-					It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnectionMock.Object);
-
 		_tableClientMock
-			.Setup(tableClient => tableClient.DeleteEntityAsync(
-				expectedConnection.PartitionKey,
-				expectedConnection.RowKey,
-				It.IsAny<Azure.ETag>(),
+			.Setup(tableClient => tableClient.AddEntityAsync(
+				It.Is<BankPartnerConnection>(connection => connectionMatches(connection)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
@@ -60,7 +63,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.DeleteAsync(ConnectionId);
+	public async Task InitializeAsync() => await _connectionRepository.CreateAsync(_connection);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
@@ -68,5 +71,5 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
 
 	[Fact]
-	public void ThenConnectionDeleted() => _tableClientMock.Verify();
+	public void ThenConnectionIsWritten() => _tableClientMock.Verify();
 }

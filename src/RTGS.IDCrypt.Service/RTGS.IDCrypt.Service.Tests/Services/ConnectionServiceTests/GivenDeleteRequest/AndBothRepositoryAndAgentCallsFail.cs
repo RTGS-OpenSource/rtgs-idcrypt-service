@@ -37,11 +37,11 @@ public class AndBothRepositoryAndAgentCallsFail
 			.ThrowsAsync(new Exception("Something else went wrong"))
 			.Verifiable();
 
-
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			_logger,
 			_connectionRepositoryMock.Object,
+			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
 			coreOptions);

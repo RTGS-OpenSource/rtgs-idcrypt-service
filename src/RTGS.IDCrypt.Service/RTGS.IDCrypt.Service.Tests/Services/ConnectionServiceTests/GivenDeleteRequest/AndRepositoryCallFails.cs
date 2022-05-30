@@ -40,6 +40,7 @@ public class AndRepositoryCallFails
 			_connectionsClientMock.Object,
 			_logger,
 			_connectionRepositoryMock.Object,
+			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
 			coreOptions);

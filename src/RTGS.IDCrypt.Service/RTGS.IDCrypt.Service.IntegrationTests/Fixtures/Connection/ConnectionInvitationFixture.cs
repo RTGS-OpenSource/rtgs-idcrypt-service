@@ -4,7 +4,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class ConnectionInvitationFixture : BankPartnerTestFixtureBase
+public class ConnectionInvitationFixture : ConnectionsTestFixtureBase
 {
 	public ConnectionInvitationFixture()
 	{

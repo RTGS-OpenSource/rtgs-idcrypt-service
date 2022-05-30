@@ -52,7 +52,7 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 
 		_controller = new MessageController(
 			logger,
-			Mock.Of<IOptions<BankPartnerConnectionsConfig>>(),
+			Mock.Of<IOptions<ConnectionsConfig>>(),
 			Mock.Of<IStorageTableResolver>(),
 			_jsonSignaturesClientMock.Object,
 			Mock.Of<IDateTimeProvider>(),

@@ -39,6 +39,7 @@ public class AndConnectionExists : IAsyncLifetime
 			_connectionsClientMock.Object,
 			logger,
 			_connectionRepositoryMock.Object,
+			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
 			coreOptions);

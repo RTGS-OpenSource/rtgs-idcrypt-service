@@ -8,11 +8,11 @@ namespace RTGS.IDCrypt.Service.Repositories;
 public class ConnectionRepository : IConnectionRepository
 {
 	private readonly IStorageTableResolver _storageTableResolver;
-	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
+	private readonly ConnectionsConfig _bankPartnerConnectionsConfig;
 	private readonly ILogger<ConnectionRepository> _logger;
 
 	public ConnectionRepository(IStorageTableResolver storageTableResolver,
-		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsOptions,
+		IOptions<ConnectionsConfig> bankPartnerConnectionsOptions,
 		ILogger<ConnectionRepository> logger)
 	{
 		_storageTableResolver = storageTableResolver;
@@ -20,7 +20,7 @@ public class ConnectionRepository : IConnectionRepository
 		_logger = logger;
 	}
 
-	public async Task SaveAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
+	public async Task CreateAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
 	{
 		try
 		{

@@ -43,6 +43,7 @@ public class AndIdCryptApiUnavailable
 			connectionsClientMock.Object,
 			_logger,
 			Mock.Of<IConnectionRepository>(),
+			Mock.Of<IRtgsConnectionRepository>(),
 			aliasProviderMock.Object,
 			Mock.Of<IWalletClient>(),
 			coreOptions

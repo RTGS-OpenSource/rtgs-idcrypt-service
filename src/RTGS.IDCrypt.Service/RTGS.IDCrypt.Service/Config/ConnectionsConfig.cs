@@ -1,7 +1,8 @@
 ﻿namespace RTGS.IDCrypt.Service.Config;
 
-public record BankPartnerConnectionsConfig
+public record ConnectionsConfig
 {
 	public string BankPartnerConnectionsTableName { get; init; }
+	public string RtgsConnectionsTableName { get; init; }
 	public TimeSpan MinimumConnectionAge { get; init; }
 }

@@ -2,6 +2,7 @@
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -14,6 +15,7 @@ namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreate
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
+	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionRepositoryMock = new();
 
 	private readonly ConnectionService _connectionService;
 	private readonly Models.ConnectionInvitation _expectedResponse;
@@ -48,7 +50,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			InvitationUrl = "invitation-url",
-			Invitation = new ConnectionInvitation
+			Invitation = new IDCryptSDK.Connections.Models.ConnectionInvitation
 			{
 				Id = "id",
 				Type = "type",
@@ -76,10 +78,38 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		var aliasProviderMock = new Mock<IAliasProvider>();
 		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
 
+		var expectedConnection = new RtgsConnection
+		{
+			PartitionKey = Alias,
+			RowKey = createConnectionInvitationResponse.ConnectionId,
+			Alias = Alias,
+			ConnectionId = createConnectionInvitationResponse.ConnectionId,
+			Status = "Pending"
+		};
+
+		Func<RtgsConnection, bool> connectionMatches = actualConnection =>
+		{
+			actualConnection.Should().BeEquivalentTo(expectedConnection, options =>
+			{
+				options.Excluding(connection => connection.ETag);
+				options.Excluding(connection => connection.Timestamp);
+
+				return options;
+			});
+
+			return true;
+		};
+
+		_rtgsConnectionRepositoryMock.Setup(repo => repo.CreateAsync(
+				It.Is<RtgsConnection>(connection => connectionMatches(connection)),
+				It.IsAny<CancellationToken>()))
+			.Verifiable();
+
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			logger,
 			Mock.Of<IConnectionRepository>(),
+			_rtgsConnectionRepositoryMock.Object,
 			aliasProviderMock.Object,
 			Mock.Of<IWalletClient>(),
 			coreOptions);
@@ -96,4 +126,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	[Fact]
 	public void WhenInvoked_ThenCallCreateConnectionInvitationAsyncWithExpected() => _connectionsClientMock.Verify();
+
+	[Fact]
+	public void WhenInvoked_ThenCallSaveBankPartnerConnectionAsyncWithExpected() => _rtgsConnectionRepositoryMock.Verify();
 }
