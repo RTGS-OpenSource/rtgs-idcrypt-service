@@ -4,7 +4,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class MissingDeleteConnectionFixture : BankPartnerTestFixtureBase
+public class MissingDeleteConnectionFixture : ConnectionsTestFixtureBase
 {
 	public MissingDeleteConnectionFixture()
 	{

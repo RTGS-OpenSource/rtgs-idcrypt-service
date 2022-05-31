@@ -6,12 +6,12 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable;
 
-public class AndConnectionIsNotActive : IClassFixture<ProofExchangeFixture>, IAsyncLifetime
+public class AndConnectionIsNotActive : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private HttpResponseMessage _httpResponse;
 
-	public AndConnectionIsNotActive(ProofExchangeFixture testFixture)
+	public AndConnectionIsNotActive(ConnectionsWebhookFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 

@@ -1,17 +1,18 @@
-﻿using Azure.Data.Tables;
+﻿using System.Linq.Expressions;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCrypt.Service.Tests.TestData;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenDeleteAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenDeleteAsyncRequest;
 
 public class AndConnectionDoesNotExist : IAsyncLifetime
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private const string ConnectionId = "connection-id-999";
@@ -20,14 +21,23 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 	{
 		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			TestBankPartnerConnections.Connections
-				.GetEnumerator());
+			new List<BankPartnerConnection>().GetEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
+		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
+		{
+			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection =>
+				bankPartnerConnection.ConnectionId == ConnectionId;
+
+			actualExpression.Should().BeEquivalentTo(expectedExpression);
+
+			return true;
+		};
+
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(
-					It.IsAny<string>(),
+				tableClient.Query(
+					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
@@ -39,18 +49,21 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
-		var logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
+		var logger = new FakeLogger<Service.Repositories.BankPartnerConnectionRepository>();
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
+			_storageTableResolverMock.Object,
+			options,
+			logger,
+			Mock.Of<IDateTimeProvider>());
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.DeleteAsync(ConnectionId);
+	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.DeleteAsync(ConnectionId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

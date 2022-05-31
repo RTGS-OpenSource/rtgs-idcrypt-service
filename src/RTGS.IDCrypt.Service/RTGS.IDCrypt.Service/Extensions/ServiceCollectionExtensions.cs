@@ -20,11 +20,11 @@ public static class ServiceCollectionExtensions
 	public static void AddRtgsDependencies(this IServiceCollection services, IConfiguration config)
 	{
 		services.Configure<CoreConfig>(config);
-		services.Configure<BankPartnerConnectionsConfig>(config);
+		services.Configure<ConnectionsConfig>(config);
 
 		services.AddSingleton(_ =>
 		{
-			var bankPartnerConnectionsConfig = new BankPartnerConnectionsConfig
+			var bankPartnerConnectionsConfig = new ConnectionsConfig
 			{
 				BankPartnerConnectionsTableName = "bankPartnerConnections",
 				MinimumConnectionAge = TimeSpan.FromMinutes(5)
@@ -35,8 +35,10 @@ public static class ServiceCollectionExtensions
 			return Options.Create(bankPartnerConnectionsConfig);
 		});
 
+		services.AddSingleton<IBankPartnerConnectionRepository, BankPartnerConnectionRepository>();
+		services.AddSingleton<IRtgsConnectionRepository, RtgsConnectionRepository>();
+
 		services.AddSingleton<IConnectionService, ConnectionService>();
-		services.AddSingleton<IConnectionRepository, ConnectionRepository>();
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
 		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();

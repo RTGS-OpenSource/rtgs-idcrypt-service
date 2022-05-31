@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class DeleteConnectionFixture : BankPartnerTestFixtureBase
+public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 {
 	public DeleteConnectionFixture()
 	{

@@ -21,7 +21,8 @@ public class GivenConnectionService
 			new ConnectionService(
 				Mock.Of<IConnectionsClient>(),
 				Mock.Of<ILogger<ConnectionService>>(),
-				Mock.Of<IConnectionRepository>(),
+				Mock.Of<IBankPartnerConnectionRepository>(),
+				Mock.Of<IRtgsConnectionRepository>(),
 				Mock.Of<IAliasProvider>(),
 				Mock.Of<IWalletClient>(),
 				Options.Create(new CoreConfig

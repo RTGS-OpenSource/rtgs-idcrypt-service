@@ -66,7 +66,7 @@ public class AndIdCryptAgentApiUnavailable
 				storageTableResolver.GetTable("bankPartnerConnections"))
 			.Returns(tableClientMock.Object);
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});

@@ -1,22 +1,21 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
 using RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.TestData;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using VerifyXunit;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable.AndConnectionIsActive;
 
 [UsesVerify]
-public class AndConnectionIsActive : IClassFixture<ProofExchangeFixture>, IAsyncLifetime
+public class AndFromBank : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly ProofExchangeFixture _testFixture;
+	private readonly ConnectionsWebhookFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public AndConnectionIsActive(ProofExchangeFixture testFixture)
+	public AndFromBank(ConnectionsWebhookFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -56,11 +55,9 @@ public class AndConnectionIsActive : IClassFixture<ProofExchangeFixture>, IAsync
 	{
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SendProofRequest.Path].Single().Content!.ReadAsStringAsync();
 
-		using var jsonDocument = JsonDocument.Parse(content);
-
-		var prettyContent = JsonSerializer.Serialize(jsonDocument, new JsonSerializerOptions { WriteIndented = true });
-
-		await Verifier.Verify(prettyContent);
+		await Verifier
+			.VerifyJson(content)
+			.UseFileName("ProofBody.txt");
 	}
 
 	[Fact]

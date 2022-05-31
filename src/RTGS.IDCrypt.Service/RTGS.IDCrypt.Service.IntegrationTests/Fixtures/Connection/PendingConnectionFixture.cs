@@ -1,7 +1,7 @@
 ﻿using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
-public class PendingConnectionFixture : BankPartnerTestFixtureBase
+public class PendingConnectionFixture : ConnectionsTestFixtureBase
 {
 	protected override async Task Seed()
 	{

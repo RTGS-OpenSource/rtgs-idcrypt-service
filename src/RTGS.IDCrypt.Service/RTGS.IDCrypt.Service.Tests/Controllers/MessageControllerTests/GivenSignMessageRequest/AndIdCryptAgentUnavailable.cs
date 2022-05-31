@@ -76,7 +76,7 @@ public class AndIdCryptAgentUnavailable
 				storageTableResolver.GetTable("bankPartnerConnections"))
 			.Returns(tableClientMock.Object);
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections",
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)

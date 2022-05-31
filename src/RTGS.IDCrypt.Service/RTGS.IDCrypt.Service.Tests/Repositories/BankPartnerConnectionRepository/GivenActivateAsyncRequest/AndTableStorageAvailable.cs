@@ -1,17 +1,19 @@
-﻿using Azure;
+﻿using System.Linq.Expressions;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenActivateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenActivateAsyncRequest;
 
 public class AndTableStorageAvailable : IAsyncLifetime
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private readonly BankPartnerConnection _retrievedConnection;
@@ -35,9 +37,19 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 		_tableClientMock = new Mock<TableClient>();
 
+		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
+		{
+			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection =>
+				bankPartnerConnection.ConnectionId == _retrievedConnection.ConnectionId;
+
+			actualExpression.Should().BeEquivalentTo(expectedExpression);
+
+			return true;
+		};
+
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(
-					It.IsAny<string>(),
+				tableClient.Query(
+					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
@@ -81,18 +93,21 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
-		var logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
+		var logger = new FakeLogger<Service.Repositories.BankPartnerConnectionRepository>();
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
+			_storageTableResolverMock.Object,
+			options,
+			logger,
+			Mock.Of<IDateTimeProvider>());
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.ActivateAsync(_retrievedConnection.ConnectionId);
+	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.ActivateAsync(_retrievedConnection.ConnectionId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

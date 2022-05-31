@@ -15,7 +15,8 @@ public class ConnectionService : IConnectionService
 {
 	private readonly IConnectionsClient _connectionsClient;
 	private readonly ILogger<ConnectionService> _logger;
-	private readonly IConnectionRepository _connectionRepository;
+	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
+	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
 	private readonly string _rtgsGlobalId;
@@ -23,14 +24,16 @@ public class ConnectionService : IConnectionService
 	public ConnectionService(
 		IConnectionsClient connectionsClient,
 		ILogger<ConnectionService> logger,
-		IConnectionRepository connectionRepository,
+		IBankPartnerConnectionRepository bankPartnerConnectionRepository,
+		IRtgsConnectionRepository rtgsConnectionRepository,
 		IAliasProvider aliasProvider,
 		IWalletClient walletClient,
 		IOptions<CoreConfig> coreOptions)
 	{
 		_connectionsClient = connectionsClient;
 		_logger = logger;
-		_connectionRepository = connectionRepository;
+		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
+		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_aliasProvider = aliasProvider;
 		_walletClient = walletClient;
 
@@ -65,10 +68,10 @@ public class ConnectionService : IConnectionService
 				ConnectionId = response.ConnectionId,
 				Alias = response.Alias,
 				PublicDid = invitation.PublicDid,
-				Status = BankPartnerConnectionStatuses.Pending
+				Status = ConnectionStatuses.Pending
 			};
 
-			await _connectionRepository.SaveAsync(connection, cancellationToken);
+			await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -96,11 +99,11 @@ public class ConnectionService : IConnectionService
 				RowKey = alias,
 				Alias = alias,
 				ConnectionId = createConnectionInvitationResponse.ConnectionId,
-				Status = BankPartnerConnectionStatuses.Pending,
+				Status = ConnectionStatuses.Pending,
 				PublicDid = publicDid
 			};
 
-			await _connectionRepository.SaveAsync(connection, cancellationToken);
+			await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
 
 			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
 
@@ -128,6 +131,17 @@ public class ConnectionService : IConnectionService
 
 			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
 
+			var connection = new RtgsConnection
+			{
+				PartitionKey = alias,
+				RowKey = createConnectionInvitationResponse.ConnectionId,
+				Alias = alias,
+				ConnectionId = createConnectionInvitationResponse.ConnectionId,
+				Status = ConnectionStatuses.Pending
+			};
+
+			await _rtgsConnectionRepository.CreateAsync(connection, cancellationToken);
+
 			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
 
 			return connectionInvitation;
@@ -150,7 +164,7 @@ public class ConnectionService : IConnectionService
 		{
 			aggregateTask = Task.WhenAll(
 				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
-				_connectionRepository.DeleteAsync(connectionId, cancellationToken));
+				_bankPartnerConnectionRepository.DeleteAsync(connectionId, cancellationToken));
 
 			await aggregateTask;
 		}

@@ -1,35 +1,41 @@
 ﻿using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 
 namespace RTGS.IDCrypt.Service.Repositories;
 
-public class ConnectionRepository : IConnectionRepository
+public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 {
 	private readonly IStorageTableResolver _storageTableResolver;
-	private readonly BankPartnerConnectionsConfig _bankPartnerConnectionsConfig;
-	private readonly ILogger<ConnectionRepository> _logger;
+	private readonly ConnectionsConfig _connectionsConfig;
+	private readonly ILogger<BankPartnerConnectionRepository> _logger;
+	private readonly IDateTimeProvider _dateTimeProvider;
 
-	public ConnectionRepository(IStorageTableResolver storageTableResolver,
-		IOptions<BankPartnerConnectionsConfig> bankPartnerConnectionsOptions,
-		ILogger<ConnectionRepository> logger)
+	public BankPartnerConnectionRepository(IStorageTableResolver storageTableResolver,
+		IOptions<ConnectionsConfig> connectionsOptions,
+		ILogger<BankPartnerConnectionRepository> logger,
+		IDateTimeProvider dateTimeProvider)
 	{
 		_storageTableResolver = storageTableResolver;
-		_bankPartnerConnectionsConfig = bankPartnerConnectionsOptions.Value;
+		_connectionsConfig = connectionsOptions.Value;
 		_logger = logger;
+		_dateTimeProvider = dateTimeProvider;
 	}
 
 	public async Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			var connection = tableClient
-				.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-				.SingleOrDefault(bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId);
+				.Query<BankPartnerConnection>(bankPartnerConnection =>
+						bankPartnerConnection.ConnectionId == connectionId,
+					cancellationToken: cancellationToken)
+				.SingleOrDefault();
 
 			if (connection is null)
 			{
@@ -37,7 +43,7 @@ public class ConnectionRepository : IConnectionRepository
 				return;
 			}
 
-			connection.Status = "Active";
+			connection.Status = ConnectionStatuses.Active;
 
 			await tableClient.UpdateEntityAsync(
 				connection,
@@ -53,13 +59,13 @@ public class ConnectionRepository : IConnectionRepository
 		}
 	}
 
-	public async Task SaveAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
+	public async Task CreateAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			connection.CreatedAt = DateTime.UtcNow;
+			connection.CreatedAt = _dateTimeProvider.UtcNow;
 
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			await tableClient.AddEntityAsync(connection, cancellationToken);
 		}
@@ -75,11 +81,13 @@ public class ConnectionRepository : IConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			var connection = tableClient
-				.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-				.SingleOrDefault(bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId);
+				.Query<BankPartnerConnection>(bankPartnerConnection =>
+						bankPartnerConnection.ConnectionId == connectionId,
+					cancellationToken: cancellationToken)
+				.SingleOrDefault();
 
 			if (connection is null)
 			{

@@ -67,7 +67,7 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 		var logger = new FakeLogger<MessageController>();
 
-		var options = Options.Create(new BankPartnerConnectionsConfig
+		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections",
 			MinimumConnectionAge = TimeSpan.FromMinutes(5)

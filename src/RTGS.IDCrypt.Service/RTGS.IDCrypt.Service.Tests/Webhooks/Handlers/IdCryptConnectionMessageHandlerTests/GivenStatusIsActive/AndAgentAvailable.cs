@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
@@ -12,7 +12,7 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageH
 public class AndAgentAvailable
 {
 	private readonly Mock<IProofClient> _proofClientMock;
-	private readonly FakeLogger<IdCryptConnectionMessageHandler> _logger;
+	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionsRepository;
 	private readonly IdCryptConnectionMessageHandler _handler;
 	private SendProofRequestRequest _expectedRequest;
 
@@ -33,9 +33,11 @@ public class AndAgentAvailable
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		_logger = new FakeLogger<IdCryptConnectionMessageHandler>();
+		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
-		_handler = new IdCryptConnectionMessageHandler(_logger, _proofClientMock.Object);
+		_rtgsConnectionsRepository = new Mock<IRtgsConnectionRepository>();
+
+		_handler = new IdCryptConnectionMessageHandler(logger, _proofClientMock.Object, _rtgsConnectionsRepository.Object);
 	}
 
 	[Fact]
@@ -59,7 +61,7 @@ public class AndAgentAvailable
 	}
 
 	[Fact]
-	public async Task WhenPostingFromRtgs_ThenProofNotRequested()
+	public async Task WhenPostingFromRtgs_ThenSetConnectionActive()
 	{
 		var activeRtgsConnection = new IdCryptConnection
 		{
@@ -75,30 +77,9 @@ public class AndAgentAvailable
 
 		await _handler.HandleAsync(message, default);
 
-		_proofClientMock.Verify(client => client.SendProofRequestAsync(
-			It.IsAny<SendProofRequestRequest>(),
-			It.IsAny<CancellationToken>()), Times.Never);
-	}
-
-	[Fact]
-	public async Task WhenPostingFromRtgs_ThenLog()
-	{
-		var activeRtgsConnection = new IdCryptConnection
-		{
-			Alias = "alias",
-			ConnectionId = "connection-id",
-			State = "active",
-			TheirLabel = "RTGS_Jurisdiction_Agent_Test"
-		};
-
-		SetupExpectedRequest(activeRtgsConnection.ConnectionId);
-
-		var message = JsonSerializer.Serialize(activeRtgsConnection);
-
-		await _handler.HandleAsync(message, default);
-
-		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(
-			"Ignoring connection with alias alias because it is not a bank connection");
+		_rtgsConnectionsRepository.Verify(repo =>
+			repo.ActivateAsync("connection-id", It.IsAny<CancellationToken>()),
+			Times.Once);
 	}
 
 	private void SetupExpectedRequest(string connectionId)

@@ -6,11 +6,12 @@ using RTGS.IDCrypt.Service.Storage;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
-public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program>
+public abstract class ConnectionsTestFixtureBase : WebApplicationFactory<Program>
 {
 	private string _bankPartnerConnectionsTableName;
+	private string _rtgsConnectionsTableName;
 
-	protected BankPartnerTestFixtureBase()
+	protected ConnectionsTestFixtureBase()
 	{
 		LoadConfig();
 		CreateTable();
@@ -22,6 +23,8 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 
 	public TableClient BankPartnerConnectionsTable { get; private set; }
 
+	public TableClient RtgsConnectionsTable { get; private set; }
+
 	private void LoadConfig() =>
 		Configuration = new ConfigurationBuilder()
 			.AddJsonFile("testsettings.json")
@@ -30,15 +33,20 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 
 	private void CreateTable()
 	{
-		_bankPartnerConnectionsTableName = $"bankPartnerConnections{Guid.NewGuid():N}";
-
 		var storageTableResolver = new StorageTableResolver(Configuration);
 
+		_bankPartnerConnectionsTableName = $"bankPartnerConnections{Guid.NewGuid():N}";
 		BankPartnerConnectionsTable = storageTableResolver.GetTable(_bankPartnerConnectionsTableName);
+
+		_rtgsConnectionsTableName = $"rtgsConnections{Guid.NewGuid():N}";
+		RtgsConnectionsTable = storageTableResolver.GetTable(_rtgsConnectionsTableName);
 	}
 
 	protected async Task InsertBankPartnerConnectionAsync(BankPartnerConnection bankPartnerConnection) =>
 		await BankPartnerConnectionsTable.AddEntityAsync(bankPartnerConnection);
+
+	protected async Task InsertRtgsConnectionAsync(RtgsConnection rtgsConnection) =>
+		await RtgsConnectionsTable.AddEntityAsync(rtgsConnection);
 
 	protected virtual Task Seed() =>
 		Task.CompletedTask;
@@ -54,7 +62,8 @@ public abstract class BankPartnerTestFixtureBase : WebApplicationFactory<Program
 				.AddEnvironmentVariables()
 				.AddInMemoryCollection(new[]
 				{
-					new KeyValuePair<string, string>("BankPartnerConnectionsTableName", _bankPartnerConnectionsTableName)
+					new KeyValuePair<string, string>("BankPartneRConnectionsTableName", _bankPartnerConnectionsTableName),
+					new KeyValuePair<string, string>("RtgsConnectionsTableName", _rtgsConnectionsTableName)
 				})
 				.Build();
 

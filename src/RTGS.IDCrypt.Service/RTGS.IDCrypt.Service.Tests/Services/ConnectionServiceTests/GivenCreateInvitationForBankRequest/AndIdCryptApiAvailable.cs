@@ -15,7 +15,7 @@ namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreate
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
-	private readonly Mock<IConnectionRepository> _connectionRepositoryMock = new();
+	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 
 	private readonly ConnectionService _connectionService;
 	private readonly Models.ConnectionInvitation _expectedResponse;
@@ -98,7 +98,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_connectionRepositoryMock.Setup(repo => repo.SaveAsync(
+		_bankPartnerConnectionRepositoryMock.Setup(repo => repo.CreateAsync(
 				It.Is<BankPartnerConnection>(connection => connectionMatches(connection)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
@@ -109,7 +109,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			logger,
-			_connectionRepositoryMock.Object,
+			_bankPartnerConnectionRepositoryMock.Object,
+			Mock.Of<IRtgsConnectionRepository>(),
 			aliasProviderMock.Object,
 			Mock.Of<IWalletClient>(),
 			coreOptions);
@@ -128,5 +129,5 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	public void WhenInvoked_ThenCallCreateConnectionInvitationAsyncWithExpected() => _connectionsClientMock.Verify();
 
 	[Fact]
-	public void WhenInvoked_ThenCallSaveBankPartnerConnectionAsyncWithExpected() => _connectionRepositoryMock.Verify();
+	public void WhenInvoked_ThenCallSaveBankPartnerConnectionAsyncWithExpected() => _bankPartnerConnectionRepositoryMock.Verify();
 }
