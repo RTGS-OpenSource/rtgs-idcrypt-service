@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using System.Linq.Expressions;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -32,13 +33,23 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		var rtgsConnectionMock = new Mock<Pageable<RtgsConnection>>();
 
 		rtgsConnectionMock.Setup(rtgsConnections => rtgsConnections.GetEnumerator())
-			.Returns(new List<RtgsConnection> { retrievedConnection }.GetEnumerator());
+			.Returns(new List<RtgsConnection>().GetEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
+		Func<Expression<Func<RtgsConnection, bool>>, bool> expressionMatches = actualExpression =>
+		{
+			Expression<Func<RtgsConnection, bool>> expectedExpression = rtgsConnection =>
+				rtgsConnection.ConnectionId == "non-existent-connection-id";
+
+			actualExpression.Should().BeEquivalentTo(expectedExpression);
+
+			return true;
+		};
+
 		_tableClientMock.Setup(tableClient =>
 				tableClient.Query<RtgsConnection>(
-					It.IsAny<string>(),
+					It.Is<Expression<Func<RtgsConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))

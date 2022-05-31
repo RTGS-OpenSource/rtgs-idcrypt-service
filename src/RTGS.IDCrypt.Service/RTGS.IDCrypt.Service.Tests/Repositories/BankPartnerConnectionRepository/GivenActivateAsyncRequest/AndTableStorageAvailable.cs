@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using System.Linq.Expressions;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -36,9 +37,19 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 		_tableClientMock = new Mock<TableClient>();
 
+		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
+		{
+			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection =>
+				bankPartnerConnection.ConnectionId == _retrievedConnection.ConnectionId;
+
+			actualExpression.Should().BeEquivalentTo(expectedExpression);
+
+			return true;
+		};
+
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(
-					It.IsAny<string>(),
+				tableClient.Query(
+					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))

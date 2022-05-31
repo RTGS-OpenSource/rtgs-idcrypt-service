@@ -32,8 +32,10 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			var connection = tableClient
-				.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-				.SingleOrDefault(bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId);
+				.Query<BankPartnerConnection>(bankPartnerConnection =>
+						bankPartnerConnection.ConnectionId == connectionId,
+					cancellationToken: cancellationToken)
+				.SingleOrDefault();
 
 			if (connection is null)
 			{

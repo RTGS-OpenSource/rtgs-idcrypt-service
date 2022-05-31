@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using System.Linq.Expressions;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,26 +21,26 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 
 	public AndConnectionDoesNotExist()
 	{
-		var retrievedConnection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
-			ConnectionId = "connection-id",
-			Alias = "alias",
-			PublicDid = "public-did",
-			Status = "Pending"
-		};
-
 		var bankPartnerConnectionMock = new Mock<Pageable<BankPartnerConnection>>();
 
 		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator())
-			.Returns(new List<BankPartnerConnection> { retrievedConnection }.GetEnumerator());
+			.Returns(new List<BankPartnerConnection>().GetEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
+		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
+		{
+			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection =>
+				bankPartnerConnection.ConnectionId == "non-existent-connection-id";
+
+			actualExpression.Should().BeEquivalentTo(expectedExpression);
+
+			return true;
+		};
+
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(
-					It.IsAny<string>(),
+				tableClient.Query(
+					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
