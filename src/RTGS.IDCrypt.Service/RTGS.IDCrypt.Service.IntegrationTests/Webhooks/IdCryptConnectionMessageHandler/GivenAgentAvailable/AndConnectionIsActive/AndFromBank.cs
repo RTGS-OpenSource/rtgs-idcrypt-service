@@ -6,7 +6,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHan
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using VerifyXunit;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable.AndConnectionIsActive;
 
 [UsesVerify]
 public class AndFromBank : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime

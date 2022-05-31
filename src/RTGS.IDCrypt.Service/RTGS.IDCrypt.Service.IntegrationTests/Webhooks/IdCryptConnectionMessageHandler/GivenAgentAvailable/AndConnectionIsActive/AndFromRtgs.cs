@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable.AndConnectionIsActive;
 
 public class AndFromRtgs : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
 {

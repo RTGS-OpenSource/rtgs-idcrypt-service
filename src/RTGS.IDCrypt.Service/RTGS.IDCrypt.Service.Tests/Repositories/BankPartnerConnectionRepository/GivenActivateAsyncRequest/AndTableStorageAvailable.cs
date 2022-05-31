@@ -7,7 +7,7 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenActivateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenActivateAsyncRequest;
 
 public class AndTableStorageAvailable : IAsyncLifetime
 {
