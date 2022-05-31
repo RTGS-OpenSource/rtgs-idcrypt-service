@@ -39,7 +39,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 
 		if (connection.TheirLabel.StartsWith("RTGS_Jurisdiction_Agent"))
 		{
-			await HandleJurisidctionConnection(connection, cancellationToken);
+			await HandleJurisdictionConnection(connection, cancellationToken);
 
 			return;
 		}
@@ -47,12 +47,10 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 		if (connection.TheirLabel.StartsWith("RTGS_Bank_Agent"))
 		{
 			await HandleBankConnection(connection, cancellationToken);
-
-			return;
 		}
 	}
 
-	private async Task HandleJurisidctionConnection(IdCryptConnection connection, CancellationToken cancellationToken) =>
+	private async Task HandleJurisdictionConnection(IdCryptConnection connection, CancellationToken cancellationToken) =>
 		await _rtgsConnectionRepository.ActivateAsync(connection.ConnectionId, cancellationToken);
 
 	private async Task HandleBankConnection(IdCryptConnection connection, CancellationToken cancellationToken)

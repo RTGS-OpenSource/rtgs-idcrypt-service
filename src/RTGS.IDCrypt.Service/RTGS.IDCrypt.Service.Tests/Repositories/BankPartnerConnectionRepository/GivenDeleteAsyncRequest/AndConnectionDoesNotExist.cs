@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -46,8 +47,11 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_bankPartnerConnectionRepository =
-			new Service.Repositories.BankPartnerConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
+			_storageTableResolverMock.Object,
+			options,
+			logger,
+			Mock.Of<IDateTimeProvider>());
 	}
 
 	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.DeleteAsync(ConnectionId);

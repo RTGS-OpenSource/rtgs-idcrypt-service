@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -17,13 +18,16 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 	public AndTableStorageAvailable()
 	{
+		var referenceDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
+
 		_connection = new BankPartnerConnection
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
 			ConnectionId = "connection-id",
 			PublicDid = "public-did",
-			Alias = "alias"
+			Alias = "alias",
+			CreatedAt = referenceDate
 		};
 
 		Func<BankPartnerConnection, bool> connectionMatches = request =>
@@ -59,8 +63,14 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_bankPartnerConnectionRepository =
-			new Service.Repositories.BankPartnerConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
+
+		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
+			_storageTableResolverMock.Object,
+			options,
+			logger,
+			dateTimeProviderMock.Object);
 	}
 
 	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.CreateAsync(_connection);

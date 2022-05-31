@@ -1,6 +1,7 @@
 ﻿using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 
@@ -11,14 +12,17 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly ConnectionsConfig _connectionsConfig;
 	private readonly ILogger<BankPartnerConnectionRepository> _logger;
+	private readonly IDateTimeProvider _dateTimeProvider;
 
 	public BankPartnerConnectionRepository(IStorageTableResolver storageTableResolver,
 		IOptions<ConnectionsConfig> connectionsOptions,
-		ILogger<BankPartnerConnectionRepository> logger)
+		ILogger<BankPartnerConnectionRepository> logger,
+		IDateTimeProvider dateTimeProvider)
 	{
 		_storageTableResolver = storageTableResolver;
 		_connectionsConfig = connectionsOptions.Value;
 		_logger = logger;
+		_dateTimeProvider = dateTimeProvider;
 	}
 
 	public async Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default)
@@ -57,7 +61,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			connection.CreatedAt = DateTime.UtcNow;
+			connection.CreatedAt = _dateTimeProvider.UtcNow;
 
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
@@ -78,8 +82,10 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			var connection = tableClient
-				.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-				.SingleOrDefault(bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId);
+				.Query<BankPartnerConnection>(bankPartnerConnection =>
+						bankPartnerConnection.ConnectionId == connectionId,
+					cancellationToken: cancellationToken)
+				.SingleOrDefault();
 
 			if (connection is null)
 			{

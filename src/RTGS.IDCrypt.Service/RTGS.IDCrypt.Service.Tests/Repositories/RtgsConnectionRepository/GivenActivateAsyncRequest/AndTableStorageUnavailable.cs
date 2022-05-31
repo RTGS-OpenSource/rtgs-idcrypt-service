@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
@@ -9,7 +10,7 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.Given
 
 public class AndTableStorageUnavailable
 {
-	private readonly Service.Repositories.RtgsConnectionRepository _bankPartnerConnectionRepository;
+	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly FakeLogger<Service.Repositories.RtgsConnectionRepository> _logger = new();
 
 	public AndTableStorageUnavailable()
@@ -25,13 +26,16 @@ public class AndTableStorageUnavailable
 			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_bankPartnerConnectionRepository =
-			new Service.Repositories.RtgsConnectionRepository(storageTableResolverMock.Object, options, _logger);
+		_rtgsConnectionRepository = new Service.Repositories.RtgsConnectionRepository(
+			storageTableResolverMock.Object,
+			options,
+			_logger,
+			Mock.Of<IDateTimeProvider>());
 	}
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
+		.Awaiting(() => _rtgsConnectionRepository.ActivateAsync("connection-id"))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -41,7 +45,7 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
+			.Awaiting(() => _rtgsConnectionRepository.ActivateAsync("connection-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 

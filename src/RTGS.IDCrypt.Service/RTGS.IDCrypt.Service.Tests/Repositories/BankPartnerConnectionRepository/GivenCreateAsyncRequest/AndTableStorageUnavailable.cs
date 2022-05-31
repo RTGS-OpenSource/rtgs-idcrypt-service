@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -35,8 +36,11 @@ public class AndTableStorageUnavailable
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_bankPartnerConnectionRepository =
-			new Service.Repositories.BankPartnerConnectionRepository(storageTableResolverMock.Object, options, _logger);
+		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
+			storageTableResolverMock.Object,
+			options,
+			_logger,
+			Mock.Of<IDateTimeProvider>());
 	}
 
 	[Fact]

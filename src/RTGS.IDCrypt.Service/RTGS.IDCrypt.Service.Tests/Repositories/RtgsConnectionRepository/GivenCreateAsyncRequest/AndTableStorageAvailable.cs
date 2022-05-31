@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -17,12 +18,15 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 	public AndTableStorageAvailable()
 	{
+		var referenceDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
+
 		_connection = new RtgsConnection
 		{
 			PartitionKey = "alias",
 			RowKey = "connection-id",
 			ConnectionId = "connection-id",
-			Alias = "alias"
+			Alias = "alias",
+			CreatedAt = referenceDate
 		};
 
 		Func<RtgsConnection, bool> connectionMatches = request =>
@@ -58,8 +62,14 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_rtgsConnectionRepository =
-			new Service.Repositories.RtgsConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		var dateTimeProviderMock = new Mock<IDateTimeProvider>();
+		dateTimeProviderMock.SetupGet(provider => provider.UtcNow).Returns(referenceDate);
+
+		_rtgsConnectionRepository = new Service.Repositories.RtgsConnectionRepository(
+			_storageTableResolverMock.Object,
+			options,
+			logger,
+			dateTimeProviderMock.Object);
 	}
 
 	public async Task InitializeAsync() => await _rtgsConnectionRepository.CreateAsync(_connection);

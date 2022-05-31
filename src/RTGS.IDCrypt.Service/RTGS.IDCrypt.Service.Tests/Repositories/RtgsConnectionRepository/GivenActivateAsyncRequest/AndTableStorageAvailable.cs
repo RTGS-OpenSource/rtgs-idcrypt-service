@@ -3,6 +3,7 @@ using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -11,7 +12,7 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.Given
 
 public class AndTableStorageAvailable : IAsyncLifetime
 {
-	private readonly Service.Repositories.RtgsConnectionRepository _bankPartnerConnectionRepository;
+	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private readonly RtgsConnection _retrievedConnection;
@@ -86,11 +87,14 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_bankPartnerConnectionRepository =
-			new Service.Repositories.RtgsConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		_rtgsConnectionRepository = new Service.Repositories.RtgsConnectionRepository(
+			_storageTableResolverMock.Object,
+			options,
+			logger,
+			Mock.Of<IDateTimeProvider>());
 	}
 
-	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.ActivateAsync(_retrievedConnection.ConnectionId);
+	public async Task InitializeAsync() => await _rtgsConnectionRepository.ActivateAsync(_retrievedConnection.ConnectionId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
