@@ -7,7 +7,6 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCrypt.Service.Tests.TestData;
 
 namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenDeleteAsyncRequest;
 
@@ -32,13 +31,13 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator())
-			.Returns( new List<BankPartnerConnection> { _connection }.GetEnumerator());
+			.Returns(new List<BankPartnerConnection> { _connection }.GetEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
 		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
 		{
-			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection => 
+			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection =>
 				bankPartnerConnection.ConnectionId == _connection.ConnectionId;
 
 			actualExpression.Should().BeEquivalentTo(expectedExpression);
@@ -48,7 +47,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 		_tableClientMock.Setup(tableClient =>
 				tableClient.Query(
-					It.Is<Expression<Func<BankPartnerConnection, bool>>> (expression => expressionMatches(expression)),
+					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))

@@ -7,7 +7,6 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCrypt.Service.Tests.TestData;
 
 namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenDeleteAsyncRequest;
 

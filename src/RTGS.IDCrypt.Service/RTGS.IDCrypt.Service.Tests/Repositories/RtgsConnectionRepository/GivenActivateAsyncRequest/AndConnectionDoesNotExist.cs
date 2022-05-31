@@ -48,7 +48,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		};
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query<RtgsConnection>(
+				tableClient.Query(
 					It.Is<Expression<Func<RtgsConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
