@@ -27,7 +27,8 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			PublicDid = "public-did",
-			Status = "Pending"
+			Status = "Pending",
+			Role = "Inviter"
 		};
 
 		var bankPartnerConnectionMock = new Mock<Pageable<BankPartnerConnection>>();
@@ -62,7 +63,8 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			PublicDid = "public-did",
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		Func<BankPartnerConnection, bool> connectionMatches = request =>

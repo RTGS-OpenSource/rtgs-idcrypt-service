@@ -13,7 +13,8 @@ public class PendingConnectionFixture : ConnectionsTestFixtureBase
 			ConnectionId = "connection-id",
 			PublicDid = "public-did",
 			CreatedAt = DateTime.UtcNow,
-			Status = "Pending"
+			Status = "Pending",
+			Role = "Inviter"
 		});
 	}
 }

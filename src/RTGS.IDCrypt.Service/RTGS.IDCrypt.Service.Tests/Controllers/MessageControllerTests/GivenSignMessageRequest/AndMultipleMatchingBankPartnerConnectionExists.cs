@@ -50,7 +50,8 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			RowKey = "alias-1",
 			ConnectionId = "connection-1",
 			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(3)),
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		var tooNewConnection = new BankPartnerConnection
@@ -59,7 +60,8 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			RowKey = "alias-2",
 			ConnectionId = "connection-2",
 			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(3)),
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		_validConnection = new BankPartnerConnection
@@ -68,7 +70,8 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			RowKey = "alias-3",
 			ConnectionId = "connection-3",
 			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		var matchingBankPartnerConnections = new List<BankPartnerConnection>

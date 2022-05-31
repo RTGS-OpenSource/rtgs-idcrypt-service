@@ -26,7 +26,8 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			RowKey = "alias-1",
 			ConnectionId = "connection-id-1",
 			CreatedAt = DateTime.Parse("2022-01-01"),
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
