@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
 using RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.TestData;
 using RTGS.IDCrypt.Service.Webhooks.Models;
@@ -56,11 +55,9 @@ public class AndFromBank : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifet
 	{
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SendProofRequest.Path].Single().Content!.ReadAsStringAsync();
 
-		using var jsonDocument = JsonDocument.Parse(content);
-
-		var prettyContent = JsonSerializer.Serialize(jsonDocument, new JsonSerializerOptions { WriteIndented = true });
-
-		await Verifier.Verify(prettyContent);
+		await Verifier
+			.VerifyJson(content)
+			.UseFileName("ProofBody.txt");
 	}
 
 	[Fact]
