@@ -33,7 +33,7 @@
     <None Update="testsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailable\AndConnectionIsActive\AndFromBank.WhenCallingIdCryptAgent_ThenBodyIsExpected.verified.txt">
+    <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailable\AndConnectionIsActive\ProofBody.txt.verified.txt">
       <DependentUpon>AndFromBank.cs</DependentUpon>
     </None>
     <None Update="xunit.runner.json">
