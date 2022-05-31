@@ -13,7 +13,6 @@ public class AndAgentAvailable
 {
 	private readonly Mock<IProofClient> _proofClientMock;
 	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionsRepository;
-	private readonly FakeLogger<IdCryptConnectionMessageHandler> _logger;
 	private readonly IdCryptConnectionMessageHandler _handler;
 	private SendProofRequestRequest _expectedRequest;
 
@@ -34,11 +33,11 @@ public class AndAgentAvailable
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		_logger = new FakeLogger<IdCryptConnectionMessageHandler>();
+		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
 		_rtgsConnectionsRepository = new Mock<IRtgsConnectionRepository>();
 
-		_handler = new IdCryptConnectionMessageHandler(_logger, _proofClientMock.Object, _rtgsConnectionsRepository.Object);
+		_handler = new IdCryptConnectionMessageHandler(logger, _proofClientMock.Object, _rtgsConnectionsRepository.Object);
 	}
 
 	[Fact]
