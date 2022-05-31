@@ -10,7 +10,7 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenCrea
 
 public class AndTableStorageAvailable : IAsyncLifetime
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly BankPartnerConnection _connection;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
@@ -52,18 +52,18 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
-		var logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
+		var logger = new FakeLogger<Service.Repositories.BankPartnerConnectionRepository>();
 
 		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		_bankPartnerConnectionRepository =
+			new Service.Repositories.BankPartnerConnectionRepository(_storageTableResolverMock.Object, options, logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.CreateAsync(_connection);
+	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.CreateAsync(_connection);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

@@ -108,7 +108,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			logger,
-			Mock.Of<IConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>(),
 			_rtgsConnectionRepositoryMock.Object,
 			aliasProviderMock.Object,
 			Mock.Of<IWalletClient>(),

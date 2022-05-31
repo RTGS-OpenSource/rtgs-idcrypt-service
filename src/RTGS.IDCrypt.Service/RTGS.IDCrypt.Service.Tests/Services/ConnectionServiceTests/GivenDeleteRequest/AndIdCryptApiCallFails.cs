@@ -15,7 +15,7 @@ public class AndIdCryptApiCallFails
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
-	private readonly Mock<IConnectionRepository> _connectionRepositoryMock = new();
+	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 	private const string ConnectionId = "connection-id";
 	private readonly FakeLogger<ConnectionService> _logger = new();
 
@@ -31,7 +31,7 @@ public class AndIdCryptApiCallFails
 			.ThrowsAsync(new Exception("Something went wrong"))
 			.Verifiable();
 
-		_connectionRepositoryMock
+		_bankPartnerConnectionRepositoryMock
 			.Setup(service => service.DeleteAsync(ConnectionId,
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
@@ -39,7 +39,7 @@ public class AndIdCryptApiCallFails
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			_logger,
-			_connectionRepositoryMock.Object,
+			_bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),

@@ -14,7 +14,7 @@ public class AndConnectionExists : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
-	private readonly Mock<IConnectionRepository> _connectionRepositoryMock = new();
+	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 	private const string ConnectionId = "connection-id";
 
 	public AndConnectionExists()
@@ -28,7 +28,7 @@ public class AndConnectionExists : IAsyncLifetime
 			.Setup(client => client.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		_connectionRepositoryMock
+		_bankPartnerConnectionRepositoryMock
 			.Setup(service => service.DeleteAsync(ConnectionId,
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
@@ -38,7 +38,7 @@ public class AndConnectionExists : IAsyncLifetime
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			logger,
-			_connectionRepositoryMock.Object,
+			_bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
@@ -54,5 +54,5 @@ public class AndConnectionExists : IAsyncLifetime
 	public void WhenInvoked_ThenCallDeleteOnAgent() => _connectionsClientMock.Verify();
 
 	[Fact]
-	public void WhenInvoked_ThenCallDeleteOnRepository() => _connectionRepositoryMock.Verify();
+	public void WhenInvoked_ThenCallDeleteOnRepository() => _bankPartnerConnectionRepositoryMock.Verify();
 }

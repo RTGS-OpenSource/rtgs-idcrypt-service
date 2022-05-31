@@ -11,9 +11,9 @@ public class GivenPresentProof
 	[Fact]
 	public async Task WhenPostingRtgsParticipantCredential_ThenSetConnectionActive()
 	{
-		var connectionRepositoryMock = new Mock<IConnectionRepository>();
+		var bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 
-		var handler = new PresentProofMessageHandler(connectionRepositoryMock.Object);
+		var handler = new PresentProofMessageHandler(bankPartnerConnectionRepositoryMock.Object);
 
 		var proof = new Proof
 		{
@@ -24,7 +24,7 @@ public class GivenPresentProof
 
 		await handler.HandleAsync(serialisedProof, default);
 
-		connectionRepositoryMock.Verify(repo =>
+		bankPartnerConnectionRepositoryMock.Verify(repo =>
 			repo.ActivateAsync(proof.ConnectionId, It.IsAny<CancellationToken>()), Times.Once);
 	}
 }

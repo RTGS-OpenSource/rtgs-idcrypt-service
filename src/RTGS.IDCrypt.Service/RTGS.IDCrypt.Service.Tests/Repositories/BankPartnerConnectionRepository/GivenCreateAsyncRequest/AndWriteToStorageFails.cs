@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Azure.Data.Tables;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
@@ -8,13 +9,13 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 
 namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenCreateAsyncRequest;
 
-public class AndTableStorageUnavailable
+public class AndWriteToStorageFails
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly BankPartnerConnection _connection;
-	private readonly FakeLogger<Service.Repositories.ConnectionRepository> _logger = new();
+	private readonly FakeLogger<Service.Repositories.BankPartnerConnectionRepository> _logger = new();
 
-	public AndTableStorageUnavailable()
+	public AndWriteToStorageFails()
 	{
 		_connection = new BankPartnerConnection
 		{
@@ -25,23 +26,31 @@ public class AndTableStorageUnavailable
 			Alias = "alias"
 		};
 
+		var tableClientMock = new Mock<TableClient>();
+		tableClientMock
+			.Setup(tableClient => tableClient.AddEntityAsync(
+				It.IsAny<BankPartnerConnection>(),
+				It.IsAny<CancellationToken>()))
+			.Throws<Exception>();
+
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
-			.Throws<Exception>();
+			.Returns(tableClientMock.Object)
+			.Verifiable();
 
 		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(storageTableResolverMock.Object, options, _logger);
+		_bankPartnerConnectionRepository =
+			new Service.Repositories.BankPartnerConnectionRepository(storageTableResolverMock.Object, options, _logger);
 	}
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _connectionRepository.CreateAsync(_connection))
+		.Awaiting(() => _bankPartnerConnectionRepository.CreateAsync(_connection))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -51,7 +60,7 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionRepository.CreateAsync(_connection))
+			.Awaiting(() => _bankPartnerConnectionRepository.CreateAsync(_connection))
 			.Should()
 			.ThrowAsync<Exception>();
 

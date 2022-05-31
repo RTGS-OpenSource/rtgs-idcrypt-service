@@ -15,7 +15,7 @@ public class AndBothRepositoryAndAgentCallsFail
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
-	private readonly Mock<IConnectionRepository> _connectionRepositoryMock = new();
+	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 	private const string ConnectionId = "connection-id";
 	private readonly FakeLogger<ConnectionService> _logger = new();
 
@@ -31,7 +31,7 @@ public class AndBothRepositoryAndAgentCallsFail
 			.ThrowsAsync(new Exception("Something went wrong"))
 			.Verifiable();
 
-		_connectionRepositoryMock
+		_bankPartnerConnectionRepositoryMock
 			.Setup(service => service.DeleteAsync(ConnectionId,
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception("Something else went wrong"))
@@ -40,7 +40,7 @@ public class AndBothRepositoryAndAgentCallsFail
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			_logger,
-			_connectionRepositoryMock.Object,
+			_bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),

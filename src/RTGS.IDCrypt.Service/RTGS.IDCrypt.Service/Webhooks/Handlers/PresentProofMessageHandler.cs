@@ -6,11 +6,11 @@ namespace RTGS.IDCrypt.Service.Webhooks.Handlers;
 
 public class PresentProofMessageHandler : IMessageHandler
 {
-	private readonly IConnectionRepository _connectionRepository;
+	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 
-	public PresentProofMessageHandler(IConnectionRepository connectionRepository)
+	public PresentProofMessageHandler(IBankPartnerConnectionRepository bankPartnerConnectionRepository)
 	{
-		_connectionRepository = connectionRepository;
+		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 	}
 
 	public string MessageType => "present_proof";
@@ -19,6 +19,6 @@ public class PresentProofMessageHandler : IMessageHandler
 	{
 		var proof = JsonSerializer.Deserialize<Proof>(jsonMessage);
 
-		await _connectionRepository.ActivateAsync(proof.ConnectionId, cancellationToken);
+		await _bankPartnerConnectionRepository.ActivateAsync(proof.ConnectionId, cancellationToken);
 	}
 }

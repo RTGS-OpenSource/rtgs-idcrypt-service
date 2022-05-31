@@ -15,7 +15,7 @@ public class ConnectionService : IConnectionService
 {
 	private readonly IConnectionsClient _connectionsClient;
 	private readonly ILogger<ConnectionService> _logger;
-	private readonly IConnectionRepository _connectionRepository;
+	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
@@ -24,7 +24,7 @@ public class ConnectionService : IConnectionService
 	public ConnectionService(
 		IConnectionsClient connectionsClient,
 		ILogger<ConnectionService> logger,
-		IConnectionRepository connectionRepository,
+		IBankPartnerConnectionRepository bankPartnerConnectionRepository,
 		IRtgsConnectionRepository rtgsConnectionRepository,
 		IAliasProvider aliasProvider,
 		IWalletClient walletClient,
@@ -32,7 +32,7 @@ public class ConnectionService : IConnectionService
 	{
 		_connectionsClient = connectionsClient;
 		_logger = logger;
-		_connectionRepository = connectionRepository;
+		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_aliasProvider = aliasProvider;
 		_walletClient = walletClient;
@@ -71,7 +71,7 @@ public class ConnectionService : IConnectionService
 				Status = ConnectionStatuses.Pending
 			};
 
-			await _connectionRepository.CreateAsync(connection, cancellationToken);
+			await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -103,7 +103,7 @@ public class ConnectionService : IConnectionService
 				PublicDid = publicDid
 			};
 
-			await _connectionRepository.CreateAsync(connection, cancellationToken);
+			await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
 
 			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
 
@@ -164,7 +164,7 @@ public class ConnectionService : IConnectionService
 		{
 			aggregateTask = Task.WhenAll(
 				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
-				_connectionRepository.DeleteAsync(connectionId, cancellationToken));
+				_bankPartnerConnectionRepository.DeleteAsync(connectionId, cancellationToken));
 
 			await aggregateTask;
 		}

@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
 			return Options.Create(bankPartnerConnectionsConfig);
 		});
 
-		services.AddSingleton<IConnectionRepository, ConnectionRepository>();
+		services.AddSingleton<IBankPartnerConnectionRepository, BankPartnerConnectionRepository>();
 		services.AddSingleton<IRtgsConnectionRepository, RtgsConnectionRepository>();
 
 		services.AddSingleton<IConnectionService, ConnectionService>();

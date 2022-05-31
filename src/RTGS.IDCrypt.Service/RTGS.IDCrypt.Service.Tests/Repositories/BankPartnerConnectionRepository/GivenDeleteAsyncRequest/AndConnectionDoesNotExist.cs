@@ -11,7 +11,7 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenDele
 
 public class AndConnectionDoesNotExist : IAsyncLifetime
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private const string ConnectionId = "connection-id-999";
@@ -39,18 +39,18 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
-		var logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
+		var logger = new FakeLogger<Service.Repositories.BankPartnerConnectionRepository>();
 
 		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, logger);
+		_bankPartnerConnectionRepository =
+			new Service.Repositories.BankPartnerConnectionRepository(_storageTableResolverMock.Object, options, logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.DeleteAsync(ConnectionId);
+	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.DeleteAsync(ConnectionId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

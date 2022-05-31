@@ -6,15 +6,15 @@ using RTGS.IDCrypt.Service.Storage;
 
 namespace RTGS.IDCrypt.Service.Repositories;
 
-public class ConnectionRepository : IConnectionRepository
+public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 {
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly ConnectionsConfig _connectionsConfig;
-	private readonly ILogger<ConnectionRepository> _logger;
+	private readonly ILogger<BankPartnerConnectionRepository> _logger;
 
-	public ConnectionRepository(IStorageTableResolver storageTableResolver,
+	public BankPartnerConnectionRepository(IStorageTableResolver storageTableResolver,
 		IOptions<ConnectionsConfig> connectionsOptions,
-		ILogger<ConnectionRepository> logger)
+		ILogger<BankPartnerConnectionRepository> logger)
 	{
 		_storageTableResolver = storageTableResolver;
 		_connectionsConfig = connectionsOptions.Value;

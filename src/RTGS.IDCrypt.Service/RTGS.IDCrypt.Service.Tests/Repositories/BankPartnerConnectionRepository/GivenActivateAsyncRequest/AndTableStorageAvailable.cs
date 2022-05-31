@@ -1,6 +1,5 @@
 ﻿using Azure;
 using Azure.Data.Tables;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
@@ -10,16 +9,16 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 
 namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenActivateAsyncRequest;
 
-public class AndConnectionDoesNotExist : IAsyncLifetime
+public class AndTableStorageAvailable : IAsyncLifetime
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
-	private readonly FakeLogger<Service.Repositories.ConnectionRepository> _logger;
+	private readonly BankPartnerConnection _retrievedConnection;
 
-	public AndConnectionDoesNotExist()
+	public AndTableStorageAvailable()
 	{
-		var retrievedConnection = new BankPartnerConnection
+		_retrievedConnection = new BankPartnerConnection
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
@@ -32,7 +31,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		var bankPartnerConnectionMock = new Mock<Pageable<BankPartnerConnection>>();
 
 		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator())
-			.Returns(new List<BankPartnerConnection> { retrievedConnection }.GetEnumerator());
+			.Returns(new List<BankPartnerConnection> { _retrievedConnection }.GetEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
@@ -44,6 +43,37 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 					It.IsAny<CancellationToken>()))
 			.Returns(bankPartnerConnectionMock.Object);
 
+		var updatedConnection = new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias",
+			ConnectionId = "connection-id",
+			Alias = "alias",
+			PublicDid = "public-did",
+			Status = "Active"
+		};
+
+		Func<BankPartnerConnection, bool> connectionMatches = request =>
+		{
+			request.Should().BeEquivalentTo(updatedConnection, options =>
+			{
+				options.Excluding(connection => connection.ETag);
+				options.Excluding(connection => connection.Timestamp);
+
+				return options;
+			});
+
+			return true;
+		};
+
+		_tableClientMock
+			.Setup(tableClient => tableClient.UpdateEntityAsync(
+				It.Is<BankPartnerConnection>(connection => connectionMatches(connection)),
+				It.IsAny<ETag>(),
+				TableUpdateMode.Merge,
+				It.IsAny<CancellationToken>()))
+			.Verifiable();
+
 		_storageTableResolverMock = new Mock<IStorageTableResolver>();
 
 		_storageTableResolverMock
@@ -51,18 +81,18 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
 
-		_logger = new FakeLogger<Service.Repositories.ConnectionRepository>();
+		var logger = new FakeLogger<Service.Repositories.BankPartnerConnectionRepository>();
 
 		var options = Options.Create(new ConnectionsConfig
 		{
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(_storageTableResolverMock.Object, options, _logger);
+		_bankPartnerConnectionRepository =
+			new Service.Repositories.BankPartnerConnectionRepository(_storageTableResolverMock.Object, options, logger);
 	}
 
-	public async Task InitializeAsync() => await _connectionRepository.ActivateAsync("non-existent-connection-id");
+	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.ActivateAsync(_retrievedConnection.ConnectionId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
@@ -70,18 +100,5 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
 
 	[Fact]
-	public void ThenQueryIsPerformed() => _tableClientMock.Verify();
-
-	[Fact]
-	public void ThenNoUpdateAttemptIsMade() => _tableClientMock
-		.Verify(client => client.UpdateEntityAsync(
-			It.IsAny<BankPartnerConnection>(),
-			It.IsAny<ETag>(),
-			It.IsAny<TableUpdateMode>(),
-			It.IsAny<CancellationToken>()), Times.Never);
-
-	[Fact]
-	public void ThenLog() =>
-		_logger.Logs[LogLevel.Warning]
-			.Should().BeEquivalentTo("Unable to activate connection as the connection was not found");
+	public void ThenConnectionActivated() => _tableClientMock.Verify();
 }

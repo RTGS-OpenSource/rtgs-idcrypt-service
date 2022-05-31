@@ -42,7 +42,7 @@ public class AndIdCryptApiUnavailable
 		_connectionService = new ConnectionService(
 			connectionsClientMock.Object,
 			_logger,
-			Mock.Of<IConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>(),
 			Mock.Of<IRtgsConnectionRepository>(),
 			aliasProviderMock.Object,
 			Mock.Of<IWalletClient>(),

@@ -5,17 +5,17 @@ using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenDeleteAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.ConnectionRepository.GivenActivateAsyncRequest;
 
 public class AndTableStorageUnavailable
 {
-	private readonly Service.Repositories.ConnectionRepository _connectionRepository;
-	private const string ConnectionId = "connection-id-1";
-	private readonly FakeLogger<Service.Repositories.ConnectionRepository> _logger = new();
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
+	private readonly FakeLogger<Service.Repositories.BankPartnerConnectionRepository> _logger = new();
 
 	public AndTableStorageUnavailable()
 	{
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+
 		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
 			.Throws<Exception>();
@@ -25,13 +25,13 @@ public class AndTableStorageUnavailable
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		_connectionRepository =
-			new Service.Repositories.ConnectionRepository(storageTableResolverMock.Object, options, _logger);
+		_bankPartnerConnectionRepository =
+			new Service.Repositories.BankPartnerConnectionRepository(storageTableResolverMock.Object, options, _logger);
 	}
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _connectionRepository.DeleteAsync(ConnectionId))
+		.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -41,13 +41,11 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionRepository.DeleteAsync(ConnectionId))
+			.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
-		{
-			"Error occurred when deleting connection"
-		});
+		_logger.Logs[LogLevel.Error]
+			.Should().BeEquivalentTo("Error occurred when activating connection");
 	}
 }
