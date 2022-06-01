@@ -70,12 +70,6 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
-
-	[Fact]
-	public void ThenQueryIsPerformed() => _tableClientMock.Verify();
-
-	[Fact]
 	public void ThenNoDeleteAttemptIsMade() => _tableClientMock
 		.Verify(client => client.DeleteEntityAsync(
 			It.IsAny<string>(),

@@ -76,4 +76,45 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 			throw;
 		}
 	}
+
+	public async Task<RtgsConnection> GetEstablishedAsync(CancellationToken cancellationToken = default)
+	{
+		RtgsConnection connection;
+
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
+
+			var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
+
+			var connections = await tableClient
+				.QueryAsync<RtgsConnection>(cancellationToken: cancellationToken)
+				.Where(connection =>
+					connection.CreatedAt <= dateThreshold
+					&& connection.Status == ConnectionStatuses.Active)
+				.ToListAsync(cancellationToken);
+
+
+			connection = connections.MaxBy(rtgsConnection => rtgsConnection.CreatedAt);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when getting connection");
+
+			throw;
+		}
+
+		if (connection is null)
+		{
+			const string errorMessage = "No established RTGS connection found";
+
+			var ex = new Exception(errorMessage);
+
+			_logger.LogError(ex, errorMessage);
+
+			throw ex;
+		}
+
+		return connection;
+	}
 }

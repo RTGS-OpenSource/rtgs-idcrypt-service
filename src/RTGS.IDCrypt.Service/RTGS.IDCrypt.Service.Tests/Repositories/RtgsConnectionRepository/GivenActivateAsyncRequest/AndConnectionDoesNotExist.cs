@@ -81,12 +81,6 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
-
-	[Fact]
-	public void ThenQueryIsPerformed() => _tableClientMock.Verify();
-
-	[Fact]
 	public void ThenNoUpdateAttemptIsMade() => _tableClientMock
 		.Verify(client => client.UpdateEntityAsync(
 			It.IsAny<BankPartnerConnection>(),

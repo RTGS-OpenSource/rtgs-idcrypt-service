@@ -101,5 +101,5 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	public void ThenConnectionRetrieved() => _tableClientMock.Verify();
 
 	[Fact]
-	public void ThenRetrievedConnectionIsReturned() => _actualConnection.Should().BeEquivalentTo(_retrievedConnection);
+	public void ThenExpectedConnectionIsReturned() => _actualConnection.Should().BeEquivalentTo(_retrievedConnection);
 }
