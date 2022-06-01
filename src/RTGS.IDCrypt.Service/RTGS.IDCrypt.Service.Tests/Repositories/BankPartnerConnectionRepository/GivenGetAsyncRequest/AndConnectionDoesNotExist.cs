@@ -10,14 +10,16 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenActivateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenGetAsyncRequest;
 
-public class AndConnectionDoesNotExist : IAsyncLifetime
+public class AndConnectionDoesNotExist
 {
 	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private readonly FakeLogger<Service.Repositories.BankPartnerConnectionRepository> _logger;
+
+	private const string ConnectionId = "non-existent-connection-id";
 
 	public AndConnectionDoesNotExist()
 	{
@@ -31,7 +33,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
 		{
 			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection =>
-				bankPartnerConnection.ConnectionId == "non-existent-connection-id";
+				bankPartnerConnection.ConnectionId == ConnectionId;
 
 			actualExpression.Should().BeEquivalentTo(expectedExpression);
 
@@ -67,20 +69,23 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 			Mock.Of<IDateTimeProvider>());
 	}
 
-	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.ActivateAsync("non-existent-connection-id");
-
-	public Task DisposeAsync() => Task.CompletedTask;
+	[Fact]
+	public async Task WhenInvoked_ThenThrows() => await FluentActions
+		.Awaiting(() => _bankPartnerConnectionRepository.GetAsync(ConnectionId))
+		.Should()
+		.ThrowAsync<Exception>();
 
 	[Fact]
-	public void ThenNoUpdateAttemptIsMade() => _tableClientMock
-		.Verify(client => client.UpdateEntityAsync(
-			It.IsAny<BankPartnerConnection>(),
-			It.IsAny<ETag>(),
-			It.IsAny<TableUpdateMode>(),
-			It.IsAny<CancellationToken>()), Times.Never);
+	public async Task WhenInvoked_ThenLogs()
+	{
+		using var _ = new AssertionScope();
 
-	[Fact]
-	public void ThenLog() =>
-		_logger.Logs[LogLevel.Warning]
-			.Should().BeEquivalentTo("Unable to activate connection as the connection was not found");
+		await FluentActions
+			.Awaiting(() => _bankPartnerConnectionRepository.GetAsync("non-existent-connection-id"))
+			.Should()
+			.ThrowAsync<Exception>();
+
+		_logger.Logs[LogLevel.Error]
+			.Should().BeEquivalentTo($"Connection with ID {ConnectionId} not found");
+	}
 }

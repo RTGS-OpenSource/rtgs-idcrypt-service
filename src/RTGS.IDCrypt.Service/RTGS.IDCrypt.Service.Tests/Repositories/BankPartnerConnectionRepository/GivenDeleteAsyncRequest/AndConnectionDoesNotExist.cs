@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -19,9 +20,10 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 
 	public AndConnectionDoesNotExist()
 	{
-		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
-		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			new List<BankPartnerConnection>().GetEnumerator());
+		var bankPartnerConnectionMock = new Mock<AsyncPageable<BankPartnerConnection>>();
+
+		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+			.Returns(new List<BankPartnerConnection>().ToAsyncEnumerable().GetAsyncEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
@@ -36,7 +38,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		};
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query(
+				tableClient.QueryAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
@@ -78,6 +80,6 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		.Verify(client => client.DeleteEntityAsync(
 			It.IsAny<string>(),
 			It.IsAny<string>(),
-			It.IsAny<Azure.ETag>(),
+			It.IsAny<ETag>(),
 			It.IsAny<CancellationToken>()), Times.Never);
 }

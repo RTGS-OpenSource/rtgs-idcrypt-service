@@ -31,10 +31,10 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			Role = "Inviter"
 		};
 
-		var bankPartnerConnectionMock = new Mock<Pageable<BankPartnerConnection>>();
+		var bankPartnerConnectionMock = new Mock<AsyncPageable<BankPartnerConnection>>();
 
-		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator())
-			.Returns(new List<BankPartnerConnection> { _retrievedConnection }.GetEnumerator());
+		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+			.Returns(new List<BankPartnerConnection> { _retrievedConnection }.ToAsyncEnumerable().GetAsyncEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
@@ -49,12 +49,13 @@ public class AndTableStorageAvailable : IAsyncLifetime
 		};
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query(
+				tableClient.QueryAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
 					It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnectionMock.Object);
+			.Returns(bankPartnerConnectionMock.Object)
+			.Verifiable();
 
 		var updatedConnection = new BankPartnerConnection
 		{
