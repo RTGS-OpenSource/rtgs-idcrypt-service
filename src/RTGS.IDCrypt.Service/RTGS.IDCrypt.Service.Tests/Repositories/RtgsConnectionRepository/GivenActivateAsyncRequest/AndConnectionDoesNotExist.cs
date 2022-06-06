@@ -15,21 +15,11 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.Given
 public class AndConnectionDoesNotExist : IAsyncLifetime
 {
 	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
-	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private readonly FakeLogger<Service.Repositories.RtgsConnectionRepository> _logger;
 
 	public AndConnectionDoesNotExist()
 	{
-		var retrievedConnection = new RtgsConnection
-		{
-			PartitionKey = "alias",
-			RowKey = "connection-id",
-			ConnectionId = "connection-id",
-			Alias = "alias",
-			Status = "Pending"
-		};
-
 		var rtgsConnectionMock = new Mock<Pageable<RtgsConnection>>();
 
 		rtgsConnectionMock.Setup(rtgsConnections => rtgsConnections.GetEnumerator())
@@ -55,9 +45,9 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 					It.IsAny<CancellationToken>()))
 			.Returns(rtgsConnectionMock.Object);
 
-		_storageTableResolverMock = new Mock<IStorageTableResolver>();
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 
-		_storageTableResolverMock
+		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("rtgsConnections"))
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
@@ -70,7 +60,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		});
 
 		_rtgsConnectionRepository = new Service.Repositories.RtgsConnectionRepository(
-			_storageTableResolverMock.Object,
+			storageTableResolverMock.Object,
 			options,
 			_logger,
 			Mock.Of<IDateTimeProvider>());

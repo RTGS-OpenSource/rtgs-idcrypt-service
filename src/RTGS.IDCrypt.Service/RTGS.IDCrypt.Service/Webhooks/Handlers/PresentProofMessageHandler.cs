@@ -37,7 +37,7 @@ public class PresentProofMessageHandler : IMessageHandler
 
 		var bankConnection = await _bankPartnerConnectionRepository.GetAsync(proof.ConnectionId, cancellationToken);
 
-		if (bankConnection.Role is ConnectionRoles.Invitee)
+		if (bankConnection.Role == ConnectionRoles.Invitee)
 		{
 			var rtgsConnection = await _rtgsConnectionRepository.GetEstablishedAsync(cancellationToken);
 

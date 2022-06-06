@@ -14,21 +14,13 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.Given
 public class AndConnectionDoesNotExist
 {
 	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
-	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
-	private readonly Mock<TableClient> _tableClientMock;
 	private readonly FakeLogger<Service.Repositories.RtgsConnectionRepository> _logger;
 
 	public AndConnectionDoesNotExist()
 	{
 		var referenceDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
-		const int maximumConnectionAgeInMinues = 5;
-
-		var config = new ConnectionsConfig
-		{
-			RtgsConnectionsTableName = "rtgsConnections",
-			MinimumConnectionAge = TimeSpan.FromMinutes(maximumConnectionAgeInMinues)
-		};
+		const int maximumConnectionAgeInMinutes = 5;
 
 		var tooNewConnection = new RtgsConnection
 		{
@@ -37,7 +29,7 @@ public class AndConnectionDoesNotExist
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			Status = "Active",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinues - 1))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinutes - 1))
 		};
 
 		var staleConnection = new RtgsConnection
@@ -47,7 +39,7 @@ public class AndConnectionDoesNotExist
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			Status = "Active",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinues + 10))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinutes + 10))
 		};
 
 		var inactiveConnection = new RtgsConnection
@@ -57,7 +49,7 @@ public class AndConnectionDoesNotExist
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			Status = "Pending",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinues + 1))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinutes + 1))
 		};
 
 		var rtgsConnectionsMock = new Mock<AsyncPageable<RtgsConnection>>();
@@ -70,9 +62,9 @@ public class AndConnectionDoesNotExist
 				inactiveConnection
 			}.ToAsyncEnumerable().GetAsyncEnumerator());
 
-		_tableClientMock = new Mock<TableClient>();
+		var tableClientMock = new Mock<TableClient>();
 
-		_tableClientMock.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 				tableClient.QueryAsync<RtgsConnection>(
 					It.IsAny<string>(),
 					It.IsAny<int?>(),
@@ -80,11 +72,11 @@ public class AndConnectionDoesNotExist
 					It.IsAny<CancellationToken>()))
 			.Returns(rtgsConnectionsMock.Object);
 
-		_storageTableResolverMock = new Mock<IStorageTableResolver>();
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 
-		_storageTableResolverMock
+		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("rtgsConnections"))
-			.Returns(_tableClientMock.Object)
+			.Returns(tableClientMock.Object)
 			.Verifiable();
 
 		_logger = new FakeLogger<Service.Repositories.RtgsConnectionRepository>();
@@ -95,7 +87,7 @@ public class AndConnectionDoesNotExist
 		});
 
 		_rtgsConnectionRepository = new Service.Repositories.RtgsConnectionRepository(
-			_storageTableResolverMock.Object,
+			storageTableResolverMock.Object,
 			options,
 			_logger,
 			Mock.Of<IDateTimeProvider>());

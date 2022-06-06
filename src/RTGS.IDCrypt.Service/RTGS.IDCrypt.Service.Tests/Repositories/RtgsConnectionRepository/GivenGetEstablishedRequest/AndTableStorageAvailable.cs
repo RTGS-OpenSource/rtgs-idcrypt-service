@@ -14,7 +14,6 @@ public class AndTableStorageAvailable : IAsyncLifetime
 {
 	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
-	private readonly Mock<TableClient> _tableClientMock;
 	private readonly RtgsConnection _establishedConnection;
 
 	private RtgsConnection _retrievedConnection;
@@ -23,12 +22,12 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	{
 		var referenceDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
-		const int maximumConnectionAgeInMinues = 5;
+		const int maximumConnectionAgeInMinutes = 5;
 
 		var config = new ConnectionsConfig
 		{
 			RtgsConnectionsTableName = "rtgsConnections",
-			MinimumConnectionAge = TimeSpan.FromMinutes(maximumConnectionAgeInMinues)
+			MinimumConnectionAge = TimeSpan.FromMinutes(maximumConnectionAgeInMinutes)
 		};
 
 		_establishedConnection = new RtgsConnection
@@ -38,7 +37,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			Status = "Active",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinues + 1))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinutes + 1))
 		};
 
 		var tooNewConnection = new RtgsConnection
@@ -48,7 +47,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			Status = "Active",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinues - 1))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinutes - 1))
 		};
 
 		var staleConnection = new RtgsConnection
@@ -58,7 +57,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			Status = "Active",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinues + 10))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinutes + 10))
 		};
 
 		var inactiveConnection = new RtgsConnection
@@ -68,7 +67,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			Status = "Pending",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinues + 1))
+			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(maximumConnectionAgeInMinutes + 1))
 		};
 
 		var rtgsConnectionsMock = new Mock<AsyncPageable<RtgsConnection>>();
@@ -82,9 +81,9 @@ public class AndTableStorageAvailable : IAsyncLifetime
 				inactiveConnection
 			}.ToAsyncEnumerable().GetAsyncEnumerator());
 
-		_tableClientMock = new Mock<TableClient>();
+		var tableClientMock = new Mock<TableClient>();
 
-		_tableClientMock.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 				tableClient.QueryAsync<RtgsConnection>(
 					It.IsAny<string>(),
 					It.IsAny<int?>(),
@@ -96,7 +95,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 
 		_storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("rtgsConnections"))
-			.Returns(_tableClientMock.Object)
+			.Returns(tableClientMock.Object)
 			.Verifiable();
 
 		var logger = new FakeLogger<Service.Repositories.RtgsConnectionRepository>();

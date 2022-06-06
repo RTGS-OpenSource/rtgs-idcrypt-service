@@ -13,7 +13,6 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.PresentProofHandlerTests;
 public class GivenProofPresentation
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
-	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionRepositoryMock;
 	private readonly RtgsConnection _rtgsConnection;
 	private readonly Proof _presentedProof;
 	private readonly CoreConfig _coreConfig;
@@ -30,14 +29,14 @@ public class GivenProofPresentation
 
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 
-		_rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
+		var rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
 
 		_rtgsConnection = new RtgsConnection
 		{
 			ConnectionId = "rtgs-connection-id"
 		};
 
-		_rtgsConnectionRepositoryMock
+		rtgsConnectionRepositoryMock
 			.Setup(repo => repo.GetEstablishedAsync(It.IsAny<CancellationToken>()))
 			.ReturnsAsync(_rtgsConnection);
 
@@ -50,7 +49,7 @@ public class GivenProofPresentation
 
 		_handler = new PresentProofMessageHandler(
 			_bankPartnerConnectionRepositoryMock.Object,
-			_rtgsConnectionRepositoryMock.Object,
+			rtgsConnectionRepositoryMock.Object,
 			_basicMessageClient.Object,
 			Options.Create(_coreConfig));
 

@@ -89,16 +89,16 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 
 			var connections = await tableClient
 				.QueryAsync<RtgsConnection>(cancellationToken: cancellationToken)
-				.Where(connection =>
-					connection.CreatedAt <= dateThreshold
-					&& connection.Status == ConnectionStatuses.Active)
+				.Where(rtgsConnection =>
+					rtgsConnection.CreatedAt <= dateThreshold
+					&& rtgsConnection.Status == ConnectionStatuses.Active)
 				.ToListAsync(cancellationToken);
 
 			connection = connections.MaxBy(rtgsConnection => rtgsConnection.CreatedAt);
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when getting connection");
+			_logger.LogError(ex, "Error occurred when getting RTGS connection");
 
 			throw;
 		}

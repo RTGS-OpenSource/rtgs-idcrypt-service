@@ -58,17 +58,6 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			.Returns(bankPartnerConnectionMock.Object)
 			.Verifiable();
 
-		var updatedConnection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
-			ConnectionId = "connection-id",
-			Alias = "alias",
-			PublicDid = "public-did",
-			Status = "Active",
-			Role = "Inviter"
-		};
-
 		_storageTableResolverMock = new Mock<IStorageTableResolver>();
 
 		_storageTableResolverMock
