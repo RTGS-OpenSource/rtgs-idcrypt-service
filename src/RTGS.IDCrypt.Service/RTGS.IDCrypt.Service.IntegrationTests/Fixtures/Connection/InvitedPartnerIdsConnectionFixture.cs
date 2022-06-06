@@ -19,7 +19,7 @@ public class InvitedPartnerIdsConnectionFixture : ConnectionsTestFixtureBase
 			("rtgs-global-id", "Pending", "Inviter"),
 			("rtgs-global-id", "Pending", "Invitee"),
 
-			// partner with single active connections as Invitee
+			// partner with single active connection as Invitee
 			("rtgs-global-id-1", "Active", "Invitee"),
 			("rtgs-global-id-1", "Pending", "Invitee"),
 			("rtgs-global-id-1", "Active", "Inviter"),
