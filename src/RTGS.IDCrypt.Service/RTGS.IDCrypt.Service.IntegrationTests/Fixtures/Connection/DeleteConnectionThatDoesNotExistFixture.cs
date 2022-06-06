@@ -4,9 +4,9 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class MissingDeleteConnectionFixture : ConnectionsTestFixtureBase
+public class DeleteConnectionThatDoesNotExistFixture : ConnectionsTestFixtureBase
 {
-	public MissingDeleteConnectionFixture()
+	public DeleteConnectionThatDoesNotExistFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()

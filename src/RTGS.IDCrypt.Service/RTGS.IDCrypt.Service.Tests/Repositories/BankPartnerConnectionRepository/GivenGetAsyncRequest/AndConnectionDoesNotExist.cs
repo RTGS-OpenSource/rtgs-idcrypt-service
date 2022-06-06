@@ -15,8 +15,6 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepositor
 public class AndConnectionDoesNotExist
 {
 	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
-	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
-	private readonly Mock<TableClient> _tableClientMock;
 	private readonly FakeLogger<Service.Repositories.BankPartnerConnectionRepository> _logger;
 
 	private const string ConnectionId = "non-existent-connection-id";
@@ -28,7 +26,7 @@ public class AndConnectionDoesNotExist
 		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
 			.Returns(new List<BankPartnerConnection>().ToAsyncEnumerable().GetAsyncEnumerator());
 
-		_tableClientMock = new Mock<TableClient>();
+		var tableClientMock = new Mock<TableClient>();
 
 		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
 		{
@@ -40,7 +38,7 @@ public class AndConnectionDoesNotExist
 			return true;
 		};
 
-		_tableClientMock.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 				tableClient.QueryAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
@@ -48,11 +46,11 @@ public class AndConnectionDoesNotExist
 					It.IsAny<CancellationToken>()))
 			.Returns(bankPartnerConnectionMock.Object);
 
-		_storageTableResolverMock = new Mock<IStorageTableResolver>();
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 
-		_storageTableResolverMock
+		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
-			.Returns(_tableClientMock.Object)
+			.Returns(tableClientMock.Object)
 			.Verifiable();
 
 		_logger = new FakeLogger<Service.Repositories.BankPartnerConnectionRepository>();
@@ -63,7 +61,7 @@ public class AndConnectionDoesNotExist
 		});
 
 		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
-			_storageTableResolverMock.Object,
+			storageTableResolverMock.Object,
 			options,
 			_logger,
 			Mock.Of<IDateTimeProvider>());
@@ -86,6 +84,6 @@ public class AndConnectionDoesNotExist
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error]
-			.Should().BeEquivalentTo($"Connection with ID {ConnectionId} not found");
+			.Should().BeEquivalentTo($"Bank partner connection with ID {ConnectionId} not found");
 	}
 }

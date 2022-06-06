@@ -82,5 +82,5 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 	[Fact]
 	public void ThenLog() =>
 		_logger.Logs[LogLevel.Warning]
-			.Should().BeEquivalentTo("Unable to activate connection as the connection was not found");
+			.Should().BeEquivalentTo("Unable to activate connection as the bank partner connection was not found");
 }

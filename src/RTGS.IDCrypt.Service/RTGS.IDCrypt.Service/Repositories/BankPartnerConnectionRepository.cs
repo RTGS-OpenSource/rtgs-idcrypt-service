@@ -35,7 +35,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 			if (connection is null)
 			{
-				_logger.LogWarning("Unable to activate connection as the connection was not found");
+				_logger.LogWarning("Unable to activate connection as the bank partner connection was not found");
 				return;
 			}
 
@@ -49,7 +49,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when activating connection");
+			_logger.LogError(ex, "Error occurred when activating bank partner connection");
 
 			throw;
 		}
@@ -83,7 +83,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 			if (connection is null)
 			{
-				_logger.LogWarning("Unable to delete connection from table storage as the connection was not found");
+				_logger.LogWarning("Unable to delete connection from table storage as the bank partner connection was not found");
 				return;
 			}
 
@@ -91,7 +91,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when deleting connection");
+			_logger.LogError(ex, "Error occurred when deleting bank partner connection");
 
 			throw;
 		}
@@ -107,16 +107,16 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when getting connection");
+			_logger.LogError(ex, "Error occurred when getting bank partner connection");
 
 			throw;
 		}
 
 		if (connection is null)
 		{
-			var ex = new Exception($"Connection with ID {connectionId} not found");
+			var ex = new Exception($"Bank partner connection with ID {connectionId} not found");
 
-			_logger.LogError(ex, "Connection with ID {ConnectionId} not found", connectionId);
+			_logger.LogError(ex, "Bank partner connection with ID {ConnectionId} not found", connectionId);
 
 			throw ex;
 		}

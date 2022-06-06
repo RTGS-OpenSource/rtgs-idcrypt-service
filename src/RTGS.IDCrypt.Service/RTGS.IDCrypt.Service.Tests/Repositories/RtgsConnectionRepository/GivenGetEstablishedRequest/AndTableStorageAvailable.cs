@@ -111,7 +111,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			dateTimeProviderMock.Object);
 	}
 
-	public async Task InitializeAsync() => 
+	public async Task InitializeAsync() =>
 		_retrievedConnection = await _rtgsConnectionRepository.GetEstablishedAsync();
 
 	public Task DisposeAsync() => Task.CompletedTask;

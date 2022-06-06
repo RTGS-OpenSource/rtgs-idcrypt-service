@@ -7,11 +7,10 @@ using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage;
-using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.PresentProofHandlerTests;
 
-public class GivenProofPresentation 
+public class GivenProofPresentation
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
 	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionRepositoryMock;
@@ -30,7 +29,7 @@ public class GivenProofPresentation
 		};
 
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
-		
+
 		_rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
 
 		_rtgsConnection = new RtgsConnection
@@ -53,7 +52,7 @@ public class GivenProofPresentation
 			_bankPartnerConnectionRepositoryMock.Object,
 			_rtgsConnectionRepositoryMock.Object,
 			_basicMessageClient.Object,
-			Options.Create(_coreConfig)); 
+			Options.Create(_coreConfig));
 
 		_serialisedProof = JsonSerializer.Serialize(_presentedProof);
 	}
@@ -107,11 +106,11 @@ public class GivenProofPresentation
 			return true;
 		};
 
-		_basicMessageClient.Verify(client => 
+		_basicMessageClient.Verify(client =>
 			client.SendAsync(
 				_rtgsConnection.ConnectionId,
 				"set-bank-partnership-online",
-				It.Is<SetBankPartnershipOnlineRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()), 
+				It.Is<SetBankPartnershipOnlineRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()),
 			Times.Once);
 	}
 
@@ -134,7 +133,7 @@ public class GivenProofPresentation
 			client.SendAsync(
 				It.IsAny<string>(),
 				It.IsAny<string>(),
-				It.IsAny<SetBankPartnershipOnlineRequest>(), 
+				It.IsAny<SetBankPartnershipOnlineRequest>(),
 				It.IsAny<CancellationToken>()),
 			Times.Never);
 	}

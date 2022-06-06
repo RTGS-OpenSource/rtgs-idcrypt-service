@@ -50,6 +50,6 @@ public class AndTableStorageUnavailable
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error]
-			.Should().BeEquivalentTo("Error occurred when activating connection");
+			.Should().BeEquivalentTo("Error occurred when activating bank partner connection");
 	}
 }

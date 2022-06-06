@@ -5,7 +5,6 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage;
-using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.Webhooks.Handlers;
 
@@ -34,7 +33,7 @@ public class PresentProofMessageHandler : IMessageHandler
 	{
 		var proof = JsonSerializer.Deserialize<Proof>(jsonMessage);
 
-		await _bankPartnerConnectionRepository.ActivateAsync(proof.ConnectionId, cancellationToken);
+		await _bankPartnerConnectionRepository.ActivateAsync(proof!.ConnectionId, cancellationToken);
 
 		var bankConnection = await _bankPartnerConnectionRepository.GetAsync(proof.ConnectionId, cancellationToken);
 

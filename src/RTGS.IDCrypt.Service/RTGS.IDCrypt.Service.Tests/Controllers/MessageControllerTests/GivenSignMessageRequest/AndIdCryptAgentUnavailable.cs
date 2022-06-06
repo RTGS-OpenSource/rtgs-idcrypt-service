@@ -60,7 +60,7 @@ public class AndIdCryptAgentUnavailable
 		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
 			new List<BankPartnerConnection>
 			{
-				matchingBankPartnerConnection,
+				matchingBankPartnerConnection
 			}
 			.GetEnumerator());
 

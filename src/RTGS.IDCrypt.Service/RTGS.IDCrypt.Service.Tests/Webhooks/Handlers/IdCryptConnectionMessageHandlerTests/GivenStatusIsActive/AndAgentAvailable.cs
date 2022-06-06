@@ -485,7 +485,7 @@ public class AndAgentAvailable
 								}
 							}
 						}
-					},
+					}
 				},
 				RequestedPredicates = new()
 			}

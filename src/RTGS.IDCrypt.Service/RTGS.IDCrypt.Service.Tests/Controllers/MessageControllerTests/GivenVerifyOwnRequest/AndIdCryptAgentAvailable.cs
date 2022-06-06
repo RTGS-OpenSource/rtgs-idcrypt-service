@@ -28,7 +28,7 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 		_verifyOwnMessageRequest = new VerifyOwnMessageRequest
 		{
 			Message = message,
-			PublicSignature = "signature",
+			PublicSignature = "signature"
 		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();

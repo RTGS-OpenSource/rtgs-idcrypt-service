@@ -4,9 +4,9 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
-public class PendingConnectionFixture : ConnectionsTestFixtureBase
+public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 {
-	public PendingConnectionFixture() =>
+	public BankPartnerConnectionPendingFixture() =>
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
@@ -40,9 +40,7 @@ public class PendingConnectionFixture : ConnectionsTestFixtureBase
 			Role = "Invitee"
 		});
 
-
-		var connectionAge = TimeSpan.Parse(Configuration["MinimumConnectionAge"]);
-		connectionAge.Add(TimeSpan.FromMinutes(1));
+		var minimumConnectionAge = TimeSpan.Parse(Configuration["MinimumConnectionAge"]).Add(TimeSpan.FromMinutes(1));
 
 		await InsertRtgsConnectionAsync(new RtgsConnection
 		{
@@ -50,7 +48,7 @@ public class PendingConnectionFixture : ConnectionsTestFixtureBase
 			RowKey = "rtgs-connection-id-1",
 			Alias = "rtgs-alias-1",
 			ConnectionId = "rtgs-connection-id-1",
-			CreatedAt = DateTime.UtcNow.Subtract(connectionAge),
+			CreatedAt = DateTime.UtcNow.Subtract(minimumConnectionAge),
 			Status = "Active"
 		});
 	}
