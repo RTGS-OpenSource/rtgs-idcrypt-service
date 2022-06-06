@@ -15,6 +15,7 @@ public class GivenProofPresentation
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
 	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionRepositoryMock;
+	private readonly RtgsConnection _rtgsConnection;
 	private readonly Proof _presentedProof;
 	private readonly CoreConfig _coreConfig;
 	private readonly Mock<IBasicMessageClient> _basicMessageClient;
@@ -31,7 +32,16 @@ public class GivenProofPresentation
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 		
 		_rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
-		
+
+		_rtgsConnection = new RtgsConnection
+		{
+			ConnectionId = "rtgs-connection-id"
+		};
+
+		_rtgsConnectionRepositoryMock
+			.Setup(repo => repo.GetEstablishedAsync(It.IsAny<CancellationToken>()))
+			.ReturnsAsync(_rtgsConnection);
+
 		_basicMessageClient = new Mock<IBasicMessageClient>();
 
 		_coreConfig = new CoreConfig
@@ -82,31 +92,15 @@ public class GivenProofPresentation
 			.Setup(repo => repo.GetAsync(_presentedProof.ConnectionId, It.IsAny<CancellationToken>()))
 			.ReturnsAsync(bankPartnerConnection);
 
-		var rtgsConnection = new RtgsConnection
-		{
-			ConnectionId = "rtgs-connection-id"
-		};
-
-		_rtgsConnectionRepositoryMock
-			.Setup(repo => repo.GetEstablishedAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(rtgsConnection);
-
 		await _handler.HandleAsync(_serialisedProof, default);
 
-		var setBankPartnershipOnlineRequest = new SetBankPartnershipOnlineRequest
+		var expectedMessage = new SetBankPartnershipOnlineRequest
 		{
 			ApprovingBankDid = _coreConfig.RtgsGlobalId,
 			RequestingBankDid = "requesting-bank-rtgs-global-id" //TODO - get from proof
 		};
 
-		var expectedMessage = new SendBasicMessageRequest
-		{
-			ConnectionId = rtgsConnection.ConnectionId,
-			MessageType = "SetBankPartnershipOnline",
-			Content = JsonSerializer.Serialize(setBankPartnershipOnlineRequest)
-		};
-
-		Func<SendBasicMessageRequest, bool> messageMatches = actualMessage =>
+		Func<SetBankPartnershipOnlineRequest, bool> messageMatches = actualMessage =>
 		{
 			actualMessage.Should().BeEquivalentTo(expectedMessage);
 
@@ -114,7 +108,10 @@ public class GivenProofPresentation
 		};
 
 		_basicMessageClient.Verify(client => 
-			client.SendAsync(It.Is<SendBasicMessageRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()), 
+			client.SendAsync(
+				_rtgsConnection.ConnectionId,
+				"set-bank-partnership-online",
+				It.Is<SetBankPartnershipOnlineRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()), 
 			Times.Once);
 	}
 
@@ -133,17 +130,12 @@ public class GivenProofPresentation
 
 		await _handler.HandleAsync(_serialisedProof, default);
 
-		var expectedMessage = new SendBasicMessageRequest();
-
-		Func<SendBasicMessageRequest, bool> messageMatches = actualMessage =>
-		{
-			actualMessage.Should().BeEquivalentTo(expectedMessage);
-
-			return true;
-		};
-
 		_basicMessageClient.Verify(client =>
-			client.SendAsync(It.Is<SendBasicMessageRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()),
+			client.SendAsync(
+				It.IsAny<string>(),
+				It.IsAny<string>(),
+				It.IsAny<SetBankPartnershipOnlineRequest>(), 
+				It.IsAny<CancellationToken>()),
 			Times.Never);
 	}
 }

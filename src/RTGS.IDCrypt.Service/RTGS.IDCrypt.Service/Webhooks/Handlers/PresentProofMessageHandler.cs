@@ -48,14 +48,7 @@ public class PresentProofMessageHandler : IMessageHandler
 				RequestingBankDid = "requesting-bank-rtgs-global-id" //TODO - get from proof
 			};
 
-			var notificationMessage = new SendBasicMessageRequest
-			{
-				ConnectionId = rtgsConnection.ConnectionId,
-				MessageType = "SetBankPartnershipOnline",
-				Content = JsonSerializer.Serialize(setBankPartnershipOnlineRequest),
-			};
-
-			await _basicMessageClient.SendAsync(notificationMessage, cancellationToken);
+			await _basicMessageClient.SendAsync(rtgsConnection.ConnectionId, "set-bank-partnership-online", setBankPartnershipOnlineRequest, cancellationToken);
 		}
 	}
 }

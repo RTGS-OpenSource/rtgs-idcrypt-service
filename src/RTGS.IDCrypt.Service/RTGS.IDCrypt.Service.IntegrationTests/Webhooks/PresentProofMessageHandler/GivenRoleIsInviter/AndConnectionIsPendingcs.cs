@@ -5,16 +5,16 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.PresentProofMessageHandler;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.PresentProofMessageHandler.GivenRoleIsInviter;
 
-public class AndConnectionIsActive : IClassFixture<PendingConnectionFixture>, IAsyncLifetime
+public class AndConnectionIsPendingcs : IClassFixture<PendingConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly PendingConnectionFixture _testFixture;
 
 	private HttpResponseMessage _httpResponse;
 
-	public AndConnectionIsActive(PendingConnectionFixture testFixture)
+	public AndConnectionIsPendingcs(PendingConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -25,7 +25,7 @@ public class AndConnectionIsActive : IClassFixture<PendingConnectionFixture>, IA
 	{
 		var request = new Proof
 		{
-			ConnectionId = "connection-id",
+			ConnectionId = "bank-connection-id-1",
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/present_proof", request);
@@ -42,6 +42,6 @@ public class AndConnectionIsActive : IClassFixture<PendingConnectionFixture>, IA
 	public void WhenPosting_ThenActivateConnection() =>
 		_testFixture.BankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
-			.Single(connection => connection.ConnectionId == "connection-id")
+			.Single(connection => connection.ConnectionId == "bank-connection-id-1")
 			.Status.Should().Be("Active");
 }

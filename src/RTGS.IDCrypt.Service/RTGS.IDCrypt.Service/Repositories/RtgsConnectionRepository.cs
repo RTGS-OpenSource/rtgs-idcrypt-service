@@ -94,7 +94,6 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 					&& connection.Status == ConnectionStatuses.Active)
 				.ToListAsync(cancellationToken);
 
-
 			connection = connections.MaxBy(rtgsConnection => rtgsConnection.CreatedAt);
 		}
 		catch (Exception ex)
