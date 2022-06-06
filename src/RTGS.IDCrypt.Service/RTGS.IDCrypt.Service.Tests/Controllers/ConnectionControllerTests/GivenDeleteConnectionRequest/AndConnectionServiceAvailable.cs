@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenDeleteConnectionRequest;
@@ -21,7 +22,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			.Setup(service => service.DeleteAsync(ConnectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		_connectionController = new ConnectionController(_connectionServiceMock.Object);
+		_connectionController = new ConnectionController(_connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	public async Task InitializeAsync() => _response = await _connectionController.Delete(ConnectionId);

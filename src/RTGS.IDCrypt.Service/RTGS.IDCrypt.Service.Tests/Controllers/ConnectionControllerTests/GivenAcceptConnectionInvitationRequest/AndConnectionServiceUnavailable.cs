@@ -1,6 +1,7 @@
 ﻿using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenAcceptConnectionInvitationRequest;
@@ -19,7 +20,7 @@ public class AndConnectionServiceUnavailable
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-		_connectionController = new ConnectionController(connectionServiceMock.Object);
+		_connectionController = new ConnectionController(connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	[Fact]

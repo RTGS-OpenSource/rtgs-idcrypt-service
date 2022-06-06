@@ -2,6 +2,7 @@
 using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationForRtgsRequest;
@@ -40,7 +41,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			.ReturnsAsync(connectionInvitation)
 			.Verifiable();
 
-		_connectionController = new ConnectionController(_connectionServiceMock.Object);
+		_connectionController = new ConnectionController(_connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	public async Task InitializeAsync() =>
