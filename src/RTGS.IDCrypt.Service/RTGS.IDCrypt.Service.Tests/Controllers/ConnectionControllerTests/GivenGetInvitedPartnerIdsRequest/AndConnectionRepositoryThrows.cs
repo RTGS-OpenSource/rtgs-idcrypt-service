@@ -7,19 +7,18 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 
 public class AndConnectionRepositoryThrows
 {
-	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
 	private readonly ConnectionController _connectionController;
 
 	public AndConnectionRepositoryThrows()
 	{
-		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
+		var bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 
-		_bankPartnerConnectionRepositoryMock
+		bankPartnerConnectionRepositoryMock
 			.Setup(mock => mock.GetInvitedPartnerIdsAsync(It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
 		_connectionController =
-			new ConnectionController(Mock.Of<IConnectionService>(), _bankPartnerConnectionRepositoryMock.Object);
+			new ConnectionController(Mock.Of<IConnectionService>(), bankPartnerConnectionRepositoryMock.Object);
 	}
 
 	[Fact]

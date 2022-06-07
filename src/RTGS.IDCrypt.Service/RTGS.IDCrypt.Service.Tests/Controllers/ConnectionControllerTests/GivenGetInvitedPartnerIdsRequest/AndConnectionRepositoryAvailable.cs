@@ -27,7 +27,7 @@ public class AndConnectionRepositoryAvailable : IAsyncLifetime
 	public async Task InitializeAsync() => _response = await _connectionController.InvitedPartnerIds();
 
 	[Fact]
-	public void WhenInvoked_ThenReturnOkt() => _response.Should().BeOfType<OkObjectResult>();
+	public void WhenInvoked_ThenReturnOk() => _response.Should().BeOfType<OkObjectResult>();
 
 	[Fact]
 	public void WhenInvoked_ThenCallRepositoryAsync() => _bankPartnerConnectionRepositoryMock.Verify();

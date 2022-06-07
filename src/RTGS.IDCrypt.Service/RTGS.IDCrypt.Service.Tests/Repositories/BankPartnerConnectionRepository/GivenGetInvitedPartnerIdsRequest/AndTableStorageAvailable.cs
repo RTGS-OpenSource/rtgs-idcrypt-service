@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -29,9 +30,9 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			Role = "Invitee"
 		};
 
-		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
-		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator())
-			.Returns(new List<BankPartnerConnection> { connection }.GetEnumerator());
+		var bankPartnerConnectionMock = new Mock<AsyncPageable<BankPartnerConnection>>();
+		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+			.Returns(new List<BankPartnerConnection> { connection }.ToAsyncEnumerable().GetAsyncEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
@@ -46,7 +47,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 		};
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query(
+				tableClient.QueryAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),

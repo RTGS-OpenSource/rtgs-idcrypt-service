@@ -62,11 +62,16 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			return (await tableClient
-				.QueryAsync<BankPartnerConnection>(bankPartnerConnection => bankPartnerConnection.Status == "Active"
-																	   && bankPartnerConnection.Role == "Invitee",
-					cancellationToken: cancellationToken, select: new[] { "PartitionKey" })
-				.ToListAsync(cancellationToken))
+			var connections
+				= await tableClient.QueryAsync<BankPartnerConnection>(
+					bankPartnerConnection =>
+						bankPartnerConnection.Status == ConnectionStatuses.Active &&
+						bankPartnerConnection.Role == ConnectionRoles.Invitee,
+					cancellationToken: cancellationToken,
+					select: new[] { "PartitionKey" })
+				.ToListAsync(cancellationToken);
+
+			return connections
 				.Select(bankPartnerConnection => bankPartnerConnection.PartitionKey)
 				.Distinct();
 		}
