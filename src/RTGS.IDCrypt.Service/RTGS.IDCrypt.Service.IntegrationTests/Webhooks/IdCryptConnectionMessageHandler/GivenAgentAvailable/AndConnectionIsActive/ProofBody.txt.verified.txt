@@ -8,7 +8,7 @@
         name: aliases,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -16,7 +16,7 @@
         name: base_currency,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:65212:default
           }
         ]
       },
@@ -24,7 +24,7 @@
         name: business_line,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -32,7 +32,7 @@
         name: category,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -40,7 +40,7 @@
         name: contacts_country_code,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -48,7 +48,7 @@
         name: contacts_country_name,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -56,7 +56,7 @@
         name: contacts_email,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -64,7 +64,7 @@
         name: contacts_phone,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -72,7 +72,7 @@
         name: csleid,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -80,7 +80,7 @@
         name: date_of_establishment_year,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -88,7 +88,7 @@
         name: description,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -96,7 +96,7 @@
         name: establishment_country_code,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -104,7 +104,7 @@
         name: establishment_country_name,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -112,7 +112,7 @@
         name: full_legal_name_local,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -120,7 +120,7 @@
         name: full_legal_name,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -128,7 +128,7 @@
         name: identifier_LEI,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -136,7 +136,7 @@
         name: identifier_RTGSg,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -144,7 +144,7 @@
         name: idprefix,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -152,7 +152,7 @@
         name: id,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -160,7 +160,7 @@
         name: listing_status,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -168,7 +168,7 @@
         name: monitored,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -176,7 +176,7 @@
         name: parent,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:65212:default
           }
         ]
       },
@@ -184,7 +184,7 @@
         name: participant,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:65212:default
           }
         ]
       },
@@ -192,7 +192,7 @@
         name: preferred_label,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -200,7 +200,7 @@
         name: products_and_services,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6194:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -208,7 +208,7 @@
         name: risk_monitoring_status,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -216,7 +216,7 @@
         name: risk_monitoring_subscription_uri,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:68627:default
           }
         ]
       },
@@ -224,7 +224,7 @@
         name: RTGS_global,
         restrictions: [
           {
-            cred_def_id: XvCtmx54WgYNcwAycYaFzT:3:CL:6153:default
+            cred_def_id: RDmfeHMBEy7w8AQ7KXyGNi:3:CL:65212:default
           }
         ]
       }

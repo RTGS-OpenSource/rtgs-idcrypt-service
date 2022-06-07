@@ -34,12 +34,14 @@ public class PresentProofMessageHandler : IMessageHandler
 
 	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{
-		if (_logger is not null)
-		{
-			_logger.LogInformation("Present proof webhook called with payload: {Payload}", jsonMessage);
-		}
+		_logger?.LogInformation("Present proof webhook called with payload: {Payload}", jsonMessage);
 
 		var proof = JsonSerializer.Deserialize<Proof>(jsonMessage);
+
+		if (proof.State != ProofStates.Received)
+		{
+			return;
+		}
 
 		await _bankPartnerConnectionRepository.ActivateAsync(proof!.ConnectionId, cancellationToken);
 

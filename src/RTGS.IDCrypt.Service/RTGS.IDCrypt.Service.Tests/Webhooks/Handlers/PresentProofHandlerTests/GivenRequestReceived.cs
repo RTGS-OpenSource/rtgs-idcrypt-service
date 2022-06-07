@@ -10,7 +10,7 @@ using RTGS.IDCryptSDK.BasicMessage;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.PresentProofHandlerTests;
 
-public class GivenProofPresentation
+public class GivenRequestReceived
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
 	private readonly RtgsConnection _rtgsConnection;
@@ -20,11 +20,12 @@ public class GivenProofPresentation
 	private readonly PresentProofMessageHandler _handler;
 	private readonly string _serialisedProof;
 
-	public GivenProofPresentation()
+	public GivenRequestReceived()
 	{
 		_presentedProof = new Proof
 		{
-			ConnectionId = "bank-connection-id"
+			ConnectionId = "bank-connection-id",
+			State = "request_received"
 		};
 
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
