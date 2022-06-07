@@ -4,6 +4,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+
 public class RtgsConnectionDoesNotExistFixture : ConnectionsTestFixtureBase
 {
 	public RtgsConnectionDoesNotExistFixture() =>

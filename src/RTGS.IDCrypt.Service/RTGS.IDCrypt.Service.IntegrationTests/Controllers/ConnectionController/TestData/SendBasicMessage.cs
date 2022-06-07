@@ -11,4 +11,3 @@ public static class SendBasicMessage
 	public static HttpRequestResponseContext HttpRequestResponseContext =>
 		new(Path, Response);
 }
-

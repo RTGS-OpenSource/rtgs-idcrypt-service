@@ -9,4 +9,3 @@ public interface IBankPartnerConnectionRepository
 	Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default);
 	Task<BankPartnerConnection> GetAsync(string connectionId, CancellationToken cancellationToken = default);
 }
-

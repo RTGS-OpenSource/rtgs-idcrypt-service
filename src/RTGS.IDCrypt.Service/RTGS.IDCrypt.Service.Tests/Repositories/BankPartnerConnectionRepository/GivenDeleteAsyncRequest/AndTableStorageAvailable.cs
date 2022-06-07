@@ -16,8 +16,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
-
-	private BankPartnerConnection _connection;
+	private readonly BankPartnerConnection _connection;
 
 	public AndTableStorageAvailable()
 	{
