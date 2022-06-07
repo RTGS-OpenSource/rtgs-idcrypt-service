@@ -14,7 +14,6 @@ namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepositor
 public class AndConnectionDoesNotExist : IAsyncLifetime
 {
 	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
-	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
 	private const string ConnectionId = "connection-id-999";
 
@@ -45,8 +44,8 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 					It.IsAny<CancellationToken>()))
 			.Returns(bankPartnerConnectionMock.Object);
 
-		_storageTableResolverMock = new Mock<IStorageTableResolver>();
-		_storageTableResolverMock
+		var storageTableResolverMock = new Mock<IStorageTableResolver>();
+		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
 			.Returns(_tableClientMock.Object)
 			.Verifiable();
@@ -59,7 +58,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		});
 
 		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
-			_storageTableResolverMock.Object,
+			storageTableResolverMock.Object,
 			options,
 			logger,
 			Mock.Of<IDateTimeProvider>());
