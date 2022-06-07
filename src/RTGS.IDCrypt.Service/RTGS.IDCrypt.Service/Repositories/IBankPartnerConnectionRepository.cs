@@ -8,5 +8,5 @@ public interface IBankPartnerConnectionRepository
 	Task CreateAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default);
 	Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default);
 	Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default);
-	IEnumerable<string> GetInvitedPartnerIds(CancellationToken cancellationToken = default);
+	Task<IEnumerable<string>> GetInvitedPartnerIdsAsync(CancellationToken cancellationToken = default);
 }

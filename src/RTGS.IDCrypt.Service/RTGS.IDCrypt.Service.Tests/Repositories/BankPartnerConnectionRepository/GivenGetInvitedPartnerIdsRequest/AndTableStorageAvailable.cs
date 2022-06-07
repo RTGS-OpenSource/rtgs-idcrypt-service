@@ -10,11 +10,12 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 
 namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenGetInvitedPartnerIdsRequest;
 
-public class AndTableStorageAvailable
+public class AndTableStorageAvailable : IAsyncLifetime
 {
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
-	private readonly IEnumerable<string> _ids;
+	private IEnumerable<string> _ids;
+	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 
 	public AndTableStorageAvailable()
 	{
@@ -65,14 +66,14 @@ public class AndTableStorageAvailable
 			BankPartnerConnectionsTableName = "bankPartnerConnections"
 		});
 
-		var bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
+		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
 			_storageTableResolverMock.Object,
 			options,
 			logger,
 			Mock.Of<IDateTimeProvider>());
-
-		_ids = bankPartnerConnectionRepository.GetInvitedPartnerIds();
 	}
+
+	public async Task InitializeAsync() => _ids = await _bankPartnerConnectionRepository.GetInvitedPartnerIdsAsync();
 
 	[Fact]
 	public void ThenExpectedTableIsResolved() => _storageTableResolverMock.Verify();
@@ -82,4 +83,6 @@ public class AndTableStorageAvailable
 
 	[Fact]
 	public void ThenExpectedResult() => _ids.Should().BeEquivalentTo("rtgs-global-id-1");
+
+	public Task DisposeAsync() => Task.CompletedTask;
 }

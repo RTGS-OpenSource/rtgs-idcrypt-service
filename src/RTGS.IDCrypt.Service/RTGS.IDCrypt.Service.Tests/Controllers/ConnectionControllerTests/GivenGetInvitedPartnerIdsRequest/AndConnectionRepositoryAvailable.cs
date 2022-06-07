@@ -6,7 +6,7 @@ using RTGS.IDCrypt.Service.Services;
 
 namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenGetInvitedPartnerIdsRequest;
 
-public class AndConnectionRepositoryAvailable
+public class AndConnectionRepositoryAvailable : IAsyncLifetime
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
 	private readonly ConnectionController _connectionController;
@@ -18,17 +18,21 @@ public class AndConnectionRepositoryAvailable
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 
 		_bankPartnerConnectionRepositoryMock
-			.Setup(mock => mock.GetInvitedPartnerIds(It.IsAny<CancellationToken>()))
-			.Returns(new[] { "id1", "id2" });
+			.Setup(mock => mock.GetInvitedPartnerIdsAsync(It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new[] { "id1", "id2" });
 
 		_connectionController = new ConnectionController(Mock.Of<IConnectionService>(), _bankPartnerConnectionRepositoryMock.Object);
-
-		_response = _connectionController.InvitedPartnerIds();
 	}
+
+	public async Task InitializeAsync() => _response = await _connectionController.InvitedPartnerIds();
 
 	[Fact]
 	public void WhenInvoked_ThenReturnOkt() => _response.Should().BeOfType<OkObjectResult>();
 
 	[Fact]
 	public void WhenInvoked_ThenCallRepositoryAsync() => _bankPartnerConnectionRepositoryMock.Verify();
+
+
+
+	public Task DisposeAsync() => Task.CompletedTask;
 }

@@ -60,17 +60,17 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
-	public IEnumerable<string> GetInvitedPartnerIds(CancellationToken cancellationToken = default)
+	public async Task<IEnumerable<string>> GetInvitedPartnerIdsAsync(CancellationToken cancellationToken = default)
 	{
 		try
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			return tableClient
-				.Query<BankPartnerConnection>(bankPartnerConnection => bankPartnerConnection.Status == "Active"
+			return (await tableClient
+				.QueryAsync<BankPartnerConnection>(bankPartnerConnection => bankPartnerConnection.Status == "Active"
 																	   && bankPartnerConnection.Role == "Invitee",
 					cancellationToken: cancellationToken, select: new[] { "PartitionKey" })
-				.ToList()
+				.ToListAsync(cancellationToken))
 				.Select(bankPartnerConnection => bankPartnerConnection.PartitionKey)
 				.Distinct();
 		}

@@ -33,20 +33,20 @@ public class AndTableStorageUnavailable
 	}
 
 	[Fact]
-	public void WhenInvoked_ThenThrows() => FluentActions
-		.Invoking(() => _bankPartnerConnectionRepository.GetInvitedPartnerIds())
+	public async Task WhenInvoked_ThenThrows() => await FluentActions
+		.Awaiting(() => _bankPartnerConnectionRepository.GetInvitedPartnerIdsAsync())
 		.Should()
-		.Throw<Exception>();
+		.ThrowAsync<Exception>();
 
 	[Fact]
-	public void WhenInvoked_ThenLogs()
+	public async Task WhenInvoked_ThenLogs()
 	{
 		using var _ = new AssertionScope();
 
-		FluentActions
-			.Invoking(() => _bankPartnerConnectionRepository.GetInvitedPartnerIds())
+		await FluentActions
+			.Awaiting(() => _bankPartnerConnectionRepository.GetInvitedPartnerIdsAsync())
 			.Should()
-			.Throw<Exception>();
+			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 		{

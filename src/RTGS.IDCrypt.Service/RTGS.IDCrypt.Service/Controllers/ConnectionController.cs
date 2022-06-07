@@ -105,9 +105,9 @@ public class ConnectionController : ControllerBase
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="OkObjectResult"/></returns>
 	[HttpGet("InvitedPartnerIds")]
-	public IActionResult InvitedPartnerIds(CancellationToken cancellationToken = default)
+	public async Task<IActionResult> InvitedPartnerIds(CancellationToken cancellationToken = default)
 	{
-		var result = _bankPartnerConnectionRepository.GetInvitedPartnerIds(cancellationToken);
+		var result = await _bankPartnerConnectionRepository.GetInvitedPartnerIdsAsync(cancellationToken);
 
 		return Ok(result);
 	}

@@ -15,17 +15,17 @@ public class AndConnectionRepositoryThrows
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 
 		_bankPartnerConnectionRepositoryMock
-			.Setup(mock => mock.GetInvitedPartnerIds(It.IsAny<CancellationToken>()))
-			.Throws(new Exception());
+			.Setup(mock => mock.GetInvitedPartnerIdsAsync(It.IsAny<CancellationToken>()))
+			.ThrowsAsync(new Exception());
 
 		_connectionController =
 			new ConnectionController(Mock.Of<IConnectionService>(), _bankPartnerConnectionRepositoryMock.Object);
 	}
 
 	[Fact]
-	public void WhenInvoking_ThenThrows() =>
-		FluentActions
-			.Invoking(() => _connectionController.InvitedPartnerIds())
+	public async Task WhenInvoking_ThenThrows() =>
+		await FluentActions
+			.Awaiting(() => _connectionController.InvitedPartnerIds())
 			.Should()
-			.Throw<Exception>();
+			.ThrowAsync<Exception>();
 }
