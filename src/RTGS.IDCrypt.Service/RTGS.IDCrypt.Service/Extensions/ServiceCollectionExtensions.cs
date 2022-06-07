@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
 			var bankPartnerConnectionsConfig = new ConnectionsConfig
 			{
 				BankPartnerConnectionsTableName = "bankPartnerConnections",
+				RtgsConnectionsTableName = "rtgsConnections",
 				MinimumConnectionAge = TimeSpan.FromMinutes(5)
 			};
 

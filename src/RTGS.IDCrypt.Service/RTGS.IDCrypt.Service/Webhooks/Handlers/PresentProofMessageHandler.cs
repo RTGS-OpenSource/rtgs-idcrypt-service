@@ -38,7 +38,7 @@ public class PresentProofMessageHandler : IMessageHandler
 
 		var proof = JsonSerializer.Deserialize<Proof>(jsonMessage);
 
-		if (proof.State != ProofStates.Received)
+		if (proof!.State != ProofStates.Received)
 		{
 			return;
 		}
