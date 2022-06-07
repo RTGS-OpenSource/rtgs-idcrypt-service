@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Extensions;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 
 namespace RTGS.IDCrypt.Service.Controllers;
@@ -10,11 +11,14 @@ namespace RTGS.IDCrypt.Service.Controllers;
 public class ConnectionController : ControllerBase
 {
 	private readonly IConnectionService _connectionService;
+	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 
 	public ConnectionController(
-		IConnectionService connectionService)
+		IConnectionService connectionService,
+		IBankPartnerConnectionRepository bankPartnerConnectionRepository)
 	{
 		_connectionService = connectionService;
+		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 	}
 
 	/// <summary>
@@ -93,5 +97,18 @@ public class ConnectionController : ControllerBase
 		await _connectionService.DeleteAsync(connectionId, cancellationToken);
 
 		return NoContent();
+	}
+
+	/// <summary>
+	/// Endpoint to return distinct list of RtgsGlobalIds for Active partner backs that were Invited by us.
+	/// </summary>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="OkObjectResult"/></returns>
+	[HttpGet("InvitedPartnerIds")]
+	public async Task<IActionResult> InvitedPartnerIds(CancellationToken cancellationToken = default)
+	{
+		var result = await _bankPartnerConnectionRepository.GetInvitedPartnerIdsAsync(cancellationToken);
+
+		return Ok(result);
 	}
 }

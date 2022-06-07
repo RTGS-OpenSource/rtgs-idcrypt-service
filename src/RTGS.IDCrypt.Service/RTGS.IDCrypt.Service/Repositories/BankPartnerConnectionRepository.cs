@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Collections.Generic;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
@@ -50,6 +51,33 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error occurred when activating bank partner connection");
+
+			throw;
+		}
+	}
+
+	public async Task<IEnumerable<string>> GetInvitedPartnerIdsAsync(CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+			var connections
+				= await tableClient.QueryAsync<BankPartnerConnection>(
+					bankPartnerConnection =>
+						bankPartnerConnection.Status == ConnectionStatuses.Active &&
+						bankPartnerConnection.Role == ConnectionRoles.Invitee,
+					cancellationToken: cancellationToken,
+					select: new[] { "PartitionKey" })
+				.ToListAsync(cancellationToken);
+
+			return connections
+				.Select(bankPartnerConnection => bankPartnerConnection.PartitionKey)
+				.Distinct();
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when querying bank partner connections");
 
 			throw;
 		}
