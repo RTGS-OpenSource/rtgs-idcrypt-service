@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.PresentProofMessageHandler.GivenRoleIsInviter;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.PresentProofMessageHandler.GivenRoleIsInviterAndStateIsRequestReceived;
 
 public class AndBankPartnerConnectionDoesNotExist : IClassFixture<BankPartnerConnectionDoesNotExistFixture>, IAsyncLifetime
 {
@@ -24,7 +24,8 @@ public class AndBankPartnerConnectionDoesNotExist : IClassFixture<BankPartnerCon
 	{
 		_request = new Proof
 		{
-			ConnectionId = "bank-connection-id-1"
+			ConnectionId = "bank-connection-id-1",
+			State = "request_received"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/present_proof", _request);

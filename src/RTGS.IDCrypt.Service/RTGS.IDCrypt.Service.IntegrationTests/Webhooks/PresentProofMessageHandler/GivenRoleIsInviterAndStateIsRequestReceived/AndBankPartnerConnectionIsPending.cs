@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.PresentProofMessageHandler.GivenRoleIsInviter;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.PresentProofMessageHandler.GivenRoleIsInviterAndStateIsRequestReceived;
 
 public class AndBankPartnerConnectionIsPending : IClassFixture<BankPartnerConnectionPendingFixture>, IAsyncLifetime
 {
@@ -25,7 +25,8 @@ public class AndBankPartnerConnectionIsPending : IClassFixture<BankPartnerConnec
 	{
 		var request = new Proof
 		{
-			ConnectionId = "bank-connection-id-1"
+			ConnectionId = "bank-connection-id-1",
+			State = "request_received"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/present_proof", request);

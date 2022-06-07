@@ -28,7 +28,8 @@ public class AndBankPartnerConnectionIsPending : IClassFixture<BankPartnerConnec
 	{
 		var request = new Proof
 		{
-			ConnectionId = "bank-connection-id-2"
+			ConnectionId = "bank-connection-id-2",
+			State = "request_received"
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/present_proof", request);
