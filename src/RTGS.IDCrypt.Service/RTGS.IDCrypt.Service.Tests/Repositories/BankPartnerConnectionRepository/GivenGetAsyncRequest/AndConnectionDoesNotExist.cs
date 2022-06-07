@@ -10,13 +10,14 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenActivateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenGetAsyncRequest;
 
-public class AndConnectionDoesNotExist : IAsyncLifetime
+public class AndConnectionDoesNotExist
 {
 	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
-	private readonly Mock<TableClient> _tableClientMock;
 	private readonly FakeLogger<Service.Repositories.BankPartnerConnectionRepository> _logger;
+
+	private const string ConnectionId = "non-existent-connection-id";
 
 	public AndConnectionDoesNotExist()
 	{
@@ -25,19 +26,19 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
 			.Returns(new List<BankPartnerConnection>().ToAsyncEnumerable().GetAsyncEnumerator());
 
-		_tableClientMock = new Mock<TableClient>();
+		var tableClientMock = new Mock<TableClient>();
 
 		Func<Expression<Func<BankPartnerConnection, bool>>, bool> expressionMatches = actualExpression =>
 		{
 			Expression<Func<BankPartnerConnection, bool>> expectedExpression = bankPartnerConnection =>
-				bankPartnerConnection.ConnectionId == "non-existent-connection-id";
+				bankPartnerConnection.ConnectionId == ConnectionId;
 
 			actualExpression.Should().BeEquivalentTo(expectedExpression);
 
 			return true;
 		};
 
-		_tableClientMock.Setup(tableClient =>
+		tableClientMock.Setup(tableClient =>
 				tableClient.QueryAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
@@ -49,7 +50,7 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 
 		storageTableResolverMock
 			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
-			.Returns(_tableClientMock.Object)
+			.Returns(tableClientMock.Object)
 			.Verifiable();
 
 		_logger = new FakeLogger<Service.Repositories.BankPartnerConnectionRepository>();
@@ -66,20 +67,23 @@ public class AndConnectionDoesNotExist : IAsyncLifetime
 			Mock.Of<IDateTimeProvider>());
 	}
 
-	public async Task InitializeAsync() => await _bankPartnerConnectionRepository.ActivateAsync("non-existent-connection-id");
-
-	public Task DisposeAsync() => Task.CompletedTask;
+	[Fact]
+	public async Task WhenInvoked_ThenThrows() => await FluentActions
+		.Awaiting(() => _bankPartnerConnectionRepository.GetAsync(ConnectionId))
+		.Should()
+		.ThrowAsync<Exception>();
 
 	[Fact]
-	public void ThenNoUpdateAttemptIsMade() => _tableClientMock
-		.Verify(client => client.UpdateEntityAsync(
-			It.IsAny<BankPartnerConnection>(),
-			It.IsAny<ETag>(),
-			It.IsAny<TableUpdateMode>(),
-			It.IsAny<CancellationToken>()), Times.Never);
+	public async Task WhenInvoked_ThenLogs()
+	{
+		using var _ = new AssertionScope();
 
-	[Fact]
-	public void ThenLog() =>
-		_logger.Logs[LogLevel.Warning]
-			.Should().BeEquivalentTo("Unable to activate connection as the bank partner connection was not found");
+		await FluentActions
+			.Awaiting(() => _bankPartnerConnectionRepository.GetAsync("non-existent-connection-id"))
+			.Should()
+			.ThrowAsync<Exception>();
+
+		_logger.Logs[LogLevel.Error]
+			.Should().BeEquivalentTo($"Bank partner connection with ID {ConnectionId} not found");
+	}
 }

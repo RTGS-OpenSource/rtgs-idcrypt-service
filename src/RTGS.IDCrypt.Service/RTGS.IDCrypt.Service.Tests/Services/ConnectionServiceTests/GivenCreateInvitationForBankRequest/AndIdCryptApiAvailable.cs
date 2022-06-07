@@ -82,7 +82,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			RowKey = Alias,
 			Alias = Alias,
 			ConnectionId = createConnectionInvitationResponse.ConnectionId,
-			Status = "Pending"
+			Status = "Pending",
+			Role = "Inviter"
 		};
 
 		Func<BankPartnerConnection, bool> connectionMatches = actualConnection =>

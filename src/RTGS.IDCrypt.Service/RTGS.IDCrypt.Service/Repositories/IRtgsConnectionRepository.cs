@@ -6,4 +6,5 @@ public interface IRtgsConnectionRepository
 {
 	Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default);
 	Task CreateAsync(RtgsConnection rtgsConnection, CancellationToken cancellationToken = default);
+	Task<RtgsConnection> GetEstablishedAsync(CancellationToken cancellationToken = default);
 }

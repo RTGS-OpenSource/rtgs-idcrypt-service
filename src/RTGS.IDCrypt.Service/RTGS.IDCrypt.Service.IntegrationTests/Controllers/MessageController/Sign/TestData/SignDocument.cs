@@ -10,7 +10,7 @@ public static class SignDocument
 	public static SignDocumentResponse ExpectedResponse => new()
 	{
 		PairwiseDidSignature = "pairwise-did-signature",
-		PublicDidSignature = "public-did-signature",
+		PublicDidSignature = "public-did-signature"
 	};
 
 	private static string SerialisedResponse =>

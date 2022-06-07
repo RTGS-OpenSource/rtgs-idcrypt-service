@@ -17,7 +17,7 @@ namespace RTGS.IDCrypt.Service.Controllers;
 public class MessageController : ControllerBase
 {
 	private readonly ILogger<MessageController> _logger;
-	private readonly ConnectionsConfig _bankPartnerConnectionsConfig;
+	private readonly ConnectionsConfig _connectionsConfig;
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
 	private readonly IDateTimeProvider _dateTimeProvider;
@@ -25,14 +25,14 @@ public class MessageController : ControllerBase
 
 	public MessageController(
 		ILogger<MessageController> logger,
-		IOptions<ConnectionsConfig> bankPartnerConnectionsConfig,
+		IOptions<ConnectionsConfig> connectionsConfig,
 		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient,
 		IDateTimeProvider dateTimeProvider,
 		IWalletClient walletClient)
 	{
 		_logger = logger;
-		_bankPartnerConnectionsConfig = bankPartnerConnectionsConfig.Value;
+		_connectionsConfig = connectionsConfig.Value;
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
 		_dateTimeProvider = dateTimeProvider;
@@ -50,9 +50,9 @@ public class MessageController : ControllerBase
 		SignMessageRequest signMessageRequest,
 		CancellationToken cancellationToken)
 	{
-		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_bankPartnerConnectionsConfig.MinimumConnectionAge);
+		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
@@ -110,7 +110,7 @@ public class MessageController : ControllerBase
 		CancellationToken cancellationToken = default)
 	{
 		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(
-			_bankPartnerConnectionsConfig.BankPartnerConnectionsTableName);
+			_connectionsConfig.BankPartnerConnectionsTableName);
 
 		var bankPartnerConnections = bankPartnerConnectionsTable
 			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)

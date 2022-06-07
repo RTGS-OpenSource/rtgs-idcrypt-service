@@ -18,7 +18,7 @@ public class AndAgentUnavailable : IClassFixture<DeleteConnectionAgentUnavailabl
 	[Fact]
 	public async Task ThenReturnInternalServerError()
 	{
-		var response = await _client.DeleteAsync($"api/connection/connection-id-1");
+		var response = await _client.DeleteAsync("api/connection/connection-id-1");
 
 		using var _ = new AssertionScope();
 

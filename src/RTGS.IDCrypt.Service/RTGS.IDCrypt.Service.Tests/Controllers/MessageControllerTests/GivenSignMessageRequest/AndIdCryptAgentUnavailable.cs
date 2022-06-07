@@ -41,7 +41,8 @@ public class AndIdCryptAgentUnavailable
 			RowKey = "alias",
 			ConnectionId = "connection-id",
 			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
@@ -59,7 +60,7 @@ public class AndIdCryptAgentUnavailable
 		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
 			new List<BankPartnerConnection>
 			{
-				matchingBankPartnerConnection,
+				matchingBankPartnerConnection
 			}
 			.GetEnumerator());
 

@@ -6,27 +6,27 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenActivateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.RtgsConnectionRepository.GivenGetEstablishedRequest;
 
 public class AndTableStorageUnavailable
 {
-	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
-	private readonly FakeLogger<Service.Repositories.BankPartnerConnectionRepository> _logger = new();
+	private readonly Service.Repositories.RtgsConnectionRepository _rtgsConnectionRepository;
+	private readonly FakeLogger<Service.Repositories.RtgsConnectionRepository> _logger = new();
 
 	public AndTableStorageUnavailable()
 	{
 		var storageTableResolverMock = new Mock<IStorageTableResolver>();
 
 		storageTableResolverMock
-			.Setup(resolver => resolver.GetTable("bankPartnerConnections"))
+			.Setup(resolver => resolver.GetTable("rtgsConnections"))
 			.Throws<Exception>();
 
 		var options = Options.Create(new ConnectionsConfig
 		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
+			RtgsConnectionsTableName = "rtgsConnections"
 		});
 
-		_bankPartnerConnectionRepository = new Service.Repositories.BankPartnerConnectionRepository(
+		_rtgsConnectionRepository = new Service.Repositories.RtgsConnectionRepository(
 			storageTableResolverMock.Object,
 			options,
 			_logger,
@@ -35,7 +35,7 @@ public class AndTableStorageUnavailable
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
+		.Awaiting(() => _rtgsConnectionRepository.GetEstablishedAsync())
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -45,11 +45,11 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
+			.Awaiting(() => _rtgsConnectionRepository.GetEstablishedAsync())
 			.Should()
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error]
-			.Should().BeEquivalentTo("Error occurred when activating bank partner connection");
+			.Should().BeEquivalentTo("Error occurred when getting RTGS connection");
 	}
 }
