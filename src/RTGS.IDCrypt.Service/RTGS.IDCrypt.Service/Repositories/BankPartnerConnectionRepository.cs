@@ -32,15 +32,11 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			var connection = tableClient
-				.Query<BankPartnerConnection>(bankPartnerConnection =>
-						bankPartnerConnection.ConnectionId == connectionId,
-					cancellationToken: cancellationToken)
-				.SingleOrDefault();
+			var connection = await GetFromTableAsync(connectionId, cancellationToken);
 
 			if (connection is null)
 			{
-				_logger.LogWarning("Unable to activate connection as the connection was not found");
+				_logger.LogWarning("Unable to activate connection as the bank partner connection was not found");
 				return;
 			}
 
@@ -54,7 +50,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when activating connection");
+			_logger.LogError(ex, "Error occurred when activating bank partner connection");
 
 			throw;
 		}
@@ -106,15 +102,11 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			var connection = tableClient
-				.Query<BankPartnerConnection>(bankPartnerConnection =>
-						bankPartnerConnection.ConnectionId == connectionId,
-					cancellationToken: cancellationToken)
-				.SingleOrDefault();
+			var connection = await GetFromTableAsync(connectionId, cancellationToken);
 
 			if (connection is null)
 			{
-				_logger.LogWarning("Unable to delete connection from table storage as the connection was not found");
+				_logger.LogWarning("Unable to delete connection from table storage as the bank partner connection was not found");
 				return;
 			}
 
@@ -122,9 +114,49 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when deleting connection");
+			_logger.LogError(ex, "Error occurred when deleting bank partner connection");
 
 			throw;
 		}
+	}
+
+	public async Task<BankPartnerConnection> GetAsync(string connectionId, CancellationToken cancellationToken = default)
+	{
+		BankPartnerConnection connection;
+
+		try
+		{
+			connection = await GetFromTableAsync(connectionId, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when getting bank partner connection");
+
+			throw;
+		}
+
+		if (connection is null)
+		{
+			var ex = new Exception($"Bank partner connection with ID {connectionId} not found");
+
+			_logger.LogError(ex, "Bank partner connection with ID {ConnectionId} not found", connectionId);
+
+			throw ex;
+		}
+
+		return connection;
+	}
+
+	private async Task<BankPartnerConnection> GetFromTableAsync(string connectionId, CancellationToken cancellationToken)
+	{
+		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+		var connection = await tableClient
+			.QueryAsync<BankPartnerConnection>(bankPartnerConnection =>
+					bankPartnerConnection.ConnectionId == connectionId,
+				cancellationToken: cancellationToken)
+			.SingleOrDefaultAsync(cancellationToken);
+
+		return connection;
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Azure;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -15,8 +16,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 	private readonly Service.Repositories.BankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly Mock<IStorageTableResolver> _storageTableResolverMock;
 	private readonly Mock<TableClient> _tableClientMock;
-
-	private BankPartnerConnection _connection;
+	private readonly BankPartnerConnection _connection;
 
 	public AndTableStorageAvailable()
 	{
@@ -26,12 +26,14 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			RowKey = "alias-1",
 			ConnectionId = "connection-id-1",
 			CreatedAt = DateTime.Parse("2022-01-01"),
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
-		var bankPartnerConnectionMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
-		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator())
-			.Returns(new List<BankPartnerConnection> { _connection }.GetEnumerator());
+		var bankPartnerConnectionMock = new Mock<AsyncPageable<BankPartnerConnection>>();
+
+		bankPartnerConnectionMock.Setup(bankPartnerConnections => bankPartnerConnections.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+			.Returns(new List<BankPartnerConnection> { _connection }.ToAsyncEnumerable().GetAsyncEnumerator());
 
 		_tableClientMock = new Mock<TableClient>();
 
@@ -46,7 +48,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 		};
 
 		_tableClientMock.Setup(tableClient =>
-				tableClient.Query(
+				tableClient.QueryAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expression => expressionMatches(expression)),
 					It.IsAny<int?>(),
 					It.IsAny<IEnumerable<string>>(),
@@ -57,7 +59,7 @@ public class AndTableStorageAvailable : IAsyncLifetime
 			.Setup(tableClient => tableClient.DeleteEntityAsync(
 				_connection.PartitionKey,
 				_connection.RowKey,
-				It.IsAny<Azure.ETag>(),
+				It.IsAny<ETag>(),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 

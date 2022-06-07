@@ -79,7 +79,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			ConnectionId = connectionResponse.ConnectionId,
 			Alias = connectionResponse.Alias,
 			PublicDid = _request.PublicDid,
-			Status = "Pending"
+			Status = "Pending",
+			Role = "Invitee"
 		};
 
 		Func<BankPartnerConnection, bool> connectionMatches = actualConnection =>

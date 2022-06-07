@@ -68,7 +68,8 @@ public class ConnectionService : IConnectionService
 				ConnectionId = response.ConnectionId,
 				Alias = response.Alias,
 				PublicDid = invitation.PublicDid,
-				Status = ConnectionStatuses.Pending
+				Status = ConnectionStatuses.Pending,
+				Role = ConnectionRoles.Invitee
 			};
 
 			await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
@@ -100,7 +101,8 @@ public class ConnectionService : IConnectionService
 				Alias = alias,
 				ConnectionId = createConnectionInvitationResponse.ConnectionId,
 				Status = ConnectionStatuses.Pending,
-				PublicDid = publicDid
+				PublicDid = publicDid,
+				Role = ConnectionRoles.Inviter
 			};
 
 			await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);

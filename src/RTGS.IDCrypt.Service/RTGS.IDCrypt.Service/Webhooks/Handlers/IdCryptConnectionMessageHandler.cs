@@ -111,7 +111,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 			KeyValuePair.Create("id", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
 			KeyValuePair.Create("risk_monitoring_status", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
 			KeyValuePair.Create("monitored", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
-			KeyValuePair.Create("risk_monitoring_subscription_uri", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default"),
+			KeyValuePair.Create("risk_monitoring_subscription_uri", "XvCtmx54WgYNcwAycYaFzT:3:CL:6206:default")
 		};
 
 		var proofAttributes = rtgsNetworkParticipationProofAttributes.ToDictionary(

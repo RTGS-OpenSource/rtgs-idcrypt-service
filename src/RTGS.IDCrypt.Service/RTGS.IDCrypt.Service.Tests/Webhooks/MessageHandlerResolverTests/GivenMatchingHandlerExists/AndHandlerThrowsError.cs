@@ -28,7 +28,7 @@ public class AndHandlerThrowsError : IAsyncLifetime
 
 		var messageHandlers = new List<IMessageHandler>()
 		{
-			_mockMessageHandler.Object,
+			_mockMessageHandler.Object
 		};
 
 		_resolver = new MessageHandlerResolver(_logger, messageHandlers);

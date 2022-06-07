@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Data.Tables" Version="12.5.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
-    <PackageReference Include="RTGS.IDCryptSDK" Version="0.0.20" />
+    <PackageReference Include="RTGS.IDCryptSDK" Version="0.0.22" />
     <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />

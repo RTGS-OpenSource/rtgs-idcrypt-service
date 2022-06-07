@@ -31,7 +31,8 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 				Alias = "alias",
 				CreatedAt = aDate,
 				PublicDid = "public-did",
-				Status = "Active"
+				Status = "Active",
+				Role = "Inviter"
 			},
 			new()
 			{
@@ -41,7 +42,8 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 				Alias = "alias-1",
 				CreatedAt = aDate,
 				PublicDid = "public-did-1",
-				Status = "Pending"
+				Status = "Pending",
+				Role = "Inviter"
 			},
 			new()
 			{
@@ -51,7 +53,8 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 				Alias = "alias-2",
 				CreatedAt = aDate,
 				PublicDid = "public-did-2",
-				Status = "Active"
+				Status = "Active",
+				Role = "Inviter"
 			}
 		};
 

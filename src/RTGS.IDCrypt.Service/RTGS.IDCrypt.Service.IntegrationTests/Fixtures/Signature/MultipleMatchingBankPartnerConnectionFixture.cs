@@ -39,7 +39,8 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 			Alias = "alias-1",
 			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3)),
 			PublicDid = "public-did-1",
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		var tooNewConnection = new BankPartnerConnection
@@ -50,7 +51,8 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 			Alias = "alias-2",
 			CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3)),
 			PublicDid = "public-did-2",
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		ValidConnection = new BankPartnerConnection
@@ -61,7 +63,8 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 			Alias = "alias-3",
 			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1)),
 			PublicDid = "public-did-3",
-			Status = "Active"
+			Status = "Active",
+			Role = "Inviter"
 		};
 
 		var bankPartnerConnections = new List<BankPartnerConnection>

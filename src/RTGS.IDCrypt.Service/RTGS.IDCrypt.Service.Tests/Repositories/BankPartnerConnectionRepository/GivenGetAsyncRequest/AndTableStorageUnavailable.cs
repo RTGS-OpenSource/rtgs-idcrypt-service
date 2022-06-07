@@ -6,7 +6,7 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenActivateAsyncRequest;
+namespace RTGS.IDCrypt.Service.Tests.Repositories.BankPartnerConnectionRepository.GivenGetAsyncRequest;
 
 public class AndTableStorageUnavailable
 {
@@ -35,7 +35,7 @@ public class AndTableStorageUnavailable
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() => await FluentActions
-		.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
+		.Awaiting(() => _bankPartnerConnectionRepository.GetAsync("connection-id"))
 		.Should()
 		.ThrowAsync<Exception>();
 
@@ -45,11 +45,11 @@ public class AndTableStorageUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _bankPartnerConnectionRepository.ActivateAsync("connection-id"))
+			.Awaiting(() => _bankPartnerConnectionRepository.GetAsync("connection-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
 		_logger.Logs[LogLevel.Error]
-			.Should().BeEquivalentTo("Error occurred when activating bank partner connection");
+			.Should().BeEquivalentTo("Error occurred when getting bank partner connection");
 	}
 }

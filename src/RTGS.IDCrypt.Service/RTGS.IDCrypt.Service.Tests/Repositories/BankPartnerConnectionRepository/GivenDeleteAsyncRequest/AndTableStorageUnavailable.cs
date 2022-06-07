@@ -51,7 +51,7 @@ public class AndTableStorageUnavailable
 
 		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>
 		{
-			"Error occurred when deleting connection"
+			"Error occurred when deleting bank partner connection"
 		});
 	}
 }

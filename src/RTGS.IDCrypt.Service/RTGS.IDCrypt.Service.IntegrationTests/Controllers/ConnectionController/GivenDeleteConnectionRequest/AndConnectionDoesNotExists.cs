@@ -4,13 +4,13 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenDeleteConnectionRequest;
 
-public class AndConnectionDoesNotExists : IClassFixture<MissingDeleteConnectionFixture>, IAsyncLifetime
+public class AndConnectionDoesNotExists : IClassFixture<DeleteConnectionThatDoesNotExistFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private HttpResponseMessage _httpResponse;
 	private const string ConnectionId = "connection-id-1";
 
-	public AndConnectionDoesNotExists(MissingDeleteConnectionFixture testFixture)
+	public AndConnectionDoesNotExists(DeleteConnectionThatDoesNotExistFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
