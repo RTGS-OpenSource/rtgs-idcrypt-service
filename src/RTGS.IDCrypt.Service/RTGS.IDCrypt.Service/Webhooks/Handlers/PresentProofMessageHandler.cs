@@ -14,16 +14,19 @@ public class PresentProofMessageHandler : IMessageHandler
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IBasicMessageClient _basicMessageClient;
 	private readonly CoreConfig _coreConfig;
+	private readonly ILogger<PresentProofMessageHandler> _logger;
 
 	public PresentProofMessageHandler(
 		IBankPartnerConnectionRepository bankPartnerConnectionRepository,
 		IRtgsConnectionRepository rtgsConnectionRepository,
 		IBasicMessageClient basicMessageClient,
-		IOptions<CoreConfig> coreConfigOptions)
+		IOptions<CoreConfig> coreConfigOptions,
+		ILogger<PresentProofMessageHandler> logger = null)
 	{
 		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_basicMessageClient = basicMessageClient;
+		_logger = logger;
 		_coreConfig = coreConfigOptions.Value;
 	}
 
@@ -31,6 +34,11 @@ public class PresentProofMessageHandler : IMessageHandler
 
 	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{
+		if (_logger is not null)
+		{
+			_logger.LogInformation("Present proof webhook called with payload: {Payload}", jsonMessage);
+		}
+
 		var proof = JsonSerializer.Deserialize<Proof>(jsonMessage);
 
 		await _bankPartnerConnectionRepository.ActivateAsync(proof!.ConnectionId, cancellationToken);
