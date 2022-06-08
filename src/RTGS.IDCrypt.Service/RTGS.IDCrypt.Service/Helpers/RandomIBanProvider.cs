@@ -10,7 +10,8 @@ public class RandomIBanProvider : IIBanProvider
 		var pruef = (ktnr * 1000000) + 43;
 		var pruef2 = pruef % 97;
 		pruef = 98 - pruef2;
-		if (pruef > 9) {
+		if (pruef > 9)
+		{
 			return "DE" + pruef + "70050000" + "000" + ktnr;
 		}
 

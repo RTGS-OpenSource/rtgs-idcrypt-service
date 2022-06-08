@@ -34,7 +34,7 @@ public class GivenRequestSent : IAsyncLifetime
 		_rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
 		_basicMessageClient = new Mock<IBasicMessageClient>();
 		_ibanProviderMock = new Mock<IIBanProvider>();
-		
+
 		_coreConfig = new CoreConfig
 		{
 			RtgsGlobalId = "accepting-bank-rtgs-global-id"

@@ -101,7 +101,7 @@ public class GivenRequestReceived
 		_ibanProviderMock
 			.Setup(x => x.Generate())
 			.Returns("GB45BARC20039548689787");
-		
+
 		await _handler.HandleAsync(_serialisedProof, default);
 
 		var expectedMessage = new ApproveBankPartnerRequest

@@ -8,15 +8,15 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 {
 	public StubIBanProvider StubIBanProvider { get; }
-	
-	
+
+
 	public BankPartnerConnectionPendingFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
 			.Build();
-		
+
 		StubIBanProvider = new StubIBanProvider();
 	}
 
