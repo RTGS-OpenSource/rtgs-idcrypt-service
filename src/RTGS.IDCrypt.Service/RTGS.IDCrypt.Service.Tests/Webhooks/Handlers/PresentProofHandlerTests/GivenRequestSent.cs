@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.BasicMessage;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
