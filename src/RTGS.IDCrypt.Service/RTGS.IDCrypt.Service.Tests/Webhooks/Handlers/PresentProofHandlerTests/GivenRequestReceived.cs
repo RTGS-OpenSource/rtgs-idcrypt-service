@@ -112,7 +112,7 @@ public class GivenRequestReceived
 		_basicMessageClient.Verify(client =>
 			client.SendAsync(
 				_rtgsConnection.ConnectionId,
-				"set-bank-partnership-online",
+				"SetBankPartnershipOnlineRequest",
 				It.Is<SetBankPartnershipOnlineRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()),
 			Times.Once);
 	}

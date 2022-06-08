@@ -58,7 +58,7 @@ public class PresentProofMessageHandler : IMessageHandler
 				RequestingBankDid = bankConnection.PartitionKey //TODO - get from proof
 			};
 
-			await _basicMessageClient.SendAsync(rtgsConnection.ConnectionId, "set-bank-partnership-online", setBankPartnershipOnlineRequest, cancellationToken);
+			await _basicMessageClient.SendAsync(rtgsConnection.ConnectionId, nameof(SetBankPartnershipOnlineRequest), setBankPartnershipOnlineRequest, cancellationToken);
 		}
 	}
 }
