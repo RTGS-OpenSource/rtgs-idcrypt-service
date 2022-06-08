@@ -32,6 +32,7 @@ public class AndBankPartnerConnectionIsPending : IClassFixture<BankPartnerConnec
 			State = "request_received"
 		};
 
+		_testFixture.StubIBanProvider.CurrentIBan = "NL91ABNA0417164300";
 		_httpResponse = await _client.PostAsJsonAsync("v1/idcrypt/topic/present_proof", request);
 	}
 
@@ -73,6 +74,6 @@ public class AndBankPartnerConnectionIsPending : IClassFixture<BankPartnerConnec
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SendBasicMessage.Path].Single()
 			.Content!.ReadAsStringAsync();
 
-		content.Should().Be(@"{""content"":""{\u0022MessageType\u0022:\u0022SetBankPartnershipOnlineRequest\u0022,\u0022MessageContent\u0022:{\u0022RequestingBankDid\u0022:\u0022rtgs-global-id-2\u0022,\u0022ApprovingBankDid\u0022:\u0022rtgs-global-id\u0022}}""}");
+		content.Should().Be(@"{""content"":""{\u0022MessageType\u0022:\u0022ApproveBankPartnerRequest\u0022,\u0022MessageContent\u0022:{\u0022Iban\u0022:\u0022NL91ABNA0417164300\u0022,\u0022RequestingBankDid\u0022:\u0022rtgs-global-id-2\u0022,\u0022ApprovingBankDid\u0022:\u0022rtgs-global-id\u0022}}""}");
 	}
 }

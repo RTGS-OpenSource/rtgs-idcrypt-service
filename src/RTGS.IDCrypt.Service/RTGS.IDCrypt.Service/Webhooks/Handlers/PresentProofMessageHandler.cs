@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.BasicMessage;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Models;
@@ -14,6 +15,7 @@ public class PresentProofMessageHandler : IMessageHandler
 	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IBasicMessageClient _basicMessageClient;
+	private readonly IIBanProvider _ibanProvider;
 	private readonly CoreConfig _coreConfig;
 	private readonly ILogger<PresentProofMessageHandler> _logger;
 
@@ -22,11 +24,13 @@ public class PresentProofMessageHandler : IMessageHandler
 		IRtgsConnectionRepository rtgsConnectionRepository,
 		IBasicMessageClient basicMessageClient,
 		IOptions<CoreConfig> coreConfigOptions,
+		IIBanProvider ibanProvider,
 		ILogger<PresentProofMessageHandler> logger = null)
 	{
 		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_basicMessageClient = basicMessageClient;
+		_ibanProvider = ibanProvider;
 		_logger = logger;
 		_coreConfig = coreConfigOptions.Value;
 	}
@@ -52,13 +56,14 @@ public class PresentProofMessageHandler : IMessageHandler
 		{
 			var rtgsConnection = await _rtgsConnectionRepository.GetEstablishedAsync(cancellationToken);
 
-			var setBankPartnershipOnlineRequest = new SetBankPartnershipOnlineRequest
+			var setBankPartnershipOnlineRequest = new ApproveBankPartnerRequest
 			{
+				Iban = _ibanProvider.Generate(),
 				ApprovingBankDid = _coreConfig.RtgsGlobalId,
 				RequestingBankDid = bankConnection.PartitionKey //TODO - get from proof
 			};
 
-			await _basicMessageClient.SendAsync(rtgsConnection.ConnectionId, nameof(SetBankPartnershipOnlineRequest), setBankPartnershipOnlineRequest, cancellationToken);
+			await _basicMessageClient.SendAsync(rtgsConnection.ConnectionId, nameof(ApproveBankPartnerRequest), setBankPartnershipOnlineRequest, cancellationToken);
 		}
 	}
 }

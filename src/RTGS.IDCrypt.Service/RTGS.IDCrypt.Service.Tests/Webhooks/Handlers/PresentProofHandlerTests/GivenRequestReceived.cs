@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.BasicMessage;
+using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
@@ -14,6 +15,7 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.PresentProofHandlerTests;
 public class GivenRequestReceived
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
+	private readonly Mock<IIBanProvider> _ibanProviderMock;
 	private readonly RtgsConnection _rtgsConnection;
 	private readonly Proof _presentedProof;
 	private readonly CoreConfig _coreConfig;
@@ -30,6 +32,7 @@ public class GivenRequestReceived
 		};
 
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
+		_ibanProviderMock = new Mock<IIBanProvider>();
 
 		var rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
 
@@ -53,7 +56,8 @@ public class GivenRequestReceived
 			_bankPartnerConnectionRepositoryMock.Object,
 			rtgsConnectionRepositoryMock.Object,
 			_basicMessageClient.Object,
-			Options.Create(_coreConfig));
+			Options.Create(_coreConfig),
+			_ibanProviderMock.Object);
 
 		_serialisedProof = JsonSerializer.Serialize(_presentedProof);
 	}
@@ -94,15 +98,20 @@ public class GivenRequestReceived
 			.Setup(repo => repo.GetAsync(_presentedProof.ConnectionId, It.IsAny<CancellationToken>()))
 			.ReturnsAsync(bankPartnerConnection);
 
+		_ibanProviderMock
+			.Setup(x => x.Generate())
+			.Returns("GB45BARC20039548689787");
+		
 		await _handler.HandleAsync(_serialisedProof, default);
 
-		var expectedMessage = new SetBankPartnershipOnlineRequest
+		var expectedMessage = new ApproveBankPartnerRequest
 		{
+			Iban = "GB45BARC20039548689787",
 			ApprovingBankDid = _coreConfig.RtgsGlobalId,
 			RequestingBankDid = "rtgs-global-id" //TODO - get from proof
 		};
 
-		Func<SetBankPartnershipOnlineRequest, bool> messageMatches = actualMessage =>
+		Func<ApproveBankPartnerRequest, bool> messageMatches = actualMessage =>
 		{
 			actualMessage.Should().BeEquivalentTo(expectedMessage);
 
@@ -112,8 +121,8 @@ public class GivenRequestReceived
 		_basicMessageClient.Verify(client =>
 			client.SendAsync(
 				_rtgsConnection.ConnectionId,
-				"SetBankPartnershipOnlineRequest",
-				It.Is<SetBankPartnershipOnlineRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()),
+				"ApproveBankPartnerRequest",
+				It.Is<ApproveBankPartnerRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()),
 			Times.Once);
 	}
 
@@ -136,7 +145,7 @@ public class GivenRequestReceived
 			client.SendAsync(
 				It.IsAny<string>(),
 				It.IsAny<string>(),
-				It.IsAny<SetBankPartnershipOnlineRequest>(),
+				It.IsAny<ApproveBankPartnerRequest>(),
 				It.IsAny<CancellationToken>()),
 			Times.Never);
 	}
