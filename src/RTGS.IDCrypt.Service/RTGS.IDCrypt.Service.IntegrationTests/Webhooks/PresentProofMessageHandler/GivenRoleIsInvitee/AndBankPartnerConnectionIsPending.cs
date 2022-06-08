@@ -74,6 +74,6 @@ public class AndBankPartnerConnectionIsPending : IClassFixture<BankPartnerConnec
 			.Content!.ReadAsStringAsync();
 
 		content.Should().Be(
-			@"{""content"":""{\u0022MessageType\u0022:\u0022set-bank-partnership-online\u0022,\u0022MessageContent\u0022:{\u0022RequestingBankDid\u0022:\u0022requesting-bank-rtgs-global-id\u0022,\u0022ApprovingBankDid\u0022:\u0022rtgs-global-id\u0022}}""}");
+			@"{""content"":""{\u0022MessageType\u0022:\u0022set-bank-partnership-online\u0022,\u0022MessageContent\u0022:{\u0022RequestingBankDid\u0022:\u0022rtgs-global-id-2\u0022,\u0022ApprovingBankDid\u0022:\u0022rtgs-global-id\u0022}}""}");
 	}
 }

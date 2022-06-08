@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Contracts.BasicMessage;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Models;
@@ -54,7 +55,7 @@ public class PresentProofMessageHandler : IMessageHandler
 			var setBankPartnershipOnlineRequest = new SetBankPartnershipOnlineRequest
 			{
 				ApprovingBankDid = _coreConfig.RtgsGlobalId,
-				RequestingBankDid = "requesting-bank-rtgs-global-id" //TODO - get from proof
+				RequestingBankDid = bankConnection.PartitionKey //TODO - get from proof
 			};
 
 			await _basicMessageClient.SendAsync(rtgsConnection.ConnectionId, "set-bank-partnership-online", setBankPartnershipOnlineRequest, cancellationToken);
