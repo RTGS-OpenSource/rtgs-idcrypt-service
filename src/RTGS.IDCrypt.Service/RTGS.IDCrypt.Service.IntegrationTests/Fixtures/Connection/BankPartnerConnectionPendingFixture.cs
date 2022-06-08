@@ -5,11 +5,9 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+
 public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 {
-	public StubIBanProvider StubIBanProvider { get; }
-
-
 	public BankPartnerConnectionPendingFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
@@ -19,6 +17,8 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 
 		StubIBanProvider = new StubIBanProvider();
 	}
+
+	public StubIBanProvider StubIBanProvider { get; }
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
