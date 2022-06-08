@@ -1,4 +1,4 @@
-﻿namespace RTGS.IDCrypt.Service.Models;
+﻿namespace RTGS.IDCrypt.Service.Contracts.BasicMessage;
 
 public record SetBankPartnershipOnlineRequest
 {

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Contracts.BasicMessage;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
@@ -64,6 +65,7 @@ public class GivenRequestReceived
 	{
 		var bankConnection = new BankPartnerConnection
 		{
+			PartitionKey = "rtgs-global-id",
 			ConnectionId = _presentedProof.ConnectionId,
 			Role = role
 		};
@@ -83,6 +85,7 @@ public class GivenRequestReceived
 	{
 		var bankPartnerConnection = new BankPartnerConnection
 		{
+			PartitionKey = "rtgs-global-id",
 			ConnectionId = _presentedProof.ConnectionId,
 			Role = "Invitee"
 		};
@@ -96,7 +99,7 @@ public class GivenRequestReceived
 		var expectedMessage = new SetBankPartnershipOnlineRequest
 		{
 			ApprovingBankDid = _coreConfig.RtgsGlobalId,
-			RequestingBankDid = "requesting-bank-rtgs-global-id" //TODO - get from proof
+			RequestingBankDid = "rtgs-global-id" //TODO - get from proof
 		};
 
 		Func<SetBankPartnershipOnlineRequest, bool> messageMatches = actualMessage =>
