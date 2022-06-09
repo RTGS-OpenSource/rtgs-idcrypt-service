@@ -1,5 +1,4 @@
-﻿using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
+﻿using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -14,11 +13,7 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 			.Create()
 			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
 			.Build();
-
-		StubIBanProvider = new StubIBanProvider();
 	}
-
-	public StubIBanProvider StubIBanProvider { get; }
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
@@ -65,6 +60,5 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 		builder.ConfigureServices(services =>
 		{
 			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler);
-			services.AddSingleton<IIBanProvider>(StubIBanProvider);
 		});
 }

@@ -1,25 +1,17 @@
 ﻿using System.Text.Json;
-using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Contracts.BasicMessage;
-using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
-using RTGS.IDCryptSDK.BasicMessage;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.PresentProofHandlerTests;
 
 public class GivenRequestReceived
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
-	private readonly Mock<IIBanProvider> _ibanProviderMock;
-	private readonly RtgsConnection _rtgsConnection;
+
 	private readonly Proof _presentedProof;
-	private readonly CoreConfig _coreConfig;
-	private readonly Mock<IBasicMessageClient> _basicMessageClient;
 	private readonly PresentProofMessageHandler _handler;
 	private readonly string _serialisedProof;
 
@@ -32,32 +24,20 @@ public class GivenRequestReceived
 		};
 
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
-		_ibanProviderMock = new Mock<IIBanProvider>();
 
 		var rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
 
-		_rtgsConnection = new RtgsConnection
+		var rtgsConnection = new RtgsConnection
 		{
 			ConnectionId = "rtgs-connection-id"
 		};
 
 		rtgsConnectionRepositoryMock
 			.Setup(repo => repo.GetEstablishedAsync(It.IsAny<CancellationToken>()))
-			.ReturnsAsync(_rtgsConnection);
-
-		_basicMessageClient = new Mock<IBasicMessageClient>();
-
-		_coreConfig = new CoreConfig
-		{
-			RtgsGlobalId = "accepting-bank-rtgs-global-id"
-		};
+			.ReturnsAsync(rtgsConnection);
 
 		_handler = new PresentProofMessageHandler(
-			_bankPartnerConnectionRepositoryMock.Object,
-			rtgsConnectionRepositoryMock.Object,
-			_basicMessageClient.Object,
-			Options.Create(_coreConfig),
-			_ibanProviderMock.Object);
+			_bankPartnerConnectionRepositoryMock.Object);
 
 		_serialisedProof = JsonSerializer.Serialize(_presentedProof);
 	}
@@ -82,71 +62,5 @@ public class GivenRequestReceived
 
 		_bankPartnerConnectionRepositoryMock.Verify(repo =>
 			repo.ActivateAsync(_presentedProof.ConnectionId, It.IsAny<CancellationToken>()), Times.Once);
-	}
-
-	[Fact]
-	public async Task AndBankIsInvitee_ThenNotifyRtgs()
-	{
-		var bankPartnerConnection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			ConnectionId = _presentedProof.ConnectionId,
-			Role = "Invitee"
-		};
-
-		_bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.GetAsync(_presentedProof.ConnectionId, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(bankPartnerConnection);
-
-		_ibanProviderMock
-			.Setup(x => x.Generate())
-			.Returns("GB45BARC20039548689787");
-
-		await _handler.HandleAsync(_serialisedProof, default);
-
-		var expectedMessage = new ApproveBankPartnerRequest
-		{
-			Iban = "GB45BARC20039548689787",
-			ApprovingBankDid = _coreConfig.RtgsGlobalId,
-			RequestingBankDid = "rtgs-global-id" //TODO - get from proof
-		};
-
-		Func<ApproveBankPartnerRequest, bool> messageMatches = actualMessage =>
-		{
-			actualMessage.Should().BeEquivalentTo(expectedMessage);
-
-			return true;
-		};
-
-		_basicMessageClient.Verify(client =>
-			client.SendAsync(
-				_rtgsConnection.ConnectionId,
-				"ApproveBankPartnerRequest",
-				It.Is<ApproveBankPartnerRequest>(message => messageMatches(message)), It.IsAny<CancellationToken>()),
-			Times.Once);
-	}
-
-	[Fact]
-	public async Task AndBankIsInviter_ThenDoNotNotifyRtgs()
-	{
-		var bankConnection = new BankPartnerConnection
-		{
-			ConnectionId = _presentedProof.ConnectionId,
-			Role = "Inviter"
-		};
-
-		_bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.GetAsync(_presentedProof.ConnectionId, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(bankConnection);
-
-		await _handler.HandleAsync(_serialisedProof, default);
-
-		_basicMessageClient.Verify(client =>
-			client.SendAsync(
-				It.IsAny<string>(),
-				It.IsAny<string>(),
-				It.IsAny<ApproveBankPartnerRequest>(),
-				It.IsAny<CancellationToken>()),
-			Times.Never);
 	}
 }

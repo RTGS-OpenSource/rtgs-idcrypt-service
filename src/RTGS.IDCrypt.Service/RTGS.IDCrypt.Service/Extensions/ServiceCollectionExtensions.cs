@@ -43,7 +43,6 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
 		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-		services.AddSingleton<IIBanProvider, RandomIBanProvider>();
 
 		services.AddSingleton<MessageHandlerResolver>();
 		services.AddSingleton<IMessageHandler, IdCryptConnectionMessageHandler>();

@@ -1,9 +1,6 @@
 ﻿using System.Text.Json;
-using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.BasicMessage;
-using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Models;
@@ -14,10 +11,7 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.PresentProofHandlerTests;
 public class GivenRequestSent : IAsyncLifetime
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
-	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionRepositoryMock;
-	private readonly Mock<IIBanProvider> _ibanProviderMock;
 	private readonly Proof _presentedProof;
-	private readonly CoreConfig _coreConfig;
 	private readonly Mock<IBasicMessageClient> _basicMessageClient;
 	private readonly PresentProofMessageHandler _handler;
 	private readonly string _serialisedProof;
@@ -31,21 +25,10 @@ public class GivenRequestSent : IAsyncLifetime
 		};
 
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
-		_rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
 		_basicMessageClient = new Mock<IBasicMessageClient>();
-		_ibanProviderMock = new Mock<IIBanProvider>();
-
-		_coreConfig = new CoreConfig
-		{
-			RtgsGlobalId = "accepting-bank-rtgs-global-id"
-		};
 
 		_handler = new PresentProofMessageHandler(
-			_bankPartnerConnectionRepositoryMock.Object,
-			_rtgsConnectionRepositoryMock.Object,
-			_basicMessageClient.Object,
-			Options.Create(_coreConfig),
-			_ibanProviderMock.Object);
+			_bankPartnerConnectionRepositoryMock.Object);
 
 		_serialisedProof = JsonSerializer.Serialize(_presentedProof);
 	}
