@@ -56,9 +56,7 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 		});
 	}
 
-	protected override void CustomiseHost(IHostBuilder builder) =>
-		builder.ConfigureServices(services =>
-		{
-			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler);
-		});
+	protected override void CustomiseHost(IHostBuilder builder) => 
+		builder.ConfigureServices(services => 
+			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler));
 }
