@@ -35,11 +35,7 @@ public class AndBankPartnerConnectionDoesNotExist : IClassFixture<BankPartnerCon
 		Task.CompletedTask;
 
 	[Fact]
-	public void WhenPosting_ThenReturnsInternalServerError() =>
-		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+	public void WhenPosting_ThenReturnsOK() =>
+		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-	[Fact]
-	public void WhenPosting_ThenReturnsErrorMessage() =>
-		_httpResponse.Content.ReadAsStringAsync().Result.Should().Be(
-			"{\"error\":\"Bank partner connection with ID bank-connection-id-1 not found\"}");
 }

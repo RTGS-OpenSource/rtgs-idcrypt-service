@@ -4,13 +4,16 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
+
 public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 {
-	public BankPartnerConnectionPendingFixture() =>
+	public BankPartnerConnectionPendingFixture()
+	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
 			.Build();
+	}
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
@@ -55,6 +58,5 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
-			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler)
-		);
+			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler));
 }
