@@ -10,7 +10,6 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.PresentProofHandlerTests;
 public class GivenRequestReceived
 {
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock;
-
 	private readonly Proof _presentedProof;
 	private readonly PresentProofMessageHandler _handler;
 	private readonly string _serialisedProof;
@@ -36,8 +35,7 @@ public class GivenRequestReceived
 			.Setup(repo => repo.GetEstablishedAsync(It.IsAny<CancellationToken>()))
 			.ReturnsAsync(rtgsConnection);
 
-		_handler = new PresentProofMessageHandler(
-			_bankPartnerConnectionRepositoryMock.Object);
+		_handler = new PresentProofMessageHandler(_bankPartnerConnectionRepositoryMock.Object);
 
 		_serialisedProof = JsonSerializer.Serialize(_presentedProof);
 	}

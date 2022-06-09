@@ -27,8 +27,7 @@ public class GivenRequestSent : IAsyncLifetime
 		_bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 		_basicMessageClient = new Mock<IBasicMessageClient>();
 
-		_handler = new PresentProofMessageHandler(
-			_bankPartnerConnectionRepositoryMock.Object);
+		_handler = new PresentProofMessageHandler(_bankPartnerConnectionRepositoryMock.Object);
 
 		_serialisedProof = JsonSerializer.Serialize(_presentedProof);
 	}

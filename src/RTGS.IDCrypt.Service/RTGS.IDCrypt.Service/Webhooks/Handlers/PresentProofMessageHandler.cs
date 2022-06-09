@@ -8,7 +8,6 @@ namespace RTGS.IDCrypt.Service.Webhooks.Handlers;
 public class PresentProofMessageHandler : IMessageHandler
 {
 	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
-
 	private readonly ILogger<PresentProofMessageHandler> _logger;
 
 	public PresentProofMessageHandler(
