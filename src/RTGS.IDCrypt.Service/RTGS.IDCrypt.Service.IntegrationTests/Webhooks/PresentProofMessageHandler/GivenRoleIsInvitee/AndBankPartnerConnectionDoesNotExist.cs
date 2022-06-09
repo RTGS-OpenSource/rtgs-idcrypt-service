@@ -35,6 +35,6 @@ public class AndBankPartnerConnectionDoesNotExist : IClassFixture<BankPartnerCon
 		Task.CompletedTask;
 
 	[Fact]
-	public void WhenPosting_ThenReturnsInternalServerError() =>
+	public void WhenPosting_ThenReturnsOK() =>
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 }
