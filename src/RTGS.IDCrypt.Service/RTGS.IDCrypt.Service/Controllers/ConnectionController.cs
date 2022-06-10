@@ -3,6 +3,7 @@ using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
+using RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCycleConnectionInvitationForBankRequest;
 
 namespace RTGS.IDCrypt.Service.Controllers;
 
@@ -35,6 +36,13 @@ public class ConnectionController : ControllerBase
 		var response = connectionInvitation.MapToContract();
 
 		return Ok(response);
+	}
+
+	public IActionResult Cycle(CycleConnectionRequest request)
+	{
+		_connectionService.CycleConnectionForBankAsync(request.RtgsGlobalId);
+
+		return Ok();
 	}
 
 	/// <summary>

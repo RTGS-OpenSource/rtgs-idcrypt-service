@@ -158,6 +158,9 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
+	public async Task CycleConnectionForBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default) =>
+		await CreateConnectionInvitationForBankAsync(rtgsGlobalId, cancellationToken);
+
 	public async Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default)
 	{
 		Task aggregateTask = null;
