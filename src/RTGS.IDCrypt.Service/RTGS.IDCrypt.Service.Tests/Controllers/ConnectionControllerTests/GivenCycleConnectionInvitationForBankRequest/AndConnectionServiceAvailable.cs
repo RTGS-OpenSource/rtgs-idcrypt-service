@@ -35,7 +35,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			RtgsGlobalId = RtgsGlobalId
 		};
 
-		_response = _connectionController.Cycle(request);
+		_response = await _connectionController.Cycle(request);
 	}
 
 	public Task DisposeAsync() =>

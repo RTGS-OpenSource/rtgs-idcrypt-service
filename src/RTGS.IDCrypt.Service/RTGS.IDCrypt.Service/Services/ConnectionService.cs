@@ -1,13 +1,16 @@
 ﻿using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
+using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 using ConnectionInvitation = RTGS.IDCrypt.Service.Models.ConnectionInvitation;
+using CreateConnectionInvitationResponse = RTGS.IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse;
 
 namespace RTGS.IDCrypt.Service.Services;
 
@@ -19,6 +22,7 @@ public class ConnectionService : IConnectionService
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
+	private readonly IBasicMessageClient _basicMessageClient;
 	private readonly string _rtgsGlobalId;
 
 	public ConnectionService(
@@ -28,7 +32,8 @@ public class ConnectionService : IConnectionService
 		IRtgsConnectionRepository rtgsConnectionRepository,
 		IAliasProvider aliasProvider,
 		IWalletClient walletClient,
-		IOptions<CoreConfig> coreOptions)
+		IOptions<CoreConfig> coreOptions,
+		IBasicMessageClient basicMessageClient)
 	{
 		_connectionsClient = connectionsClient;
 		_logger = logger;
@@ -36,6 +41,7 @@ public class ConnectionService : IConnectionService
 		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_aliasProvider = aliasProvider;
 		_walletClient = walletClient;
+		_basicMessageClient = basicMessageClient;
 
 		if (string.IsNullOrWhiteSpace(coreOptions.Value.RtgsGlobalId))
 		{
@@ -158,8 +164,13 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task CycleConnectionForBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default) =>
-		await CreateConnectionInvitationForBankAsync(rtgsGlobalId, cancellationToken);
+	public async Task CycleConnectionForBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
+	{
+		var establishedConnection = await _bankPartnerConnectionRepository.GetEstablishedAsync(rtgsGlobalId, cancellationToken);
+		var invitation = await CreateConnectionInvitationForBankAsync(rtgsGlobalId, cancellationToken);
+		
+		await _basicMessageClient.SendAsync(establishedConnection.ConnectionId, nameof(CycleConnectionRequest), invitation, cancellationToken);
+	}
 
 	public async Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default)
 	{

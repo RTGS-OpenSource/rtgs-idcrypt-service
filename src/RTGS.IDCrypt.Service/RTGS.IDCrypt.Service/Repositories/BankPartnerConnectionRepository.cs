@@ -151,6 +151,33 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 		return connection;
 	}
+	
+	public async Task<BankPartnerConnection> GetEstablishedAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
+	{
+		BankPartnerConnection connection;
+
+		try
+		{
+			connection = await GetEstablishedFromTableAsync(rtgsGlobalId, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when getting bank partner connection");
+
+			throw;
+		}
+
+		if (connection is null)
+		{
+			var ex = new Exception($"No established bank partner connection with RTGS Global ID {rtgsGlobalId}.");
+
+			_logger.LogError(ex, "No established bank partner connection with RTGS Global ID {RtgsGlobalId}", rtgsGlobalId);
+
+			throw ex;
+		}
+
+		return connection;
+	}
 
 	private async Task<BankPartnerConnection> GetFromTableAsync(string connectionId, CancellationToken cancellationToken)
 	{
@@ -163,5 +190,25 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			.SingleOrDefaultAsync(cancellationToken);
 
 		return connection;
+	}
+
+	private async Task<BankPartnerConnection> GetEstablishedFromTableAsync(string rtgsGlobalId,
+		CancellationToken cancellationToken)
+	{
+		var bankPartnerConnectionsTable =
+			_storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
+
+		var bankPartnerConnections = await bankPartnerConnectionsTable
+			.QueryAsync<BankPartnerConnection>(bankPartnerConnection =>
+					bankPartnerConnection.PartitionKey == rtgsGlobalId
+					&& bankPartnerConnection.CreatedAt <= dateThreshold
+					&& bankPartnerConnection.Status == ConnectionStatuses.Active,
+				cancellationToken: cancellationToken)
+			.ToListAsync(cancellationToken);
+
+		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.CreatedAt);
+		return bankPartnerConnection;
 	}
 }

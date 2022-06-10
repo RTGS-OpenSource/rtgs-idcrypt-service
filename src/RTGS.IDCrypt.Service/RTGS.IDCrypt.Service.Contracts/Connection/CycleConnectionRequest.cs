@@ -1,6 +1,6 @@
 ﻿namespace RTGS.IDCrypt.Service.Contracts.Connection;
 
-internal class CycleConnectionRequest
+public record CycleConnectionRequest
 {
-	public string RtgsGlobalId { get; set; }
+	public string RtgsGlobalId { get; init; }
 }
