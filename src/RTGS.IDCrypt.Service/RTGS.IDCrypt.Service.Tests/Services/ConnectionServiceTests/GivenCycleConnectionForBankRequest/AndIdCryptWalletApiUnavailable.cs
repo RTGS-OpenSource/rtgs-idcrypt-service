@@ -18,7 +18,6 @@ public class AndIdCryptWalletApiUnavailable
 	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
 
 	private readonly ConnectionService _connectionService;
-	private const string Alias = "alias";
 	private readonly FakeLogger<ConnectionService> _logger;
 
 	public AndIdCryptWalletApiUnavailable()
@@ -28,10 +27,12 @@ public class AndIdCryptWalletApiUnavailable
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
+		var alias = "alias";
+
 		var createConnectionInvitationResponse = new IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse
 		{
 			ConnectionId = "connection-id",
-			Alias = "alias",
+			Alias = alias,
 			InvitationUrl = "invitation-url",
 			Invitation = new IDCryptSDK.Connections.Models.ConnectionInvitation
 			{
@@ -50,7 +51,7 @@ public class AndIdCryptWalletApiUnavailable
 
 		_connectionsClientMock
 			.Setup(client => client.CreateConnectionInvitationAsync(
-				Alias,
+				alias,
 				It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(createConnectionInvitationResponse);
@@ -64,7 +65,7 @@ public class AndIdCryptWalletApiUnavailable
 		_logger = new FakeLogger<ConnectionService>();
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns(alias);
 
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
@@ -81,7 +82,7 @@ public class AndIdCryptWalletApiUnavailable
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _connectionService.CycleConnectionForBankAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CycleConnectionForBankAsync("partner-rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
@@ -91,11 +92,11 @@ public class AndIdCryptWalletApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.CycleConnectionForBankAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CycleConnectionForBankAsync("partner-rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when cycling connection for bank rtgs-global-id");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when cycling connection for bank partner-rtgs-global-id");
 	}
 
 	[Fact]

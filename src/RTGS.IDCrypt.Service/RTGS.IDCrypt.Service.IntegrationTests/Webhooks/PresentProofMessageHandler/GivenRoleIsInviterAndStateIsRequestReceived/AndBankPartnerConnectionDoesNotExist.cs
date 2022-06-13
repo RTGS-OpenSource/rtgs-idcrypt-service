@@ -37,5 +37,4 @@ public class AndBankPartnerConnectionDoesNotExist : IClassFixture<BankPartnerCon
 	[Fact]
 	public void WhenPosting_ThenReturnsOK() =>
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
 }

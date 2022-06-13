@@ -21,16 +21,17 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	private readonly ConnectionService _connectionService;
 	private const string PartnerRtgsGlobalId = "partner-rtgs-global-id";
-	private const string Alias = "alias";
 
 	public AndIdCryptApiAvailable()
 	{
-		var publicDid = "public-did";
+		const string publicDid = "public-did";
 
 		var config = new CoreConfig
 		{
 			RtgsGlobalId = "rtgs-global-id"
 		};
+
+		const string alias = "alias";
 
 		var coreOptions = Options.Create(config);
 
@@ -56,7 +57,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		_connectionsClientMock
 			.Setup(client => client.CreateConnectionInvitationAsync(
-				Alias,
+				alias,
 				It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(createConnectionInvitationResponse)
@@ -67,8 +68,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		var expectedConnection = new BankPartnerConnection
 		{
 			PartitionKey = PartnerRtgsGlobalId,
-			RowKey = Alias,
-			Alias = Alias,
+			RowKey = alias,
+			Alias = alias,
 			ConnectionId = createConnectionInvitationResponse.ConnectionId,
 			Status = "Pending",
 			Role = "Inviter",
@@ -94,7 +95,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.Verifiable();
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns(alias);
 
 		var establishedBankConnection = new BankPartnerConnection
 		{

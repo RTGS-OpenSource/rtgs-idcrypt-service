@@ -17,7 +17,6 @@ public class AndTableStorageGetEstablishedAsyncThrows
 	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
 	private readonly ConnectionService _connectionService;
 
-	private const string Alias = "alias";
 	private readonly FakeLogger<ConnectionService> _logger;
 
 	public AndTableStorageGetEstablishedAsyncThrows()
@@ -35,7 +34,7 @@ public class AndTableStorageGetEstablishedAsyncThrows
 		_logger = new FakeLogger<ConnectionService>();
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns("alias");
 
 		_connectionService = new ConnectionService(
 			Mock.Of<IConnectionsClient>(),

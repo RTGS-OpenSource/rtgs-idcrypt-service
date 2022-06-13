@@ -17,7 +17,6 @@ public class AndIdCryptBasicMessageApiUnavailable
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 
 	private readonly ConnectionService _connectionService;
-	private const string Alias = "alias";
 	private readonly FakeLogger<ConnectionService> _logger;
 
 	public AndIdCryptBasicMessageApiUnavailable()
@@ -27,10 +26,12 @@ public class AndIdCryptBasicMessageApiUnavailable
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
+		const string alias = "alias";
+
 		var createConnectionInvitationResponse = new IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse
 		{
 			ConnectionId = "connection-id",
-			Alias = "alias",
+			Alias = alias,
 			InvitationUrl = "invitation-url",
 			Invitation = new IDCryptSDK.Connections.Models.ConnectionInvitation
 			{
@@ -49,7 +50,7 @@ public class AndIdCryptBasicMessageApiUnavailable
 
 		_connectionsClientMock
 			.Setup(client => client.CreateConnectionInvitationAsync(
-				Alias,
+				alias,
 				It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(createConnectionInvitationResponse);
@@ -71,7 +72,7 @@ public class AndIdCryptBasicMessageApiUnavailable
 		_logger = new FakeLogger<ConnectionService>();
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns(alias);
 
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
