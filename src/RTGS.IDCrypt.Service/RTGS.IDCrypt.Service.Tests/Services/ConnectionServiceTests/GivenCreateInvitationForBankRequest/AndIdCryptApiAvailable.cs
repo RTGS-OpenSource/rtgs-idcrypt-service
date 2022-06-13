@@ -28,6 +28,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	public AndIdCryptApiAvailable()
 	{
+		var publicDid = "public-did";
+
 		var coreOptions = Options.Create(new CoreConfig
 		{
 			RtgsGlobalId = "rtgs-global-id"
@@ -44,7 +46,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
 			Type = "type",
-			FromRtgsGlobalId = coreOptions.Value.RtgsGlobalId
+			FromRtgsGlobalId = coreOptions.Value.RtgsGlobalId,
+			PublicDid = publicDid
 		};
 
 		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
@@ -84,7 +87,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			Alias = Alias,
 			ConnectionId = createConnectionInvitationResponse.ConnectionId,
 			Status = "Pending",
-			Role = "Inviter"
+			Role = "Inviter",
+			PublicDid = publicDid,
 		};
 
 		Func<BankPartnerConnection, bool> connectionMatches = actualConnection =>
@@ -108,13 +112,18 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		var aliasProviderMock = new Mock<IAliasProvider>();
 		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
 
+		var walletClientMock = new Mock<IWalletClient>();
+		walletClientMock
+			.Setup(client => client.GetPublicDidAsync(It.IsAny<CancellationToken>()))
+			.ReturnsAsync(publicDid);
+
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			logger,
 			_bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
 			aliasProviderMock.Object,
-			Mock.Of<IWalletClient>(),
+			walletClientMock.Object,
 			coreOptions,
 			Mock.Of<IBasicMessageClient>());
 	}

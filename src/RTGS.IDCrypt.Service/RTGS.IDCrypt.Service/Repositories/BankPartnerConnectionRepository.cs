@@ -151,7 +151,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 		return connection;
 	}
-	
+
 	public async Task<BankPartnerConnection> GetEstablishedAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
 	{
 		BankPartnerConnection connection;

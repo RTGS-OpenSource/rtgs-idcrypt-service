@@ -6,7 +6,6 @@ using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
-using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenCycleConnectionRequest;
 
@@ -30,13 +29,13 @@ public class AndConnectionExists : IClassFixture<ConnectionCycleFixture>, IAsync
 
 		_client = testFixture.CreateClient();
 	}
-	
+
 	public async Task InitializeAsync() =>
 		_httpResponse = await _client.PostAsJsonAsync("api/connection/cycle", _request);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
-	
+
 	[Fact]
 	public void WhenPosting_ThenIdCryptAgentBaseAddressIsExpected()
 	{
@@ -53,7 +52,10 @@ public class AndConnectionExists : IClassFixture<ConnectionCycleFixture>, IAsync
 
 	[Fact]
 	public void WhenPosting_ThenExpectedIdCryptAgentPathsAreCalled() =>
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKeys("/connections/create-invitation", "/wallet/did/public");
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKeys(
+			"/connections/create-invitation",
+			"/wallet/did/public",
+			$"/connections/{_testFixture.ExistingConnection.ConnectionId}/send-message");
 
 	[Fact]
 	public async Task WhenPostingMultipleTimes_ThenAliasIsAlwaysUnique()
@@ -88,31 +90,15 @@ public class AndConnectionExists : IClassFixture<ConnectionCycleFixture>, IAsync
 	}
 
 	[Fact]
-	public async Task ThenReturnOkWithCreateConnectionInvitationResponse()
-	{
-		using var _ = new AssertionScope();
-
+	public void ThenReturnOk() =>
 		 _httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-		//
-		// var actualResponse = await _httpResponse.Content.ReadFromJsonAsync<CreateConnectionInvitationResponse>();
-		//
-		// actualResponse.Should().BeEquivalentTo(new CreateConnectionInvitationResponse
-		// {
-		// 	FromRtgsGlobalId = _testFixture.Configuration["RtgsGlobalId"],
-		// 	Alias = "alias",
-		// 	AgentPublicDid = GetPublicDid.ExpectedDid,
-		// 	Invitation = new ConnectionInvitation
-		// 	{
-		// 		Id = "id",
-		// 		Type = "type",
-		// 		Label = "label",
-		// 		RecipientKeys = new[]
-		// 		{
-		// 			"recipient-key-1"
-		// 		},
-		// 		ServiceEndpoint = "service-endpoint"
-		// 	}
-		// });
+
+	[Fact]
+	public async Task ThenSendBasicMessageWithCycleConnectionRequest()
+	{
+		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SendBasicMessage.Path].Single().Content!.ReadAsStringAsync();
+
+		content.Should().Be(@"{""content"":""{\u0022MessageType\u0022:\u0022CycleConnectionRequest\u0022,\u0022MessageContent\u0022:{\u0022Id\u0022:\u0022id\u0022,\u0022Type\u0022:\u0022type\u0022,\u0022Alias\u0022:\u0022alias\u0022,\u0022Label\u0022:\u0022label\u0022,\u0022RecipientKeys\u0022:[\u0022recipient-key-1\u0022],\u0022ServiceEndpoint\u0022:\u0022service-endpoint\u0022,\u0022PublicDid\u0022:\u0022Test Did\u0022,\u0022ImageUrl\u0022:null,\u0022Did\u0022:null,\u0022InvitationUrl\u0022:null,\u0022FromRtgsGlobalId\u0022:\u0022rtgs-global-id\u0022}}""}");
 	}
 
 	[Fact]
@@ -132,3 +118,4 @@ public class AndConnectionExists : IClassFixture<ConnectionCycleFixture>, IAsync
 			.Should().ContainSingle();
 	}
 }
+

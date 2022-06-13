@@ -12,13 +12,15 @@ using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCycleConnectionForBankRequest;
 
-public class AndIdCryptApiUnavailable
+public class AndIdCryptConnectionsApiUnavailable
 {
+	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
+
 	private readonly ConnectionService _connectionService;
 	private const string Alias = "alias";
 	private readonly FakeLogger<ConnectionService> _logger;
 
-	public AndIdCryptApiUnavailable()
+	public AndIdCryptConnectionsApiUnavailable()
 	{
 		var coreOptions = Options.Create(new CoreConfig
 		{
@@ -48,14 +50,14 @@ public class AndIdCryptApiUnavailable
 			aliasProviderMock.Object,
 			Mock.Of<IWalletClient>(),
 			coreOptions,
-			Mock.Of<IBasicMessageClient>()
+			_basicMessageClientMock.Object
 		);
 	}
 
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationForBankAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CycleConnectionForBankAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
@@ -65,10 +67,20 @@ public class AndIdCryptApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.CreateConnectionInvitationForBankAsync("rtgs-global-id"))
+			.Awaiting(() => _connectionService.CycleConnectionForBankAsync("rtgs-global-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when creating connection invitation for bank rtgs-global-id");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when cycling connection for bank rtgs-global-id");
 	}
+
+	[Fact]
+	public void WhenInvoked_ThenDoNotSendBasicMessage() =>
+		_basicMessageClientMock.Verify(client =>
+			client.SendAsync(
+				It.IsAny<string>(),
+				It.IsAny<string>(),
+				It.IsAny<It.IsAnyType>(),
+				It.IsAny<CancellationToken>()),
+			Times.Never);
 }

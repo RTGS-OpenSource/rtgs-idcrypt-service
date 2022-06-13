@@ -21,24 +21,20 @@ public class ConnectionCycleFixture : ConnectionsTestFixtureBase
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
-	protected override async Task Seed()
+	public BankPartnerConnection ExistingConnection => new BankPartnerConnection
 	{
-		var minimumConnectionAge = TimeSpan.Parse(Configuration["MinimumConnectionAge"]).Add(TimeSpan.FromMinutes(1));
+		PartitionKey = "rtgs-global-id",
+		RowKey = "alias",
+		ConnectionId = "rtgs-connection-id-1",
+		Alias = "alias",
+		CreatedAt = DateTime.UtcNow.Subtract(TimeSpan.Parse(Configuration["MinimumConnectionAge"]).Add(TimeSpan.FromMinutes(1))),
+		PublicDid = "public-did",
+		Status = "Active",
+		Role = "Inviter"
+	};
 
-		var bankPartnerConnection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias",
-			ConnectionId = "rtgs-connection-id-1",
-			Alias = "alias",
-			CreatedAt = DateTime.UtcNow.Subtract(minimumConnectionAge),
-			PublicDid = "public-did",
-			Status = "Active",
-			Role = "Inviter"
-		};
-
-		await InsertBankPartnerConnectionAsync(bankPartnerConnection);
-	}
+	protected override async Task Seed() =>
+		await InsertBankPartnerConnectionAsync(ExistingConnection);
 
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
