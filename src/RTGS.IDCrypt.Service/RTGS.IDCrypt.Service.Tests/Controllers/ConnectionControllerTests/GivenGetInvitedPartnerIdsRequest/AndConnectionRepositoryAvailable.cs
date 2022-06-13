@@ -26,13 +26,11 @@ public class AndConnectionRepositoryAvailable : IAsyncLifetime
 
 	public async Task InitializeAsync() => _response = await _connectionController.InvitedPartnerIds();
 
+	public Task DisposeAsync() => Task.CompletedTask;
+
 	[Fact]
 	public void WhenInvoked_ThenReturnOk() => _response.Should().BeOfType<OkObjectResult>();
 
 	[Fact]
 	public void WhenInvoked_ThenCallRepositoryAsync() => _bankPartnerConnectionRepositoryMock.Verify();
-
-
-
-	public Task DisposeAsync() => Task.CompletedTask;
 }

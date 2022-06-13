@@ -36,7 +36,6 @@ public class GivenRequestSent : IAsyncLifetime
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
-
 	[Fact]
 	public void ThenConnectionIsNotSetActive() =>
 		_bankPartnerConnectionRepositoryMock.Verify(repo =>

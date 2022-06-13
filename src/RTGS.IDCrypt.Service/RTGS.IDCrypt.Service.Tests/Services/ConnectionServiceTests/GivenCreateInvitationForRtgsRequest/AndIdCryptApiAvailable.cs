@@ -6,6 +6,7 @@ using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
@@ -112,7 +113,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			_rtgsConnectionRepositoryMock.Object,
 			aliasProviderMock.Object,
 			Mock.Of<IWalletClient>(),
-			coreOptions);
+			coreOptions,
+			Mock.Of<IBasicMessageClient>());
 	}
 
 	public async Task InitializeAsync() =>

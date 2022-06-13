@@ -15,7 +15,7 @@ public class AndConnectionsExist : IClassFixture<InvitedPartnerIdsConnectionFixt
 		_client = testFixture.CreateClient();
 	}
 
-	public async Task InitializeAsync() => _httpResponse = await _client.GetAsync($"api/connection/InvitedPartnerIds");
+	public async Task InitializeAsync() => _httpResponse = await _client.GetAsync("api/connection/InvitedPartnerIds");
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

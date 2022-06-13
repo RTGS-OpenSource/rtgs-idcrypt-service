@@ -1,13 +1,16 @@
 ﻿using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
+using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 using ConnectionInvitation = RTGS.IDCrypt.Service.Models.ConnectionInvitation;
+using CreateConnectionInvitationResponse = RTGS.IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse;
 
 namespace RTGS.IDCrypt.Service.Services;
 
@@ -19,6 +22,7 @@ public class ConnectionService : IConnectionService
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
+	private readonly IBasicMessageClient _basicMessageClient;
 	private readonly string _rtgsGlobalId;
 
 	public ConnectionService(
@@ -28,7 +32,8 @@ public class ConnectionService : IConnectionService
 		IRtgsConnectionRepository rtgsConnectionRepository,
 		IAliasProvider aliasProvider,
 		IWalletClient walletClient,
-		IOptions<CoreConfig> coreOptions)
+		IOptions<CoreConfig> coreOptions,
+		IBasicMessageClient basicMessageClient)
 	{
 		_connectionsClient = connectionsClient;
 		_logger = logger;
@@ -36,6 +41,7 @@ public class ConnectionService : IConnectionService
 		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_aliasProvider = aliasProvider;
 		_walletClient = walletClient;
+		_basicMessageClient = basicMessageClient;
 
 		if (string.IsNullOrWhiteSpace(coreOptions.Value.RtgsGlobalId))
 		{
@@ -86,30 +92,9 @@ public class ConnectionService : IConnectionService
 		string toRtgsGlobalId,
 		CancellationToken cancellationToken = default)
 	{
-		var alias = _aliasProvider.Provide();
-
 		try
 		{
-			var createConnectionInvitationResponse = await CreateConnectionInvitationAsync(alias, cancellationToken);
-
-			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
-
-			var connection = new BankPartnerConnection
-			{
-				PartitionKey = toRtgsGlobalId,
-				RowKey = alias,
-				Alias = alias,
-				ConnectionId = createConnectionInvitationResponse.ConnectionId,
-				Status = ConnectionStatuses.Pending,
-				PublicDid = publicDid,
-				Role = ConnectionRoles.Inviter
-			};
-
-			await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
-
-			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
-
-			return connectionInvitation;
+			return await DoCreateConnectionInvitationForBankAsync(toRtgsGlobalId, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -122,6 +107,27 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
+	public async Task CycleConnectionForBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var establishedConnection = await _bankPartnerConnectionRepository.GetEstablishedAsync(rtgsGlobalId, cancellationToken);
+
+			var invitation = await DoCreateConnectionInvitationForBankAsync(rtgsGlobalId, cancellationToken);
+
+			await _basicMessageClient.SendAsync(establishedConnection.ConnectionId, nameof(CycleConnectionRequest), invitation, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(
+				ex,
+				"Error occurred when cycling connection for bank {RtgsGlobalId}",
+				rtgsGlobalId);
+
+			throw;
+		}
+	}
+
 	public async Task<ConnectionInvitation> CreateConnectionInvitationForRtgsAsync(
 		CancellationToken cancellationToken = default)
 	{
@@ -129,7 +135,7 @@ public class ConnectionService : IConnectionService
 
 		try
 		{
-			var createConnectionInvitationResponse = await CreateConnectionInvitationAsync(alias, cancellationToken);
+			var createConnectionInvitationResponse = await CreateAgentConnectionInvitationAsync(alias, cancellationToken);
 
 			var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
 
@@ -179,30 +185,34 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task DeleteAsync(string rtgsGlobalId, string alias, CancellationToken cancellationToken)
+	private async Task<ConnectionInvitation> DoCreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken)
 	{
-		var connection = await _bankPartnerConnectionRepository.GetAsync(rtgsGlobalId, alias, cancellationToken);
+		var alias = _aliasProvider.Provide();
+		var createConnectionInvitationResponse = await CreateAgentConnectionInvitationAsync(alias, cancellationToken);
 
-		Task aggregateTask = null;
+		var publicDid = await _walletClient.GetPublicDidAsync(cancellationToken);
 
-		try
+		var connection = new BankPartnerConnection
 		{
-			aggregateTask = Task.WhenAll(
-				_connectionsClient.DeleteConnectionAsync(connection.ConnectionId, cancellationToken),
-				_bankPartnerConnectionRepository.DeleteAsync(connection, cancellationToken));
+			PartitionKey = toRtgsGlobalId,
+			RowKey = alias,
+			Alias = alias,
+			ConnectionId = createConnectionInvitationResponse.ConnectionId,
+			Status = ConnectionStatuses.Pending,
+			PublicDid = publicDid,
+			Role = ConnectionRoles.Inviter
+		};
 
-			await aggregateTask;
-		}
-		catch (Exception e)
-		{
-			aggregateTask?.Exception?.InnerExceptions.ToList()
-				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection."));
+		await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
 
-			throw aggregateTask?.Exception ?? e;
-		}
+		var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
+
+		return connectionInvitation;
 	}
 
-	private async Task<CreateConnectionInvitationResponse> CreateConnectionInvitationAsync(string alias, CancellationToken cancellationToken)
+	private async Task<CreateConnectionInvitationResponse> CreateAgentConnectionInvitationAsync(
+		string alias,
+		CancellationToken cancellationToken)
 	{
 		const bool autoAccept = true;
 		const bool multiUse = false;
