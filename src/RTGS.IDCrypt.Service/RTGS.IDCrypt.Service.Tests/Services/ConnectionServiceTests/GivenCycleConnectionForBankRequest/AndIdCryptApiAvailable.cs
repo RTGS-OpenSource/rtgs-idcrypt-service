@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
+using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
@@ -8,49 +9,33 @@ using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
-using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationForBankRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCycleConnectionForBankRequest;
 
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
+	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
 
 	private readonly ConnectionService _connectionService;
-	private readonly Models.ConnectionInvitation _expectedResponse;
-
-	private const string RtgsGlobalId = "rtgs-global-id";
-	private const string Alias = "alias";
-
-	private Models.ConnectionInvitation _actualResponse;
+	private const string PartnerRtgsGlobalId = "partner-rtgs-global-id";
 
 	public AndIdCryptApiAvailable()
 	{
-		var publicDid = "public-did";
+		const string publicDid = "public-did";
 
-		var coreOptions = Options.Create(new CoreConfig
+		var config = new CoreConfig
 		{
 			RtgsGlobalId = "rtgs-global-id"
-		});
-
-		_expectedResponse = new Models.ConnectionInvitation
-		{
-			InvitationUrl = "invitation-url",
-			ImageUrl = "image-url",
-			Did = "did",
-			Alias = "alias",
-			Label = "label",
-			RecipientKeys = new[] { "recipient-key-1" },
-			ServiceEndpoint = "service-endpoint",
-			Id = "id",
-			Type = "type",
-			FromRtgsGlobalId = coreOptions.Value.RtgsGlobalId,
-			PublicDid = publicDid
 		};
 
-		var createConnectionInvitationResponse = new CreateConnectionInvitationResponse
+		const string alias = "alias";
+
+		var coreOptions = Options.Create(config);
+
+		var createConnectionInvitationResponse = new IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse
 		{
 			ConnectionId = "connection-id",
 			Alias = "alias",
@@ -72,7 +57,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		_connectionsClientMock
 			.Setup(client => client.CreateConnectionInvitationAsync(
-				Alias,
+				alias,
 				It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(createConnectionInvitationResponse)
@@ -82,13 +67,13 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 		var expectedConnection = new BankPartnerConnection
 		{
-			PartitionKey = RtgsGlobalId,
-			RowKey = Alias,
-			Alias = Alias,
+			PartitionKey = PartnerRtgsGlobalId,
+			RowKey = alias,
+			Alias = alias,
 			ConnectionId = createConnectionInvitationResponse.ConnectionId,
 			Status = "Pending",
 			Role = "Inviter",
-			PublicDid = publicDid,
+			PublicDid = publicDid
 		};
 
 		Func<BankPartnerConnection, bool> connectionMatches = actualConnection =>
@@ -110,12 +95,57 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.Verifiable();
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
-		aliasProviderMock.Setup(provider => provider.Provide()).Returns(Alias);
+		aliasProviderMock.Setup(provider => provider.Provide()).Returns(alias);
+
+		var establishedBankConnection = new BankPartnerConnection
+		{
+			PartitionKey = PartnerRtgsGlobalId,
+			RowKey = "established-alias",
+			Alias = "established-alias",
+			ConnectionId = "established-connection-id",
+		};
+
+		_bankPartnerConnectionRepositoryMock.Setup(repo => repo.GetEstablishedAsync(
+				PartnerRtgsGlobalId,
+				It.IsAny<CancellationToken>()))
+			.ReturnsAsync(establishedBankConnection)
+			.Verifiable();
+
+		var expectedMessage = new Models.ConnectionInvitation
+		{
+			Alias = createConnectionInvitationResponse.Alias,
+			Did = createConnectionInvitationResponse.Invitation.Did,
+			FromRtgsGlobalId = config.RtgsGlobalId,
+			Id = createConnectionInvitationResponse.Invitation.Id,
+			ImageUrl = createConnectionInvitationResponse.Invitation.ImageUrl,
+			InvitationUrl = createConnectionInvitationResponse.InvitationUrl,
+			Label = createConnectionInvitationResponse.Invitation.Label,
+			RecipientKeys = createConnectionInvitationResponse.Invitation.RecipientKeys,
+			ServiceEndpoint = createConnectionInvitationResponse.Invitation.ServiceEndpoint,
+			Type = createConnectionInvitationResponse.Invitation.Type,
+			PublicDid = publicDid
+		};
+
+		Func<Models.ConnectionInvitation, bool> messageMatches = actualMessage =>
+		{
+			actualMessage.Should().BeEquivalentTo(expectedMessage);
+
+			return true;
+		};
 
 		var walletClientMock = new Mock<IWalletClient>();
+
 		walletClientMock
 			.Setup(client => client.GetPublicDidAsync(It.IsAny<CancellationToken>()))
 			.ReturnsAsync(publicDid);
+
+		_basicMessageClientMock
+			.Setup(client => client.SendAsync(
+				establishedBankConnection.ConnectionId,
+				nameof(CycleConnectionRequest),
+				It.Is<Models.ConnectionInvitation>(message => messageMatches(message)),
+				It.IsAny<CancellationToken>()))
+			.Verifiable();
 
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
@@ -125,21 +155,21 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			aliasProviderMock.Object,
 			walletClientMock.Object,
 			coreOptions,
-			Mock.Of<IBasicMessageClient>());
+			_basicMessageClientMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
-		_actualResponse = await _connectionService.CreateConnectionInvitationForBankAsync(RtgsGlobalId);
+		await _connectionService.CycleConnectionForBankAsync(PartnerRtgsGlobalId);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
-
-	[Fact]
-	public void WhenInvoked_ThenExpectedResponse() => _actualResponse.Should().BeEquivalentTo(_expectedResponse);
 
 	[Fact]
 	public void WhenInvoked_ThenCallCreateConnectionInvitationAsyncWithExpected() => _connectionsClientMock.Verify();
 
 	[Fact]
 	public void WhenInvoked_ThenCallSaveBankPartnerConnectionAsyncWithExpected() => _bankPartnerConnectionRepositoryMock.Verify();
+
+	[Fact]
+	public void WhenInvoked_ThenCallSendBasicMessageWithExpected() => _basicMessageClientMock.Verify();
 }

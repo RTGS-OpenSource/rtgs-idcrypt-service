@@ -5,6 +5,7 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
@@ -42,7 +43,8 @@ public class AndConnectionExists : IAsyncLifetime
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
-			coreOptions);
+			coreOptions,
+			Mock.Of<IBasicMessageClient>());
 	}
 
 	public async Task InitializeAsync() =>

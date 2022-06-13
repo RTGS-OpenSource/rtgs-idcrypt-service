@@ -37,6 +37,14 @@ public class ConnectionController : ControllerBase
 		return Ok(response);
 	}
 
+	[HttpPost("cycle")]
+	public async Task<IActionResult> Cycle(CycleConnectionRequest request)
+	{
+		await _connectionService.CycleConnectionForBankAsync(request.RtgsGlobalId);
+
+		return Ok();
+	}
+
 	/// <summary>
 	/// Endpoint to create an invitation for a bank.
 	/// </summary>

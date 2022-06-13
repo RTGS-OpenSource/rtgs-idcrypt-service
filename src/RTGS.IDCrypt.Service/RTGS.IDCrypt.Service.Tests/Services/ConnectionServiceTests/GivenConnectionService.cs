@@ -5,6 +5,7 @@ using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
+using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
@@ -28,7 +29,8 @@ public class GivenConnectionService
 				Options.Create(new CoreConfig
 				{
 					RtgsGlobalId = rtgsGlobalId
-				})))
+				}),
+				Mock.Of<IBasicMessageClient>()))
 			.Should().Throw<ArgumentException>()
 				.Which.Message.Should().Be("RtgsGlobalId configuration option is not set.");
 }
