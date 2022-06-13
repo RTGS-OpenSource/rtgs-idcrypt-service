@@ -179,6 +179,29 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
+	public async Task DeleteAsync(string rtgsGlobalId, string alias, CancellationToken cancellationToken)
+	{
+		var connection = await _bankPartnerConnectionRepository.GetAsync(rtgsGlobalId, alias, cancellationToken);
+
+		Task aggregateTask = null;
+
+		try
+		{
+			aggregateTask = Task.WhenAll(
+				_connectionsClient.DeleteConnectionAsync(connection.ConnectionId, cancellationToken),
+				_bankPartnerConnectionRepository.DeleteAsync(connection, cancellationToken));
+
+			await aggregateTask;
+		}
+		catch (Exception e)
+		{
+			aggregateTask?.Exception?.InnerExceptions.ToList()
+				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection."));
+
+			throw aggregateTask?.Exception ?? e;
+		}
+	}
+
 	private async Task<CreateConnectionInvitationResponse> CreateConnectionInvitationAsync(string alias, CancellationToken cancellationToken)
 	{
 		const bool autoAccept = true;

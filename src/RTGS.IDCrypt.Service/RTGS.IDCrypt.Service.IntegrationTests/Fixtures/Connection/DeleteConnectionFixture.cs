@@ -17,23 +17,12 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
-	protected override async Task Seed()
+	public async Task TestSeed()
 	{
 		var aDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
 		var bankPartnerConnections = new List<BankPartnerConnection>
 		{
-			new()
-			{
-				PartitionKey = "rtgs-global-id",
-				RowKey = "alias",
-				ConnectionId = "connection-id",
-				Alias = "alias",
-				CreatedAt = aDate,
-				PublicDid = "public-did",
-				Status = "Active",
-				Role = "Inviter"
-			},
 			new()
 			{
 				PartitionKey = "rtgs-global-id",
@@ -43,17 +32,6 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 				CreatedAt = aDate,
 				PublicDid = "public-did-1",
 				Status = "Pending",
-				Role = "Inviter"
-			},
-			new()
-			{
-				PartitionKey = "rtgs-global-id-1",
-				RowKey = "alias-2",
-				ConnectionId = "connection-id-2",
-				Alias = "alias-2",
-				CreatedAt = aDate,
-				PublicDid = "public-did-2",
-				Status = "Active",
 				Role = "Inviter"
 			}
 		};
