@@ -13,14 +13,14 @@ using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCycleConnectionForBankRequest;
 
-public class AndTableStorageUnavailable
+public class AndTableStorageCreateAsyncThrows
 {
 	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
 	private readonly ConnectionService _connectionService;
 
 	private readonly FakeLogger<ConnectionService> _logger;
 
-	public AndTableStorageUnavailable()
+	public AndTableStorageCreateAsyncThrows()
 	{
 		var coreOptions = Options.Create(new CoreConfig
 		{

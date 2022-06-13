@@ -27,7 +27,7 @@ public class AndIdCryptWalletApiUnavailable
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
-		var alias = "alias";
+		const string alias = "alias";
 
 		var createConnectionInvitationResponse = new IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse
 		{
@@ -41,7 +41,7 @@ public class AndIdCryptWalletApiUnavailable
 				Label = "label",
 				ImageUrl = "image-url",
 				RecipientKeys = new[]
-			{
+				{
 					"recipient-key-1"
 				},
 				ServiceEndpoint = "service-endpoint",
