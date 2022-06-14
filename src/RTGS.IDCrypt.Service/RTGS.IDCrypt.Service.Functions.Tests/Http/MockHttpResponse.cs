@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http;
 
-namespace RTGS.IDCrypt.Service.Function.Tests.Helpers;
+namespace RTGS.IDCrypt.Service.Function.Tests.Http;
 
 public record MockHttpResponse
 {

@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace RTGS.IDCrypt.Service.Function.Tests.Helpers;
+namespace RTGS.IDCrypt.Service.Function.Tests.Http;
 
-public class StatusCodeHttpHandler : DelegatingHandler
+public sealed class StatusCodeHttpHandler : DelegatingHandler
 {
 	private readonly Dictionary<string, MockHttpResponse> _mockHttpResponses;
 
@@ -32,10 +29,9 @@ public class StatusCodeHttpHandler : DelegatingHandler
 
 		var response = new HttpResponseMessage(responseMock.HttpStatusCode)
 		{
-			Content = responseMock.Content
+			Content = responseMock.Content,
+			RequestMessage = request
 		};
-
-		response.RequestMessage = request;
 
 		return Task.FromResult(response);
 	}

@@ -28,7 +28,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 
 	public AndIdCryptApiAvailable()
 	{
-		var publicDid = "public-did";
+		const string publicDid = "public-did";
 
 		var coreOptions = Options.Create(new CoreConfig
 		{

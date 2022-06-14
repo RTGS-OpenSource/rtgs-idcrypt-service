@@ -118,4 +118,3 @@ public class AndConnectionExists : IClassFixture<ConnectionCycleFixture>, IAsync
 			.Should().ContainSingle();
 	}
 }
-

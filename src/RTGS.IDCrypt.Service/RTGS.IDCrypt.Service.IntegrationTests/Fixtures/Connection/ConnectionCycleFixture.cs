@@ -21,7 +21,7 @@ public class ConnectionCycleFixture : ConnectionsTestFixtureBase
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
-	public BankPartnerConnection ExistingConnection => new BankPartnerConnection
+	public BankPartnerConnection ExistingConnection => new()
 	{
 		PartitionKey = "rtgs-global-id",
 		RowKey = "alias",

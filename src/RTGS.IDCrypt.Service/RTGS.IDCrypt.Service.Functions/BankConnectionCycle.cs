@@ -25,7 +25,7 @@ public class BankConnectionCycle
 		_logger.LogInformation("BankConnectionCycle triggered at: {Time}", DateTime.Now);
 
 		string[] partnerIds;
-		
+
 		try
 		{
 			partnerIds = await _httpClient.GetFromJsonAsync<string[]>("/api/connection/InvitedPartnerIds");
@@ -36,21 +36,31 @@ public class BankConnectionCycle
 			throw;
 		}
 
-		foreach (string partnerId in partnerIds)
+		var failed = false;
+
+		foreach (var partnerId in partnerIds)
 		{
-			var cycleConnectionRequest = new CycleConnectionRequest {RtgsGlobalId = partnerId};
+			var cycleConnectionRequest = new CycleConnectionRequest { RtgsGlobalId = partnerId };
 
 			_logger.LogInformation("Cycling connection for {RtgsGlobalId}", partnerId);
 
 			try
 			{
-				await _httpClient.PostAsJsonAsync($"api/connection/cycle", cycleConnectionRequest);
+				var response = await _httpClient.PostAsJsonAsync("/api/connection/cycle", cycleConnectionRequest);
+
+				response.EnsureSuccessStatusCode();
 			}
 			catch (Exception exception)
 			{
+				failed = true;
+
 				_logger.LogError(exception, "Error cycling connection for {RtgsGlobalId}", partnerId);
-				throw;
 			}
+		}
+
+		if (failed)
+		{
+			throw new Exception("One or more cycling attempts failed.");
 		}
 	}
 }

@@ -17,14 +17,13 @@ public static class Program
 			.ConfigureServices((context, services) =>
 			{
 				services.AddHttpClient("IdCryptServiceClient", cfg =>
-				{
-					cfg.BaseAddress = new Uri(context.Configuration.GetValue<string>("IdCryptServiceBaseAddress"));
-				});
+					cfg.BaseAddress = new Uri(context.Configuration.GetValue<string>("IdCryptServiceBaseAddress"))
+				);
 				services.AddSingleton<ITelemetryInitializer>(new TelemetryInitalizer());
 				services.AddApplicationInsightsTelemetryWorkerService();
 			})
 			.Build();
-		
+
 		host.Run();
 	}
 }
