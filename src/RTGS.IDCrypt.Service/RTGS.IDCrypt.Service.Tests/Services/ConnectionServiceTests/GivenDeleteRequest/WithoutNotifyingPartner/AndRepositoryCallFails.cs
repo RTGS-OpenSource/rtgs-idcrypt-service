@@ -10,27 +10,30 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithRtgsGlobalIdAndAlias;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithoutNotifyingPartner;
 
-public class AndRepositoryGetCallFails
+public class AndRepositoryCallFails
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
+	private const string ConnectionId = "connection-id";
 	private readonly FakeLogger<ConnectionService> _logger = new();
-	private const string RtgsGlobalId = "rtgs-global-id";
-	private const string Alias = "alias";
 
-	public AndRepositoryGetCallFails()
+	public AndRepositoryCallFails()
 	{
 		var coreOptions = Options.Create(new CoreConfig
 		{
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
+		_connectionsClientMock
+			.Setup(client => client.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
+			.Verifiable();
+
 		_bankPartnerConnectionRepositoryMock
-			.Setup(service
-				=> service.GetAsync(RtgsGlobalId, Alias, It.IsAny<CancellationToken>()))
+			.Setup(service => service.DeleteAsync(ConnectionId,
+				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception("Something went wrong"))
 			.Verifiable();
 
@@ -51,12 +54,11 @@ public class AndRepositoryGetCallFails
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.DeleteAsync(RtgsGlobalId, Alias))
+			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId, false))
 			.Should()
-			.ThrowAsync<Exception>()
-			.WithMessage("Something went wrong");
+			.ThrowAsync<AggregateException>()
+			.WithMessage("One or more errors occurred. (Something went wrong)");
 
-		_logger.Logs[LogLevel.Error].Should()
-			.BeEquivalentTo("Error occurred when getting connection with RtgsGlobalId rtgs-global-id and Alias alias.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.");
 	}
 }

@@ -6,47 +6,49 @@ using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithConnectionId;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithNotifyingPartner;
 
-public class AndIdCryptApiCallFails
+public class AndNotifyingPartnerThrows
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
+	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
 	private readonly ConnectionService _connectionService;
-	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
+	private readonly FakeLogger<ConnectionService> _logger;
 	private const string ConnectionId = "connection-id";
-	private readonly FakeLogger<ConnectionService> _logger = new();
 
-	public AndIdCryptApiCallFails()
+	public AndNotifyingPartnerThrows()
 	{
 		var coreOptions = Options.Create(new CoreConfig
 		{
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
-		_connectionsClientMock
-			.Setup(client => client.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
+		_basicMessageClientMock.Setup(client => client.SendAsync(
+				ConnectionId,
+				nameof(DeleteBankPartnerConnectionBasicMessage),
+				It.IsAny<DeleteBankPartnerConnectionBasicMessage>(),
+				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception("Something went wrong"))
 			.Verifiable();
 
-		_bankPartnerConnectionRepositoryMock
-			.Setup(service => service.DeleteAsync(ConnectionId,
-				It.IsAny<CancellationToken>()))
-			.Verifiable();
+		_logger = new FakeLogger<ConnectionService>();
 
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			_logger,
-			_bankPartnerConnectionRepositoryMock.Object,
+			Mock.Of<IBankPartnerConnectionRepository>(),
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
 			coreOptions,
-			Mock.Of<IBasicMessageClient>());
+			_basicMessageClientMock.Object);
 	}
+
 
 	[Fact]
 	public async Task WhenInvoked_ThenLog()
@@ -54,10 +56,10 @@ public class AndIdCryptApiCallFails
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId))
+			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId, true))
 			.Should()
 			.ThrowAsync<Exception>().WithMessage("Something went wrong");
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when notifying partner of deleting connection.");
 	}
 }

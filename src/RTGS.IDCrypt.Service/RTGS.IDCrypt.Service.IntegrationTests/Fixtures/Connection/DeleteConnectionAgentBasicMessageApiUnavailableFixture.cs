@@ -5,13 +5,13 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class DeleteConnectionAgentUnavailableFixture : ConnectionsTestFixtureBase
+public class DeleteConnectionAgentBasicMessageApiUnavailableFixture : ConnectionsTestFixtureBase
 {
-	public DeleteConnectionAgentUnavailableFixture()
+	public DeleteConnectionAgentBasicMessageApiUnavailableFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
-			.WithServiceUnavailableResponse(DeleteConnection.Path)
+			.WithServiceUnavailableResponse(SendBasicMessage.Path)
 			.Build();
 	}
 

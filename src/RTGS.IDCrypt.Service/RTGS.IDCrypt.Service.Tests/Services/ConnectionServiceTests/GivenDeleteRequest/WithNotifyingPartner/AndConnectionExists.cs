@@ -1,26 +1,26 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
+using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithConnectionId;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithNotifyingPartner;
 
-public class AndBothRepositoryAndAgentCallsFail
+public class AndConnectionExists : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
+	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
 	private readonly ConnectionService _connectionService;
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 	private const string ConnectionId = "connection-id";
-	private readonly FakeLogger<ConnectionService> _logger = new();
 
-	public AndBothRepositoryAndAgentCallsFail()
+	public AndConnectionExists()
 	{
 		var coreOptions = Options.Create(new CoreConfig
 		{
@@ -29,37 +29,44 @@ public class AndBothRepositoryAndAgentCallsFail
 
 		_connectionsClientMock
 			.Setup(client => client.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
-			.ThrowsAsync(new Exception("Something went wrong"))
+			.Verifiable();
+
+		_basicMessageClientMock.Setup(client => client.SendAsync(
+				ConnectionId,
+				nameof(DeleteBankPartnerConnectionBasicMessage),
+				It.IsAny<DeleteBankPartnerConnectionBasicMessage>(),
+				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		_bankPartnerConnectionRepositoryMock
 			.Setup(service => service.DeleteAsync(ConnectionId,
 				It.IsAny<CancellationToken>()))
-			.ThrowsAsync(new Exception("Something else went wrong"))
 			.Verifiable();
+
+		var logger = new FakeLogger<ConnectionService>();
 
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
-			_logger,
+			logger,
 			_bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
 			coreOptions,
-			Mock.Of<IBasicMessageClient>());
+			_basicMessageClientMock.Object);
 	}
+
+	public async Task InitializeAsync() =>
+		await _connectionService.DeleteAsync(ConnectionId, true);
+
+	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public async Task WhenInvoked_ThenLog()
-	{
-		using var _ = new AssertionScope();
+	public void WhenInvoked_ThenCallDeleteOnAgent() => _connectionsClientMock.Verify();
 
-		await FluentActions
-			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId))
-			.Should()
-			.ThrowAsync<AggregateException>()
-			.WithMessage("One or more errors occurred. (Something went wrong) (Something else went wrong)");
+	[Fact]
+	public void WhenInvoked_ThenNotifiesPartnerBank() => _basicMessageClientMock.Verify();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.", "Error occurred when deleting connection.");
-	}
+	[Fact]
+	public void WhenInvoked_ThenCallDeleteOnRepository() => _bankPartnerConnectionRepositoryMock.Verify();
 }

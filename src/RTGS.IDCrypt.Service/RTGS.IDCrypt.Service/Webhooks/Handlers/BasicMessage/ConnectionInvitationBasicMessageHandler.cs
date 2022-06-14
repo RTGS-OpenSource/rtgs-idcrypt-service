@@ -16,7 +16,7 @@ public class ConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 
 	public string MessageType => nameof(ConnectionInvitation);
 
-	public async Task HandleAsync(string message, CancellationToken cancellationToken = default)
+	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default)
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<ConnectionInvitation>>(message);
 

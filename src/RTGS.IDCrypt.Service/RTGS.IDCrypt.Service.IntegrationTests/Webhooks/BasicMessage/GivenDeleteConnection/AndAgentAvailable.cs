@@ -33,15 +33,12 @@ public class AndAgentAvailable : IClassFixture<DeleteConnectionFixture>, IAsyncL
 		_message = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
 		{
 			MessageType = nameof(DeleteBankPartnerConnectionBasicMessage),
-			MessageContent = new DeleteBankPartnerConnectionBasicMessage
-			{
-				Alias = "alias-1",
-				FromRtgsGlobalId = "rtgs-global-id"
-			}
+			MessageContent = new DeleteBankPartnerConnectionBasicMessage()
 		};
 
 		var basicMessage = new IdCryptBasicMessage
 		{
+			ConnectionId = "connection-id-1",
 			Content = JsonSerializer.Serialize(_message),
 		};
 
@@ -67,6 +64,10 @@ public class AndAgentAvailable : IClassFixture<DeleteConnectionFixture>, IAsyncL
 			.Headers.GetValues("X-API-Key")
 			.Should().ContainSingle()
 			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
+
+	[Fact]
+	public void WhenPosting_DoesNotNotifyPartnerBank() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(SendBasicMessage.Path);
 
 	[Fact]
 	public void WhenPosting_ThenDeleteFromTableStorage() =>

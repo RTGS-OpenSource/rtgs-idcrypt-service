@@ -5,18 +5,16 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class DeleteConnectionFixture : ConnectionsTestFixtureBase
+public class DeleteConnectionAgentDeleteApiUnavailableFixture : ConnectionsTestFixtureBase
 {
-	public DeleteConnectionFixture()
+	public DeleteConnectionAgentDeleteApiUnavailableFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
-			.WithOkResponse(DeleteConnection.HttpRequestResponseContext)
+			.WithServiceUnavailableResponse(DeleteConnection.Path)
 			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
 			.Build();
 	}
-
-	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
 	public async Task TestSeed()
 	{
@@ -35,8 +33,10 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 		};
 
 		await InsertBankPartnerConnectionAsync(bankPartnerConnection);
-
 	}
+
+	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
+
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
 			services

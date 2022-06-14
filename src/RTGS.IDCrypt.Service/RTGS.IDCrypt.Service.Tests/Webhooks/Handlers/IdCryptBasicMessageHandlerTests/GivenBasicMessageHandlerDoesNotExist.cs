@@ -49,5 +49,5 @@ public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 
 	[Fact]
 	public void ThenDoesNotCallHandleAsync() => _mockBasicMessageHandler
-		.Verify(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+		.Verify(handler => handler.HandleAsync(It.IsAny<string>(), "connection-id", It.IsAny<CancellationToken>()), Times.Never);
 }

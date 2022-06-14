@@ -17,10 +17,10 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 	public async Task InitializeAsync()
 	{
 		_logger = new FakeLogger<IdCryptBasicMessageHandler>();
-
+		var connectionId = "connection-id";
 		var basicMessage = new IdCryptBasicMessage
 		{
-			ConnectionId = "connection-id",
+			ConnectionId = connectionId,
 			Content = JsonSerializer.Serialize(new BasicMessageContent<string>
 			{
 				MessageType = "message-type",
@@ -31,7 +31,7 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 		_mockBasicMessageHandler = new Mock<IBasicMessageHandler>();
 		_mockBasicMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
 		_mockBasicMessageHandler.Setup(handler =>
-			handler.HandleAsync(It.Is<string>(value => value == basicMessage.Content), It.IsAny<CancellationToken>()))
+			handler.HandleAsync(It.Is<string>(value => value == basicMessage.Content), connectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		var handler = new IdCryptBasicMessageHandler(_logger, new[] { _mockBasicMessageHandler.Object });

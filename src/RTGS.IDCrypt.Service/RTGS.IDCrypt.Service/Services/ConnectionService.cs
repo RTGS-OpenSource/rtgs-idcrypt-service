@@ -4,6 +4,7 @@ using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
+using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -163,8 +164,26 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default)
+	public async Task DeleteAsync(string connectionId, bool notifyPartner, CancellationToken cancellationToken = default)
 	{
+		if (notifyPartner)
+		{
+			try
+			{
+				await _basicMessageClient.SendAsync(
+					connectionId,
+					nameof(DeleteBankPartnerConnectionBasicMessage),
+					new DeleteBankPartnerConnectionBasicMessage(),
+					cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred when notifying partner of deleting connection.");
+
+				throw;
+			}
+		}
+
 		Task aggregateTask = null;
 
 		try
@@ -172,42 +191,6 @@ public class ConnectionService : IConnectionService
 			aggregateTask = Task.WhenAll(
 				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
 				_bankPartnerConnectionRepository.DeleteAsync(connectionId, cancellationToken));
-
-			await aggregateTask;
-		}
-		catch (Exception e)
-		{
-			aggregateTask?.Exception?.InnerExceptions.ToList()
-				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection."));
-
-			throw aggregateTask?.Exception ?? e;
-		}
-	}
-
-	public async Task DeleteAsync(string rtgsGlobalId, string alias, CancellationToken cancellationToken = default)
-	{
-		BankPartnerConnection connection;
-
-		try
-		{
-			connection = await _bankPartnerConnectionRepository.GetAsync(rtgsGlobalId, alias, cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex,
-				"Error occurred when getting connection with RtgsGlobalId {RtgsGlobalId} and Alias {Alias}.",
-				rtgsGlobalId, alias);
-
-			throw;
-		}
-
-		Task aggregateTask = null;
-
-		try
-		{
-			aggregateTask = Task.WhenAll(
-				_connectionsClient.DeleteConnectionAsync(connection.ConnectionId, cancellationToken),
-				_bankPartnerConnectionRepository.DeleteAsync(connection, cancellationToken));
 
 			await aggregateTask;
 		}

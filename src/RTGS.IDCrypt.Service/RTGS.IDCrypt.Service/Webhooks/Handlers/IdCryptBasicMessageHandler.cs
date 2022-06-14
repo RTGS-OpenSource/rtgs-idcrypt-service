@@ -30,7 +30,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 
 		if (_handlers.TryGetValue(messageContent.MessageType, out var handler))
 		{
-			await handler.HandleAsync(message.Content, cancellationToken);
+			await handler.HandleAsync(message.Content, message.ConnectionId, cancellationToken);
 
 			_logger.LogInformation("Handled {MessageType} BasicMessage.", messageContent.MessageType);
 		}

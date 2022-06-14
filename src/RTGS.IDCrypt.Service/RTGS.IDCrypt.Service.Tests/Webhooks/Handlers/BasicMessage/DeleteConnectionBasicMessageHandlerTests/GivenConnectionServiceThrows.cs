@@ -17,16 +17,16 @@ public class GivenConnectionServiceThrows
 		connectionServiceMock
 			.Setup(service => service.DeleteAsync(
 				It.IsAny<string>(),
-				It.IsAny<string>(),
+				It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-		var handler = new DeleteConnectionBasicMessageHandler(connectionServiceMock.Object);
+		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(connectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>());
 
 		await FluentActions
-			.Awaiting(() => handler.HandleAsync(message))
+			.Awaiting(() => handler.HandleAsync(message, "connection-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 	}

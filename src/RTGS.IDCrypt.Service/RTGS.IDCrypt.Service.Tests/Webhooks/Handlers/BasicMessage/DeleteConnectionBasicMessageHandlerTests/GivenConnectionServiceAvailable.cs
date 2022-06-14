@@ -13,27 +13,23 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 
 	public async Task InitializeAsync()
 	{
+		var connectionId = "connection-id";
+
 		var basicMessage = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
 		{
-			MessageType = nameof(DeleteConnectionBasicMessageHandler),
-			MessageContent = new DeleteBankPartnerConnectionBasicMessage
-			{
-				FromRtgsGlobalId = "from-rtgs-global-id",
-				Alias = "alias"
-			}
+			MessageType = nameof(DeleteBankPartnerConnectionBasicMessageHandler),
+			MessageContent = new DeleteBankPartnerConnectionBasicMessage()
 		};
 
 		_connectionServiceMock
-			.Setup(service => service.DeleteAsync(
-				It.Is<string>(rtgsGlobalId => rtgsGlobalId == basicMessage.MessageContent.FromRtgsGlobalId),
-				It.Is<string>(alias => alias == basicMessage.MessageContent.Alias), It.IsAny<CancellationToken>()))
+			.Setup(service => service.DeleteAsync(connectionId, false, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var handler = new DeleteConnectionBasicMessageHandler(_connectionServiceMock.Object);
+		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(_connectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(basicMessage);
 
-		await handler.HandleAsync(message);
+		await handler.HandleAsync(message, connectionId);
 	}
 
 	public Task DisposeAsync() => Task.CompletedTask;

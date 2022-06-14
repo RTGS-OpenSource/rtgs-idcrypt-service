@@ -118,20 +118,6 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 				return;
 			}
 
-			await DeleteAsync(connection, cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when deleting bank partner connection");
-
-			throw;
-		}
-	}
-
-	public async Task DeleteAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
-	{
-		try
-		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			await tableClient.DeleteEntityAsync(connection.PartitionKey, connection.RowKey, connection.ETag, cancellationToken);

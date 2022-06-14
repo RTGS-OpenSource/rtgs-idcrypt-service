@@ -44,7 +44,7 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 
 		var message = JsonSerializer.Serialize(new BasicMessageContent<ConnectionInvitation> { MessageContent = connectionInvitation });
 
-		await handler.HandleAsync(message);
+		await handler.HandleAsync(message, "connection-id");
 	}
 
 	public Task DisposeAsync() => Task.CompletedTask;

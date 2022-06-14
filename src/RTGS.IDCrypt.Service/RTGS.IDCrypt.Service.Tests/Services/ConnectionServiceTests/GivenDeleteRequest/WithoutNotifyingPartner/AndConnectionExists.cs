@@ -2,7 +2,6 @@
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -10,7 +9,7 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithRtgsGlobalIdAndAlias;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithoutNotifyingPartner;
 
 public class AndConnectionExists : IAsyncLifetime
 {
@@ -18,8 +17,6 @@ public class AndConnectionExists : IAsyncLifetime
 	private readonly ConnectionService _connectionService;
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 	private const string ConnectionId = "connection-id";
-	private const string RtgsGlobalId = "rtgs-global-id";
-	private const string Alias = "alias";
 
 	public AndConnectionExists()
 	{
@@ -28,20 +25,12 @@ public class AndConnectionExists : IAsyncLifetime
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
-		var bankPartnerConnection = new BankPartnerConnection { ConnectionId = ConnectionId };
-
-		_bankPartnerConnectionRepositoryMock
-			.Setup(service
-				=> service.GetAsync(RtgsGlobalId, Alias, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(bankPartnerConnection)
-			.Verifiable();
-
 		_connectionsClientMock
 			.Setup(client => client.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		_bankPartnerConnectionRepositoryMock
-			.Setup(service => service.DeleteAsync(bankPartnerConnection,
+			.Setup(service => service.DeleteAsync(ConnectionId,
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
@@ -59,7 +48,7 @@ public class AndConnectionExists : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		await _connectionService.DeleteAsync(RtgsGlobalId, Alias);
+		await _connectionService.DeleteAsync(ConnectionId, false);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
@@ -67,5 +56,5 @@ public class AndConnectionExists : IAsyncLifetime
 	public void WhenInvoked_ThenCallDeleteOnAgent() => _connectionsClientMock.Verify();
 
 	[Fact]
-	public void WhenInvoked_ThenCallGetAndDeleteOnRepository() => _bankPartnerConnectionRepositoryMock.Verify();
+	public void WhenInvoked_ThenCallDeleteOnRepository() => _bankPartnerConnectionRepositoryMock.Verify();
 }

@@ -25,7 +25,7 @@ public class ConnectionCycleFixture : ConnectionsTestFixtureBase
 	{
 		PartitionKey = "rtgs-global-id",
 		RowKey = "alias",
-		ConnectionId = "rtgs-connection-id-1",
+		ConnectionId = "connection-id-1",
 		Alias = "alias",
 		CreatedAt = DateTime.UtcNow.Subtract(TimeSpan.Parse(Configuration["MinimumConnectionAge"]).Add(TimeSpan.FromMinutes(1))),
 		PublicDid = "public-did",
