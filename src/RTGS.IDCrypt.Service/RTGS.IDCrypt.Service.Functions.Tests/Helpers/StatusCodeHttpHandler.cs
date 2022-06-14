@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RTGS.IDCrypt.Service.Function.Tests.BankConnectionCycle.GivenTimerTriggered;
+namespace RTGS.IDCrypt.Service.Function.Tests.Helpers;
 
 public class StatusCodeHttpHandler : DelegatingHandler
 {

@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http;
 
-namespace RTGS.IDCrypt.Service.Function.Tests.BankConnectionCycle.GivenTimerTriggered;
+namespace RTGS.IDCrypt.Service.Function.Tests.Helpers;
 
 public record MockHttpResponse
 {
