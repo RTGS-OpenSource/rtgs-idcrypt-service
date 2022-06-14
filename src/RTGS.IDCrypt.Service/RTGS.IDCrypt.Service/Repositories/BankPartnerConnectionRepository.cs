@@ -181,10 +181,11 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 		try
 		{
-			connection = await GetFromTableAsync(
-				bankPartnerConnection => bankPartnerConnection.PartitionKey == rtgsGlobalId &&
-										 bankPartnerConnection.Alias == alias,
-				cancellationToken);
+			connection =
+				await GetFromTableAsync(bankPartnerConnection =>
+						bankPartnerConnection.PartitionKey == rtgsGlobalId &&
+						bankPartnerConnection.RowKey == alias,
+					cancellationToken);
 		}
 		catch (Exception ex)
 		{

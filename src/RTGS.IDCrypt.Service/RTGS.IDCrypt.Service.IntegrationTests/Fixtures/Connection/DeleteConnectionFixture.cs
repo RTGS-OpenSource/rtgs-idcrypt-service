@@ -21,25 +21,20 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 	{
 		var aDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
-		var bankPartnerConnections = new List<BankPartnerConnection>
+		var bankPartnerConnection = new BankPartnerConnection
 		{
-			new()
-			{
-				PartitionKey = "rtgs-global-id",
-				RowKey = "alias-1",
-				ConnectionId = "connection-id-1",
-				Alias = "alias-1",
-				CreatedAt = aDate,
-				PublicDid = "public-did-1",
-				Status = "Pending",
-				Role = "Inviter"
-			}
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias-1",
+			ConnectionId = "connection-id-1",
+			Alias = "alias-1",
+			CreatedAt = aDate,
+			PublicDid = "public-did-1",
+			Status = "Pending",
+			Role = "Inviter"
 		};
 
-		foreach (var connection in bankPartnerConnections)
-		{
-			await InsertBankPartnerConnectionAsync(connection);
-		}
+		await InsertBankPartnerConnectionAsync(bankPartnerConnection);
+
 	}
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
