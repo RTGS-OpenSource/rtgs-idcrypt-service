@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
@@ -115,7 +114,7 @@ public class ConnectionService : IConnectionService
 
 			var invitation = await DoCreateConnectionInvitationForBankAsync(rtgsGlobalId, cancellationToken);
 
-			await _basicMessageClient.SendAsync(establishedConnection.ConnectionId, nameof(CycleConnectionRequest), invitation, cancellationToken);
+			await _basicMessageClient.SendAsync(establishedConnection.ConnectionId, nameof(ConnectionInvitation), invitation, cancellationToken);
 		}
 		catch (Exception ex)
 		{

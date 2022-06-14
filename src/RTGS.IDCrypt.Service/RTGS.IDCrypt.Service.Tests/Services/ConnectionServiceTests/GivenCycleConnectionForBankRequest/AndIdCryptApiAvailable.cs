@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
-using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
@@ -10,6 +9,7 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
+using ConnectionInvitation = RTGS.IDCrypt.Service.Contracts.Connection.ConnectionInvitation;
 
 namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCycleConnectionForBankRequest;
 
@@ -142,7 +142,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		_basicMessageClientMock
 			.Setup(client => client.SendAsync(
 				establishedBankConnection.ConnectionId,
-				nameof(CycleConnectionRequest),
+				nameof(ConnectionInvitation),
 				It.Is<Models.ConnectionInvitation>(message => messageMatches(message)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
