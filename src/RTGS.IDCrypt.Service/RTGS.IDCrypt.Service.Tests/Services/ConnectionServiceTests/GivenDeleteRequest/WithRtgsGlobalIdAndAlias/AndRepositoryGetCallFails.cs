@@ -17,7 +17,6 @@ public class AndRepositoryGetCallFails
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
-	private const string ConnectionId = "connection-id";
 	private readonly FakeLogger<ConnectionService> _logger = new();
 	private const string RtgsGlobalId = "rtgs-global-id";
 	private const string Alias = "alias";
