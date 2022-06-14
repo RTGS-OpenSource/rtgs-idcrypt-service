@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace RTGS.IDCrypt.Service.Functions;
 
-public class Program
+public static class Program
 {
 	public static void Main()
 	{
@@ -16,7 +16,7 @@ public class Program
 			.ConfigureFunctionsWorkerDefaults()
 			.ConfigureServices((context, services) =>
 			{
-				services.AddHttpClient<BankConnectionCycle>(cfg =>
+				services.AddHttpClient("IdCryptServiceClient", cfg =>
 				{
 					cfg.BaseAddress = new Uri(context.Configuration.GetValue<string>("IdCryptServiceBaseAddress"));
 				});

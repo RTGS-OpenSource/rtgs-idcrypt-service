@@ -21,4 +21,7 @@
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\RTGS.IDCrypt.Service.Contracts\RTGS.IDCrypt.Service.Contracts.csproj" />
+    </ItemGroup>
 </Project>
