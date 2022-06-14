@@ -8,7 +8,7 @@ public record IdCryptBasicMessage
 	public string ConnectionId { get; set; }
 
 	[JsonPropertyName("message_id")]
-	public string MessageType { get; set; }
+	public string MessageId { get; set; }
 
 	[JsonPropertyName("content")]
 	public string Content { get; set; }
