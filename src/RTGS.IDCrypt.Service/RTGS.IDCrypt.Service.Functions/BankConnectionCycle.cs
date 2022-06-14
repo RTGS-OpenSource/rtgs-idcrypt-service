@@ -20,7 +20,7 @@ public class BankConnectionCycle
 	}
 
 	[Function(nameof(BankConnectionCycle))]
-	public async Task RunAsync([TimerTrigger("%ConnectionCycleTriggerTime%")] TimerInfo timerInfo)
+	public async Task RunAsync([TimerTrigger("%ConnectionCycleTriggerTime%")] TimerInfo _)
 	{
 		_logger.LogInformation("BankConnectionCycle triggered at: {Time}", DateTime.Now);
 
