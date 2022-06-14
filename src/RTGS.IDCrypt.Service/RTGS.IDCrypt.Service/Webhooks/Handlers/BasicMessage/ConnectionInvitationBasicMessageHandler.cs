@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Services;
+using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
@@ -17,8 +18,8 @@ public class ConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 
 	public async Task HandleAsync(string message, CancellationToken cancellationToken = default)
 	{
-		var request = JsonSerializer.Deserialize<ConnectionInvitation>(message);
+		var request = JsonSerializer.Deserialize<BasicMessageContent<ConnectionInvitation>>(message);
 
-		await _connectionService.AcceptInvitationAsync(request, cancellationToken);
+		await _connectionService.AcceptInvitationAsync(request.MessageContent, cancellationToken);
 	}
 }

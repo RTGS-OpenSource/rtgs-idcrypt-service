@@ -10,9 +10,9 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithConnectionId;
 
-public class AndRepositoryCallFails
+public class AndBothRepositoryAndAgentCallsFail
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
@@ -20,7 +20,7 @@ public class AndRepositoryCallFails
 	private const string ConnectionId = "connection-id";
 	private readonly FakeLogger<ConnectionService> _logger = new();
 
-	public AndRepositoryCallFails()
+	public AndBothRepositoryAndAgentCallsFail()
 	{
 		var coreOptions = Options.Create(new CoreConfig
 		{
@@ -29,12 +29,13 @@ public class AndRepositoryCallFails
 
 		_connectionsClientMock
 			.Setup(client => client.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
+			.ThrowsAsync(new Exception("Something went wrong"))
 			.Verifiable();
 
 		_bankPartnerConnectionRepositoryMock
 			.Setup(service => service.DeleteAsync(ConnectionId,
 				It.IsAny<CancellationToken>()))
-			.ThrowsAsync(new Exception("Something went wrong"))
+			.ThrowsAsync(new Exception("Something else went wrong"))
 			.Verifiable();
 
 		_connectionService = new ConnectionService(
@@ -57,8 +58,8 @@ public class AndRepositoryCallFails
 			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId))
 			.Should()
 			.ThrowAsync<AggregateException>()
-			.WithMessage("One or more errors occurred. (Something went wrong)");
+			.WithMessage("One or more errors occurred. (Something went wrong) (Something else went wrong)");
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.", "Error occurred when deleting connection.");
 	}
 }

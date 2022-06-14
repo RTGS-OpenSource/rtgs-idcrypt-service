@@ -9,14 +9,14 @@ using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteConnection;
 
-public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>, IAsyncLifetime
+public class AndAgentUnavailable : IClassFixture<DeleteConnectionAgentUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly DeleteConnectionFixture _testFixture;
+	private readonly DeleteConnectionAgentUnavailableFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 	private BasicMessageContent<DeleteBankPartnerConnectionBasicMessage> _message;
 
-	public AndConnectionDoesNotExist(DeleteConnectionFixture testFixture)
+	public AndAgentUnavailable(DeleteConnectionAgentUnavailableFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -27,12 +27,13 @@ public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>,
 
 	public async Task InitializeAsync()
 	{
+		await _testFixture.TestSeed();
 		_message = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
 		{
 			MessageType = nameof(DeleteBankPartnerConnectionBasicMessage),
 			MessageContent = new DeleteBankPartnerConnectionBasicMessage
 			{
-				Alias = "alias-invalid",
+				Alias = "alias-1",
 				FromRtgsGlobalId = "rtgs-global-id"
 			}
 		};
@@ -48,18 +49,14 @@ public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>,
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void WhenPosting_ThenAgentIsNotCalled() =>
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().BeEmpty();
+	public async Task ThenReturnInternalServerError()
+	{
+		using var _ = new AssertionScope();
 
-	[Fact]
-	public void ThenReturnInternalServerError() =>
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
-	[Fact]
-	public async Task ThenReturnErrorMessage()
-	{
 		var content = await _httpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Bank partner connection with RtgsGlobalId rtgs-global-id and Alias alias-invalid not found\"}");
+		content.Should().Be("{\"error\":\"One or more errors occurred. (Error deleting connection from agent)\"}");
 	}
 }

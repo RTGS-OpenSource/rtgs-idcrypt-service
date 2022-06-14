@@ -6,6 +6,7 @@ using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.Tes
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
+using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
 
@@ -47,9 +48,12 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 		var basicMessage = new IdCryptBasicMessage
 		{
-			MessageType = nameof(ConnectionInvitation),
 			ConnectionId = "connection_id",
-			Content = JsonSerializer.Serialize(_connectionInvitation)
+			Content = JsonSerializer.Serialize(new BasicMessageContent<ConnectionInvitation>
+			{
+				MessageType = nameof(ConnectionInvitation),
+				MessageContent = _connectionInvitation
+			})
 		};
 
 		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);

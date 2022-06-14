@@ -5,6 +5,7 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
+using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests;
 
@@ -19,9 +20,12 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 
 		var basicMessage = new IdCryptBasicMessage
 		{
-			MessageType = "message-type",
 			ConnectionId = "connection-id",
-			Content = "hello"
+			Content = JsonSerializer.Serialize(new BasicMessageContent<string>
+			{
+				MessageType = "message-type",
+				MessageContent = "hello"
+			})
 		};
 
 		_mockBasicMessageHandler = new Mock<IBasicMessageHandler>();

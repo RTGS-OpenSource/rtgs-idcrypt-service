@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
@@ -32,7 +33,9 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			var connection = await GetFromTableAsync(connectionId, cancellationToken);
+			var connection = await GetFromTableAsync(
+				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
+				cancellationToken);
 
 			if (connection is null)
 			{
@@ -105,15 +108,31 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
-			var connection = await GetFromTableAsync(connectionId, cancellationToken);
+			var connection = await GetFromTableAsync(
+				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
+				cancellationToken);
 
 			if (connection is null)
 			{
 				_logger.LogWarning("Unable to delete connection from table storage as the bank partner connection was not found");
 				return;
 			}
+
+			await DeleteAsync(connection, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when deleting bank partner connection");
+
+			throw;
+		}
+	}
+
+	public async Task DeleteAsync(BankPartnerConnection connection, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			await tableClient.DeleteEntityAsync(connection.PartitionKey, connection.RowKey, connection.ETag, cancellationToken);
 		}
@@ -131,7 +150,9 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 		try
 		{
-			connection = await GetFromTableAsync(connectionId, cancellationToken);
+			connection = await GetFromTableAsync(
+				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
+				cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -145,6 +166,40 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			var ex = new Exception($"Bank partner connection with ID {connectionId} not found");
 
 			_logger.LogError(ex, "Bank partner connection with ID {ConnectionId} not found", connectionId);
+
+			throw ex;
+		}
+
+		return connection;
+	}
+
+
+	public async Task<BankPartnerConnection> GetAsync(string rtgsGlobalId, string alias,
+		CancellationToken cancellationToken = default)
+	{
+		BankPartnerConnection connection;
+
+		try
+		{
+			connection = await GetFromTableAsync(
+				bankPartnerConnection => bankPartnerConnection.PartitionKey == rtgsGlobalId &&
+										 bankPartnerConnection.Alias == alias,
+				cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when getting bank partner connection");
+
+			throw;
+		}
+
+		if (connection is null)
+		{
+			var ex = new Exception(
+				$"Bank partner connection with RtgsGlobalId {rtgsGlobalId} and Alias {alias} not found");
+
+			_logger.LogError(ex, "Bank partner connection with RtgsGlobalId {RtgsGlobalId} and Alias {Alias} not found",
+				rtgsGlobalId, alias);
 
 			throw ex;
 		}
@@ -179,14 +234,12 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		return connection;
 	}
 
-	private async Task<BankPartnerConnection> GetFromTableAsync(string connectionId, CancellationToken cancellationToken)
+	private async Task<BankPartnerConnection> GetFromTableAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{
 		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 		var connection = await tableClient
-			.QueryAsync<BankPartnerConnection>(bankPartnerConnection =>
-					bankPartnerConnection.ConnectionId == connectionId,
-				cancellationToken: cancellationToken)
+			.QueryAsync(filterExpression, cancellationToken: cancellationToken)
 			.SingleOrDefaultAsync(cancellationToken);
 
 		return connection;

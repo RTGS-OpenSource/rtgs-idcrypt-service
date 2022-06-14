@@ -32,11 +32,11 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 		{
 			await handler.HandleAsync(message.Content, cancellationToken);
 
-			_logger.LogInformation("Handled {MessageType} BasicMessage.", message.MessageType);
+			_logger.LogInformation("Handled {MessageType} BasicMessage.", messageContent.MessageType);
 		}
 		else
 		{
-			_logger.LogDebug("No BasicMessage handler found for message type {MessageType}.", message.MessageType);
+			_logger.LogDebug("No BasicMessage handler found for message type {MessageType}.", messageContent.MessageType);
 		}
 	}
 }
