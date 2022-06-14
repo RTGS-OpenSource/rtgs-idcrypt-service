@@ -28,7 +28,7 @@ public class BankConnectionCycle
 		
 		try
 		{
-			partnerIds = await _httpClient.GetFromJsonAsync<string[]>("api/connection/InvitedPartnerIds");
+			partnerIds = await _httpClient.GetFromJsonAsync<string[]>("/api/connection/InvitedPartnerIds");
 		}
 		catch (Exception exception)
 		{

@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.Contra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.Functions", "RTGS.IDCrypt.Service.Functions\RTGS.IDCrypt.Service.Functions.csproj", "{93892611-82FA-4558-9E5F-EBD923CB3458}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.Functions.Tests", "RTGS.IDCrypt.Service.Functions.Tests\RTGS.IDCrypt.Service.Functions.Tests.csproj", "{432E958B-AFE8-43C4-8B4C-741D561BC41D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{93892611-82FA-4558-9E5F-EBD923CB3458}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93892611-82FA-4558-9E5F-EBD923CB3458}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93892611-82FA-4558-9E5F-EBD923CB3458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{432E958B-AFE8-43C4-8B4C-741D561BC41D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{432E958B-AFE8-43C4-8B4C-741D561BC41D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{432E958B-AFE8-43C4-8B4C-741D561BC41D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{432E958B-AFE8-43C4-8B4C-741D561BC41D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{BE31246D-9A8A-48E4-A4E7-ABABA078DD3C} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
 		{95714053-3451-45F3-A618-0BE50A0BB0F0} = {D9A7FD22-6BCC-4FC8-88A0-2873D4203F6B}
 		{93892611-82FA-4558-9E5F-EBD923CB3458} = {D9A7FD22-6BCC-4FC8-88A0-2873D4203F6B}
+		{432E958B-AFE8-43C4-8B4C-741D561BC41D} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {072139B7-F9CE-4CC0-A335-02CF53AFB43B}
