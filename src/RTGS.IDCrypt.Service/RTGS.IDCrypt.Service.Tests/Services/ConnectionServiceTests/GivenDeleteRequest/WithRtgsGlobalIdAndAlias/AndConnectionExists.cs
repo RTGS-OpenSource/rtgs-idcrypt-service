@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -10,37 +10,46 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithRtgsGlobalIdAndAlias;
 
-public class AndBothRepositoryAndAgentCallsFail
+public class AndConnectionExists : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 	private const string ConnectionId = "connection-id";
-	private readonly FakeLogger<ConnectionService> _logger = new();
+	private const string RtgsGlobalId = "rtgs-global-id";
+	private const string Alias = "alias";
 
-	public AndBothRepositoryAndAgentCallsFail()
+	public AndConnectionExists()
 	{
 		var coreOptions = Options.Create(new CoreConfig
 		{
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
+		var bankPartnerConnection = new BankPartnerConnection { ConnectionId = ConnectionId };
+
+		_bankPartnerConnectionRepositoryMock
+			.Setup(service
+				=> service.GetAsync(RtgsGlobalId, Alias, It.IsAny<CancellationToken>()))
+			.ReturnsAsync(bankPartnerConnection)
+			.Verifiable();
+
 		_connectionsClientMock
 			.Setup(client => client.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
-			.ThrowsAsync(new Exception("Something went wrong"))
 			.Verifiable();
 
 		_bankPartnerConnectionRepositoryMock
-			.Setup(service => service.DeleteAsync(ConnectionId,
+			.Setup(service => service.DeleteAsync(bankPartnerConnection,
 				It.IsAny<CancellationToken>()))
-			.ThrowsAsync(new Exception("Something else went wrong"))
 			.Verifiable();
+
+		var logger = new FakeLogger<ConnectionService>();
 
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
-			_logger,
+			logger,
 			_bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IAliasProvider>(),
@@ -49,17 +58,14 @@ public class AndBothRepositoryAndAgentCallsFail
 			Mock.Of<IBasicMessageClient>());
 	}
 
+	public async Task InitializeAsync() =>
+		await _connectionService.DeleteAsync(RtgsGlobalId, Alias);
+
+	public Task DisposeAsync() => Task.CompletedTask;
+
 	[Fact]
-	public async Task WhenInvoked_ThenLog()
-	{
-		using var _ = new AssertionScope();
+	public void WhenInvoked_ThenCallDeleteOnAgent() => _connectionsClientMock.Verify();
 
-		await FluentActions
-			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId))
-			.Should()
-			.ThrowAsync<AggregateException>()
-			.WithMessage("One or more errors occurred. (Something went wrong) (Something else went wrong)");
-
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.", "Error occurred when deleting connection.");
-	}
+	[Fact]
+	public void WhenInvoked_ThenCallGetAndDeleteOnRepository() => _bankPartnerConnectionRepositoryMock.Verify();
 }

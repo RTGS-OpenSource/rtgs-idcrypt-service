@@ -3,6 +3,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
+using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.ConnectionInvitationBasicMessageHandlerTests;
 
@@ -41,7 +42,7 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 
 		var handler = new ConnectionInvitationBasicMessageHandler(_connectionServiceMock.Object);
 
-		var message = JsonSerializer.Serialize(connectionInvitation);
+		var message = JsonSerializer.Serialize(new BasicMessageContent<ConnectionInvitation> { MessageContent = connectionInvitation });
 
 		await handler.HandleAsync(message);
 	}

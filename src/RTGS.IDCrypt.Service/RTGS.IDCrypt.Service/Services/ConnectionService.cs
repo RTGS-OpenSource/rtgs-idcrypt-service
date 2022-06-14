@@ -185,6 +185,42 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
+	public async Task DeleteAsync(string rtgsGlobalId, string alias, CancellationToken cancellationToken = default)
+	{
+		BankPartnerConnection connection;
+
+		try
+		{
+			connection = await _bankPartnerConnectionRepository.GetAsync(rtgsGlobalId, alias, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex,
+				"Error occurred when getting connection with RtgsGlobalId {RtgsGlobalId} and Alias {Alias}.",
+				rtgsGlobalId, alias);
+
+			throw;
+		}
+
+		Task aggregateTask = null;
+
+		try
+		{
+			aggregateTask = Task.WhenAll(
+				_connectionsClient.DeleteConnectionAsync(connection.ConnectionId, cancellationToken),
+				_bankPartnerConnectionRepository.DeleteAsync(connection, cancellationToken));
+
+			await aggregateTask;
+		}
+		catch (Exception e)
+		{
+			aggregateTask?.Exception?.InnerExceptions.ToList()
+				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection."));
+
+			throw aggregateTask?.Exception ?? e;
+		}
+	}
+
 	private async Task<ConnectionInvitation> DoCreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken)
 	{
 		var alias = _aliasProvider.Provide();
