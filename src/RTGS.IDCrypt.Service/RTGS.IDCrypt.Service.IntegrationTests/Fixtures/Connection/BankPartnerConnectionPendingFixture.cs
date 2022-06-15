@@ -26,7 +26,7 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 			Alias = "bank-alias-1",
 			ConnectionId = "bank-connection-id-1",
 			PublicDid = "bank-public-did-1",
-			CreatedAt = DateTime.UtcNow,
+			CreatedAtx = DateTime.UtcNow,
 			Status = "Pending",
 			Role = "Inviter"
 		});
@@ -38,7 +38,7 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 			Alias = "bank-alias-2",
 			ConnectionId = "bank-connection-id-2",
 			PublicDid = "public-did-2",
-			CreatedAt = DateTime.UtcNow,
+			CreatedAtx = DateTime.UtcNow,
 			Status = "Pending",
 			Role = "Invitee"
 		});

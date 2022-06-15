@@ -44,6 +44,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			}
 
 			connection.Status = ConnectionStatuses.Active;
+			connection.ActivatedAt = _dateTimeProvider.UtcNow;
 
 			await tableClient.UpdateEntityAsync(
 				connection,
@@ -90,7 +91,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			connection.CreatedAt = _dateTimeProvider.UtcNow;
+			connection.CreatedAtx = _dateTimeProvider.UtcNow;
 
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
@@ -243,12 +244,12 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		var bankPartnerConnections = await bankPartnerConnectionsTable
 			.QueryAsync<BankPartnerConnection>(bankPartnerConnection =>
 					bankPartnerConnection.PartitionKey == rtgsGlobalId
-					&& bankPartnerConnection.CreatedAt <= dateThreshold
+					&& bankPartnerConnection.ActivatedAt <= dateThreshold
 					&& bankPartnerConnection.Status == ConnectionStatuses.Active,
 				cancellationToken: cancellationToken)
 			.ToListAsync(cancellationToken);
 
-		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.CreatedAt);
+		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.ActivatedAt);
 		return bankPartnerConnection;
 	}
 }

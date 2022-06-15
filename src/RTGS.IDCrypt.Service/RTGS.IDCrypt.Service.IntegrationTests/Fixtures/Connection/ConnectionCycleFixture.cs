@@ -27,7 +27,8 @@ public class ConnectionCycleFixture : ConnectionsTestFixtureBase
 		RowKey = "alias",
 		ConnectionId = "connection-id-1",
 		Alias = "alias",
-		CreatedAt = DateTime.UtcNow.Subtract(TimeSpan.Parse(Configuration["MinimumConnectionAge"]).Add(TimeSpan.FromMinutes(1))),
+		CreatedAtx = DateTime.UtcNow.Subtract(TimeSpan.Parse(Configuration["MinimumConnectionAge"]).Add(TimeSpan.FromMinutes(1))),
+		ActivatedAt = DateTime.UtcNow.Subtract(TimeSpan.Parse(Configuration["MinimumConnectionAge"]).Add(TimeSpan.FromMinutes(1))),
 		PublicDid = "public-did",
 		Status = "Active",
 		Role = "Inviter"

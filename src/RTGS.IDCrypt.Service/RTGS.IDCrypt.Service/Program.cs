@@ -68,6 +68,11 @@ app.UseEndpoints(endpoints =>
 	endpoints.MapPost("/v1/idcrypt/topic/{route}", idCryptMessageHandlerResolver!.ResolveAsync)
 );
 
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+	Console.WriteLine("Started");
+});
+
 try
 {
 	Log.Information("Starting web host");

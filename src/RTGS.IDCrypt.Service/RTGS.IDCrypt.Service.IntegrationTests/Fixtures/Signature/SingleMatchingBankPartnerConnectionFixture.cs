@@ -39,7 +39,8 @@ public class SingleMatchingBankPartnerConnectionFixture : ConnectionsTestFixture
 				RowKey = "alias",
 				ConnectionId = "connection-id",
 				Alias = "alias",
-				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(6)),
+				CreatedAtx = _referenceDate.Subtract(TimeSpan.FromMinutes(6)),
+				ActivatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(6)),
 				PublicDid = "public-did",
 				Status = "Active",
 				Role = "Inviter"
@@ -50,7 +51,7 @@ public class SingleMatchingBankPartnerConnectionFixture : ConnectionsTestFixture
 				RowKey = "alias-1",
 				ConnectionId = "connection-id-1",
 				Alias = "alias-1",
-				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
+				CreatedAtx = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
 				PublicDid = "public-did-1",
 				Status = "Pending",
 				Role = "Inviter"
@@ -61,7 +62,8 @@ public class SingleMatchingBankPartnerConnectionFixture : ConnectionsTestFixture
 				RowKey = "alias-2",
 				ConnectionId = "connection-id-2",
 				Alias = "alias-2",
-				CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
+				CreatedAtx = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
+				ActivatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(5)),
 				PublicDid = "public-did-2",
 				Status = "Active",
 				Role = "Inviter"

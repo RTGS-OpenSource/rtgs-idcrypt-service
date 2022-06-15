@@ -15,13 +15,14 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7107;http://localhost:5107",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-		"StorageConnection": "UseDevelopmentStorage=true",
-		"AgentApiAddress": "http://localhost",
-		"AgentApiKey": "AgentApiKey",
-		"AgentServiceEndpointAddress": "http://localhost"
-      }
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development",
+				"StorageConnection": "UseDevelopmentStorage=true",
+				"AgentApiAddress": "http://localhost",
+				"AgentApiKey": "AgentApiKey",
+				"AgentServiceEndpointAddress": "http://localhost",
+				"RtgsGlobalId": "testGlobalId" 
+			}
     },
     "IIS Express": {
       "commandName": "IISExpress",
