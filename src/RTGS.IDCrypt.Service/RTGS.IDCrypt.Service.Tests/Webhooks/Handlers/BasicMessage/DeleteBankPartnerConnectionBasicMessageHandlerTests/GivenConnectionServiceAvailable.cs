@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteConnectionBasicMessageHandlerTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteBankPartnerConnectionBasicMessageHandlerTests;
 
 public class GivenConnectionServiceAvailable : IAsyncLifetime
 {
@@ -35,5 +35,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsAcceptInvitationAsync() => _connectionServiceMock.Verify();
+	public void ThenCallsDeleteAsync() => _connectionServiceMock.Verify();
 }

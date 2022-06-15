@@ -9,4 +9,5 @@ public interface IConnectionService
 	Task<ConnectionInvitation> CreateConnectionInvitationForRtgsAsync(CancellationToken cancellationToken = default);
 	Task DeleteAsync(string connectionId, bool notifyPartner, CancellationToken cancellationToken = default);
 	Task CycleConnectionForBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default);
+	Task DeleteRtgsAsync(string connectionId, CancellationToken cancellationToken = default);
 }

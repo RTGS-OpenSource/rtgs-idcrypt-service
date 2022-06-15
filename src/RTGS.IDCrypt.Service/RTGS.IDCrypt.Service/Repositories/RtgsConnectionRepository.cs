@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Linq.Expressions;
+using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
@@ -47,13 +48,9 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
-
-			var connection = tableClient
-				.Query<RtgsConnection>(rtgsConnection =>
-						rtgsConnection.ConnectionId == connectionId,
-					cancellationToken: cancellationToken)
-				.SingleOrDefault();
+			var connection = await GetFromTableAsync(
+				rtgsConnection => rtgsConnection.ConnectionId == connectionId,
+				cancellationToken);
 
 			if (connection is null)
 			{
@@ -62,6 +59,8 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 			}
 
 			connection.Status = ConnectionStatuses.Active;
+
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
 
 			await tableClient.UpdateEntityAsync(
 				connection,
@@ -113,6 +112,44 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 
 			throw ex;
 		}
+
+		return connection;
+	}
+
+	public async Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var connection = await GetFromTableAsync(
+				rtgsConnection => rtgsConnection.ConnectionId == connectionId,
+				cancellationToken);
+
+			if (connection is null)
+			{
+				_logger.LogWarning("Unable to delete connection from table storage as the rtgs connection was not found");
+				return;
+			}
+
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+			await tableClient.DeleteEntityAsync(connection.PartitionKey, connection.RowKey, connection.ETag, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when deleting bank partner connection");
+
+			throw;
+		}
+	}
+
+
+	private async Task<RtgsConnection> GetFromTableAsync(Expression<Func<RtgsConnection, bool>> filterExpression, CancellationToken cancellationToken)
+	{
+		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
+
+		var connection = await tableClient
+			.QueryAsync(filterExpression, cancellationToken: cancellationToken)
+			.SingleOrDefaultAsync(cancellationToken);
 
 		return connection;
 	}

@@ -159,41 +159,6 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		return connection;
 	}
 
-
-	public async Task<BankPartnerConnection> GetAsync(string rtgsGlobalId, string alias,
-		CancellationToken cancellationToken = default)
-	{
-		BankPartnerConnection connection;
-
-		try
-		{
-			connection =
-				await GetFromTableAsync(bankPartnerConnection =>
-						bankPartnerConnection.PartitionKey == rtgsGlobalId &&
-						bankPartnerConnection.RowKey == alias,
-					cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when getting bank partner connection");
-
-			throw;
-		}
-
-		if (connection is null)
-		{
-			var ex = new Exception(
-				$"Bank partner connection with RtgsGlobalId {rtgsGlobalId} and Alias {alias} not found");
-
-			_logger.LogError(ex, "Bank partner connection with RtgsGlobalId {RtgsGlobalId} and Alias {Alias} not found",
-				rtgsGlobalId, alias);
-
-			throw ex;
-		}
-
-		return connection;
-	}
-
 	public async Task<BankPartnerConnection> GetEstablishedAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
 	{
 		BankPartnerConnection connection;

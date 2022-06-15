@@ -202,6 +202,26 @@ public class ConnectionService : IConnectionService
 			throw aggregateTask?.Exception ?? e;
 		}
 	}
+	public async Task DeleteRtgsAsync(string connectionId, CancellationToken cancellationToken = default)
+	{
+		Task aggregateTask = null;
+
+		try
+		{
+			aggregateTask = Task.WhenAll(
+				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
+				_rtgsConnectionRepository.DeleteAsync(connectionId, cancellationToken));
+
+			await aggregateTask;
+		}
+		catch (Exception e)
+		{
+			aggregateTask?.Exception?.InnerExceptions.ToList()
+				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting rtgs connection"));
+
+			throw aggregateTask?.Exception ?? e;
+		}
+	}
 
 	private async Task<ConnectionInvitation> DoCreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken)
 	{
