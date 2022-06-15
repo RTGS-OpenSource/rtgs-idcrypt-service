@@ -130,18 +130,17 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 				return;
 			}
 
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
 
 			await tableClient.DeleteEntityAsync(connection.PartitionKey, connection.RowKey, connection.ETag, cancellationToken);
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when deleting bank partner connection");
+			_logger.LogError(ex, "Error occurred when deleting rtgs connection");
 
 			throw;
 		}
 	}
-
 
 	private async Task<RtgsConnection> GetFromTableAsync(Expression<Func<RtgsConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{

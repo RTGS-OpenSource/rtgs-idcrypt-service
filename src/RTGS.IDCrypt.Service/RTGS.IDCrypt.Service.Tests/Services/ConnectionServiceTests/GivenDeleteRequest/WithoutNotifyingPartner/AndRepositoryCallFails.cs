@@ -54,7 +54,7 @@ public class AndRepositoryCallFails
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId, false))
+			.Awaiting(() => _connectionService.DeletePartnerAsync(ConnectionId, false))
 			.Should()
 			.ThrowAsync<AggregateException>()
 			.WithMessage("One or more errors occurred. (Something went wrong)");

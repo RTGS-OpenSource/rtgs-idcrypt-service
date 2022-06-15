@@ -57,7 +57,7 @@ public class AndConnectionExists : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		await _connectionService.DeleteAsync(ConnectionId, true);
+		await _connectionService.DeletePartnerAsync(ConnectionId, true);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

@@ -8,5 +8,4 @@ public interface IRtgsConnectionRepository
 	Task CreateAsync(RtgsConnection rtgsConnection, CancellationToken cancellationToken = default);
 	Task<RtgsConnection> GetEstablishedAsync(CancellationToken cancellationToken = default);
 	Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default);
-
 }

@@ -14,7 +14,7 @@ public class AndConnectionServiceUnavailable
 		var connectionServiceMock = new Mock<IConnectionService>();
 
 		connectionServiceMock
-			.Setup(service => service.DeleteAsync(
+			.Setup(service => service.DeletePartnerAsync(
 				It.IsAny<string>(),
 				true,
 				It.IsAny<CancellationToken>()))

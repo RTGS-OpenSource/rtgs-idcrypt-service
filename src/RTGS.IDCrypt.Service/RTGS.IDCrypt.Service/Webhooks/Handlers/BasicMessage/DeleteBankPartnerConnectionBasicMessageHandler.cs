@@ -15,5 +15,5 @@ public class DeleteBankPartnerConnectionBasicMessageHandler : IBasicMessageHandl
 	public string MessageType => nameof(DeleteBankPartnerConnectionBasicMessage);
 
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default) =>
-		await _connectionService.DeleteAsync(connectionId, false, cancellationToken);
+		await _connectionService.DeletePartnerAsync(connectionId, false, cancellationToken);
 }

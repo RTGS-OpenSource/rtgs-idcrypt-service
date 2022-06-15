@@ -22,7 +22,7 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 		};
 
 		_connectionServiceMock
-			.Setup(service => service.DeleteAsync(connectionId, false, It.IsAny<CancellationToken>()))
+			.Setup(service => service.DeletePartnerAsync(connectionId, false, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(_connectionServiceMock.Object);

@@ -15,7 +15,7 @@ public class GivenConnectionServiceThrows
 		var connectionServiceMock = new Mock<IConnectionService>();
 
 		connectionServiceMock
-			.Setup(service => service.DeleteAsync(
+			.Setup(service => service.DeletePartnerAsync(
 				It.IsAny<string>(),
 				It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))

@@ -102,7 +102,7 @@ public class ConnectionController : ControllerBase
 		string connectionId,
 		CancellationToken cancellationToken = default)
 	{
-		await _connectionService.DeleteAsync(connectionId, true, cancellationToken);
+		await _connectionService.DeletePartnerAsync(connectionId, true, cancellationToken);
 
 		return NoContent();
 	}

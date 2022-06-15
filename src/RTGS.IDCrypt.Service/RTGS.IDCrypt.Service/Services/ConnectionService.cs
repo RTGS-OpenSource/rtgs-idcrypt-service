@@ -164,7 +164,7 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task DeleteAsync(string connectionId, bool notifyPartner, CancellationToken cancellationToken = default)
+	public async Task DeletePartnerAsync(string connectionId, bool notifyPartner, CancellationToken cancellationToken = default)
 	{
 		if (notifyPartner)
 		{

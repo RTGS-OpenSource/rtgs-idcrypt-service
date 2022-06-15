@@ -54,7 +54,7 @@ public class AndIdCryptApiCallFails
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId, false))
+			.Awaiting(() => _connectionService.DeletePartnerAsync(ConnectionId, false))
 			.Should()
 			.ThrowAsync<Exception>().WithMessage("Something went wrong");
 
