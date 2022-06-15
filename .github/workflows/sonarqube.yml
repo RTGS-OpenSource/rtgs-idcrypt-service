@@ -9,6 +9,8 @@ on:
 
 env:
   SOLUTION_FOLDER: ./src/RTGS.IDCrypt.Service/
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
 jobs:
   build-with-sonarqube:

@@ -14,6 +14,8 @@ env:
   SOLUTION_FOLDER: src/RTGS.IDCrypt.Service/
   CONTRACTS_FOLDER: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service.Contracts/
   NUGET_URL: https://api.nuget.org/v3/index.json
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
 jobs:
   build-and-test:
