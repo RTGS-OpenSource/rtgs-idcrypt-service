@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -20,7 +21,8 @@ public class BankConnectionCycle
 	}
 
 	[Function(nameof(BankConnectionCycle))]
-	public async Task RunAsync([TimerTrigger("%ConnectionCycleTriggerTime%")] TimerInfo _)
+	[SuppressMessage("Style", "IDE0060:Remove unused parameter")]
+	public async Task RunAsync([TimerTrigger("%ConnectionCycleTriggerTime%")] TimerInfo timerInfo)
 	{
 		_logger.LogInformation("BankConnectionCycle triggered at: {Time}", DateTime.Now);
 
