@@ -48,6 +48,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"RTGS-OpenSource_rtgs-idcrypt-service" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.exclusions="**/WorkerExtensions.csproj" /d:sonar.verbose=true
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"RTGS-OpenSource_rtgs-idcrypt-service" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.sources="${{ env.SOLUTION_FOLDER }}" /d:sonar.exclusions="**/WorkerExtensions.csproj" /d:sonar.verbose=true
           dotnet build ${{ env.SOLUTION_FOLDER }}
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
