@@ -41,13 +41,14 @@ public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenLogsExpected()
-	{
-		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo("Received invalid-message-type BasicMessage.");
-		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo("No BasicMessage handler found for message type invalid-message-type.");
-	}
+	public void ThenLogsExpected() =>
+		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo(new[]
+		{
+			"Received invalid-message-type BasicMessage from ConnectionId connection-id",
+			"No BasicMessage handler found for message type invalid-message-type"
+		}, options => options.WithStrictOrdering());
 
 	[Fact]
 	public void ThenDoesNotCallHandleAsync() => _mockBasicMessageHandler
-		.Verify(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+		.Verify(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 }

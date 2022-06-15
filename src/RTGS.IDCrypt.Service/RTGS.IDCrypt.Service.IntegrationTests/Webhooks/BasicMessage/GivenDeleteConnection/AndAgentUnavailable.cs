@@ -9,37 +9,28 @@ using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteConnection;
 
-public class AndAgentUnavailable : IClassFixture<DeleteConnectionAgentUnavailableFixture>, IAsyncLifetime
+public class AndAgentUnavailable : IClassFixture<DeleteConnectionAgentBasicMessageApiUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly DeleteConnectionAgentUnavailableFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 	private BasicMessageContent<DeleteBankPartnerConnectionBasicMessage> _message;
 
-	public AndAgentUnavailable(DeleteConnectionAgentUnavailableFixture testFixture)
+	public AndAgentUnavailable(DeleteConnectionAgentBasicMessageApiUnavailableFixture testFixture)
 	{
-		_testFixture = testFixture;
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
-
 		_client = testFixture.CreateClient();
 	}
 
 	public async Task InitializeAsync()
 	{
-		await _testFixture.TestSeed();
 		_message = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
 		{
 			MessageType = nameof(DeleteBankPartnerConnectionBasicMessage),
-			MessageContent = new DeleteBankPartnerConnectionBasicMessage
-			{
-				Alias = "alias-1",
-				FromRtgsGlobalId = "rtgs-global-id"
-			}
+			MessageContent = new DeleteBankPartnerConnectionBasicMessage()
 		};
 
 		var basicMessage = new IdCryptBasicMessage
 		{
+			ConnectionId = "connection-id",
 			Content = JsonSerializer.Serialize(_message),
 		};
 

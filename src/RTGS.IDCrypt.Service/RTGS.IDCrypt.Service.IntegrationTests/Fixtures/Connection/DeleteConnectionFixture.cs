@@ -12,6 +12,7 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(DeleteConnection.HttpRequestResponseContext)
+			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
 			.Build();
 	}
 

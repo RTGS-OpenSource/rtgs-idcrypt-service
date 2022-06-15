@@ -4,14 +4,13 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class DeleteConnectionThatDoesNotExistFixture : ConnectionsTestFixtureBase
+public class DeleteConnectionAgentBasicMessageApiUnavailableFixture : ConnectionsTestFixtureBase
 {
-	public DeleteConnectionThatDoesNotExistFixture()
+	public DeleteConnectionAgentBasicMessageApiUnavailableFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
-			.WithNotFoundResponse(DeleteConnection.Path)
-			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
+			.WithServiceUnavailableResponse(SendBasicMessage.Path)
 			.Build();
 	}
 

@@ -30,15 +30,12 @@ public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>,
 		_message = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
 		{
 			MessageType = nameof(DeleteBankPartnerConnectionBasicMessage),
-			MessageContent = new DeleteBankPartnerConnectionBasicMessage
-			{
-				Alias = "alias-invalid",
-				FromRtgsGlobalId = "rtgs-global-id"
-			}
+			MessageContent = new DeleteBankPartnerConnectionBasicMessage()
 		};
 
 		var basicMessage = new IdCryptBasicMessage
 		{
+			ConnectionId = "connection-id-invalid",
 			Content = JsonSerializer.Serialize(_message),
 		};
 
@@ -48,8 +45,8 @@ public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>,
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void WhenPosting_ThenAgentIsNotCalled() =>
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().BeEmpty();
+	public void WhenPosting_ThenAgentIsCalled() =>
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().BeEquivalentTo("/connections/connection-id-invalid");
 
 	[Fact]
 	public void ThenReturnInternalServerError() =>
@@ -60,6 +57,6 @@ public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>,
 	{
 		var content = await _httpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Bank partner connection with RtgsGlobalId rtgs-global-id and Alias alias-invalid not found\"}");
+		content.Should().Be("{\"error\":\"One or more errors occurred. (Error deleting connection from agent)\"}");
 	}
 }

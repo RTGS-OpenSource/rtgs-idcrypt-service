@@ -19,7 +19,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 		_connectionServiceMock = new Mock<IConnectionService>();
 
 		_connectionServiceMock
-			.Setup(service => service.DeleteAsync(ConnectionId, It.IsAny<CancellationToken>()))
+			.Setup(service => service.DeleteAsync(ConnectionId, true, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		_connectionController = new ConnectionController(_connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());

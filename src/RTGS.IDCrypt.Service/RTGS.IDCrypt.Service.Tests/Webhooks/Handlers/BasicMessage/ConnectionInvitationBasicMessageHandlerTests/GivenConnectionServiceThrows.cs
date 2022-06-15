@@ -24,7 +24,7 @@ public class GivenConnectionServiceThrows
 		var message = JsonSerializer.Serialize(new ConnectionInvitation());
 
 		await FluentActions
-			.Awaiting(() => handler.HandleAsync(message))
+			.Awaiting(() => handler.HandleAsync(message, "connection-id"))
 			.Should()
 			.ThrowAsync<Exception>();
 	}

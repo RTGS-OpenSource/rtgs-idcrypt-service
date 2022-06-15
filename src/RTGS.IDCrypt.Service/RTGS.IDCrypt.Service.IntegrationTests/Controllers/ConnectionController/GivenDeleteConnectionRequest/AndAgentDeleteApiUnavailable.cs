@@ -4,11 +4,11 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.GivenDeleteConnectionRequest;
 
-public class AndAgentUnavailable : IClassFixture<DeleteConnectionAgentUnavailableFixture>
+public class AndAgentDeleteApiUnavailable : IClassFixture<DeleteConnectionAgentDeleteApiUnavailableFixture>
 {
 	private readonly HttpClient _client;
 
-	public AndAgentUnavailable(DeleteConnectionAgentUnavailableFixture testFixture)
+	public AndAgentDeleteApiUnavailable(DeleteConnectionAgentDeleteApiUnavailableFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
