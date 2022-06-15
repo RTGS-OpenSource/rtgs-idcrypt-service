@@ -178,7 +178,7 @@ public class ConnectionService : IConnectionService
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Error occurred when notifying partner of deleting connection.");
+				_logger.LogError(ex, "Error occurred when notifying partner of deleting connection");
 
 				throw;
 			}
@@ -197,7 +197,7 @@ public class ConnectionService : IConnectionService
 		catch (Exception e)
 		{
 			aggregateTask?.Exception?.InnerExceptions.ToList()
-				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection."));
+				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection"));
 
 			throw aggregateTask?.Exception ?? e;
 		}

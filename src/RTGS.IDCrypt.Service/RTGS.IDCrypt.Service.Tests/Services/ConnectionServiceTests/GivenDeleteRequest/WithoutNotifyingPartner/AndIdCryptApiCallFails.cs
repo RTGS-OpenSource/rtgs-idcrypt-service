@@ -58,6 +58,6 @@ public class AndIdCryptApiCallFails
 			.Should()
 			.ThrowAsync<Exception>().WithMessage("Something went wrong");
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection");
 	}
 }

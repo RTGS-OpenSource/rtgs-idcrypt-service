@@ -60,6 +60,6 @@ public class AndNotifyingPartnerThrows
 			.Should()
 			.ThrowAsync<Exception>().WithMessage("Something went wrong");
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when notifying partner of deleting connection.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when notifying partner of deleting connection");
 	}
 }

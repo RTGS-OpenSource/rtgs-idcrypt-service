@@ -47,8 +47,8 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 	public void ThenLogsExpected() =>
 		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo(new[]
 		{
-			"Received message-type BasicMessage from ConnectionId connection-id.",
-			"Handled message-type BasicMessage."
+			"Received message-type BasicMessage from ConnectionId connection-id",
+			"Handled message-type BasicMessage"
 		}, options => options.WithStrictOrdering());
 
 	[Fact]

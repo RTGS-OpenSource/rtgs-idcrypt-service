@@ -17,6 +17,7 @@ public class AndConnectionExists : IAsyncLifetime
 	private readonly ConnectionService _connectionService;
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 	private const string ConnectionId = "connection-id";
+	private readonly Mock<IBasicMessageClient> _basicMessageClientMock = new();
 
 	public AndConnectionExists()
 	{
@@ -44,7 +45,7 @@ public class AndConnectionExists : IAsyncLifetime
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
 			coreOptions,
-			Mock.Of<IBasicMessageClient>());
+			_basicMessageClientMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
@@ -57,4 +58,10 @@ public class AndConnectionExists : IAsyncLifetime
 
 	[Fact]
 	public void WhenInvoked_ThenCallDeleteOnRepository() => _bankPartnerConnectionRepositoryMock.Verify();
+
+	[Fact]
+	public void WhenInvoked_ThenDoesNotNotifyPartner() =>
+		_basicMessageClientMock.Verify(client
+			=> client.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(),
+				It.IsAny<CancellationToken>()), Times.Never);
 }

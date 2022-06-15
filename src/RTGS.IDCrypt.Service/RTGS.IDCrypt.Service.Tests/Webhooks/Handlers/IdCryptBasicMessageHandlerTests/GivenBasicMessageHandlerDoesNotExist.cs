@@ -44,8 +44,8 @@ public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 	public void ThenLogsExpected() =>
 		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo(new[]
 		{
-			"Received invalid-message-type BasicMessage from ConnectionId connection-id.",
-			"No BasicMessage handler found for message type invalid-message-type."
+			"Received invalid-message-type BasicMessage from ConnectionId connection-id",
+			"No BasicMessage handler found for message type invalid-message-type"
 		}, options => options.WithStrictOrdering());
 
 	[Fact]

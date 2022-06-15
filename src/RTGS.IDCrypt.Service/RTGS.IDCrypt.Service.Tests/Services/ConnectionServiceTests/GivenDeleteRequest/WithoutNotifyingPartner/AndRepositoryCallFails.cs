@@ -59,6 +59,6 @@ public class AndRepositoryCallFails
 			.ThrowAsync<AggregateException>()
 			.WithMessage("One or more errors occurred. (Something went wrong)");
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection");
 	}
 }

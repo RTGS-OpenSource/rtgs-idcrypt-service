@@ -60,6 +60,6 @@ public class AndBothRepositoryAndAgentCallsFail
 			.ThrowAsync<AggregateException>()
 			.WithMessage("One or more errors occurred. (Something went wrong) (Something else went wrong)");
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection.", "Error occurred when deleting connection.");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when deleting connection", "Error occurred when deleting connection");
 	}
 }
