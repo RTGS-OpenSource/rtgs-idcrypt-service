@@ -12,22 +12,16 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDelet
 public class AndAgentUnavailable : IClassFixture<DeleteConnectionAgentBasicMessageApiUnavailableFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly DeleteConnectionAgentBasicMessageApiUnavailableFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 	private BasicMessageContent<DeleteBankPartnerConnectionBasicMessage> _message;
 
 	public AndAgentUnavailable(DeleteConnectionAgentBasicMessageApiUnavailableFixture testFixture)
 	{
-		_testFixture = testFixture;
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
-
 		_client = testFixture.CreateClient();
 	}
 
 	public async Task InitializeAsync()
 	{
-		await _testFixture.TestSeed();
 		_message = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
 		{
 			MessageType = nameof(DeleteBankPartnerConnectionBasicMessage),
