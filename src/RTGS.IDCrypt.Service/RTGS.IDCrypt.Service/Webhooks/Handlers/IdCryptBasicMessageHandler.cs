@@ -26,7 +26,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 		var message = JsonSerializer.Deserialize<IdCryptBasicMessage>(jsonMessage);
 		var messageContent = JsonSerializer.Deserialize<BasicMessageContent>(message!.Content);
 
-		_logger.LogInformation("Received {MessageType} BasicMessage.", messageContent!.MessageType);
+		_logger.LogInformation("Received {MessageType} BasicMessage from ConnectionId {ConnectionId}.", messageContent!.MessageType, message.ConnectionId);
 
 		if (_handlers.TryGetValue(messageContent.MessageType, out var handler))
 		{
@@ -36,7 +36,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 		}
 		else
 		{
-			_logger.LogDebug("No BasicMessage handler found for message type {MessageType}.", messageContent.MessageType);
+			_logger.LogInformation("No BasicMessage handler found for message type {MessageType}.", messageContent.MessageType);
 		}
 	}
 }
