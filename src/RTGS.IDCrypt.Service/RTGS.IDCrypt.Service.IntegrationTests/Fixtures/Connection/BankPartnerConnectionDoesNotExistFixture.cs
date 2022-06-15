@@ -25,6 +25,7 @@ public class BankPartnerConnectionDoesNotExistFixture : ConnectionsTestFixtureBa
 			Alias = "rtgs-alias-1",
 			ConnectionId = "rtgs-connection-id-1",
 			CreatedAt = DateTime.UtcNow.Subtract(minimumConnectionAge),
+			ActivatedAt = DateTime.UtcNow.Subtract(minimumConnectionAge),
 			Status = "Active"
 		});
 	}

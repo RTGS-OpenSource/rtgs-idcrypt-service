@@ -35,7 +35,7 @@ public class InvitedPartnerIdsConnectionFixture : ConnectionsTestFixtureBase
 			RowKey = $"alias-{uniqueIndex++}",
 			ConnectionId = $"connection-id-{uniqueIndex}",
 			Alias = $"alias-{uniqueIndex}",
-			CreatedAtx = aDate,
+			CreatedAt = aDate,
 			ActivatedAt = partner.status == "Active" ? aDate : null,
 			PublicDid = "public-did",
 			Status = partner.status,

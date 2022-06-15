@@ -21,7 +21,6 @@
 				"AgentApiAddress": "http://localhost",
 				"AgentApiKey": "AgentApiKey",
 				"AgentServiceEndpointAddress": "http://localhost",
-				"RtgsGlobalId": "testGlobalId" 
 			}
     },
     "IIS Express": {

@@ -91,7 +91,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			connection.CreatedAtx = _dateTimeProvider.UtcNow;
+			connection.CreatedAt = _dateTimeProvider.UtcNow;
 
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 

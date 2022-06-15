@@ -28,7 +28,7 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 			RowKey = "alias-1",
 			ConnectionId = "connection-id-1",
 			Alias = "alias-1",
-			CreatedAtx = aDate,
+			CreatedAt = aDate,
 			ActivatedAt = aDate,
 			PublicDid = "public-did-1",
 			Status = "Pending",
