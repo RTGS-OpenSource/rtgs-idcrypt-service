@@ -11,7 +11,7 @@ public static class TestBankPartnerConnections
 			PartitionKey = "rtgs-global-id-1",
 			RowKey = "alias-1",
 			ConnectionId = "connection-id-1",
-			CreatedAt = DateTime.Parse("2022-01-01"),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = DateTime.Parse("2022-01-01"),
 			Status = "Active",
 			Role = "Inviter"
@@ -21,7 +21,7 @@ public static class TestBankPartnerConnections
 			PartitionKey = "rtgs-global-id-1",
 			RowKey = "alias-2",
 			ConnectionId = "connection-id-2",
-			CreatedAt = DateTime.Parse("2022-01-02"),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = DateTime.Parse("2022-01-02"),
 			Status = "Active",
 			Role = "Inviter"
@@ -31,7 +31,7 @@ public static class TestBankPartnerConnections
 			PartitionKey = "rtgs-global-id-1",
 			RowKey = "alias-2",
 			ConnectionId = "connection-id-3",
-			CreatedAt = DateTime.Parse("2022-01-03"),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			Status = "Pending",
 			Role = "Inviter"
 		},
@@ -40,7 +40,7 @@ public static class TestBankPartnerConnections
 			PartitionKey = "rtgs-global-id-2",
 			RowKey = "alias-3",
 			ConnectionId = "connection-id-4",
-			CreatedAt = DateTime.Parse("2022-01-03"),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = DateTime.Parse("2022-01-03"),
 			Status = "Active",
 			Role = "Inviter"
@@ -50,7 +50,7 @@ public static class TestBankPartnerConnections
 			PartitionKey = "rtgs-global-id-2",
 			RowKey = "alias-4",
 			ConnectionId = "connection-id-5",
-			CreatedAt = DateTime.Parse("2022-01-04"),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = DateTime.Parse("2022-01-04"),
 			Status = "Active",
 			Role = "Inviter"

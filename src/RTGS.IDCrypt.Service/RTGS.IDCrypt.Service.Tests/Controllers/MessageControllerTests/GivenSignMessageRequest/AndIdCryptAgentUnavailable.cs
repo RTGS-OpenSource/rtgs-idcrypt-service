@@ -40,7 +40,7 @@ public class AndIdCryptAgentUnavailable
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias",
 			ConnectionId = "connection-id",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
 			Status = "Active",
 			Role = "Inviter"

@@ -49,7 +49,7 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			PartitionKey = _signMessageRequest.RtgsGlobalId,
 			RowKey = "alias-1",
 			ConnectionId = "connection-1",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(3)),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = referenceDate.Subtract(TimeSpan.FromDays(3)),
 			Status = "Active",
 			Role = "Inviter"
@@ -60,7 +60,7 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			PartitionKey = _signMessageRequest.RtgsGlobalId,
 			RowKey = "alias-2",
 			ConnectionId = "connection-2",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(3)),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = referenceDate.Subtract(TimeSpan.FromMinutes(3)),
 			Status = "Active",
 			Role = "Inviter"
@@ -71,7 +71,7 @@ public class AndMultipleMatchingBankPartnerConnectionExists : IAsyncLifetime
 			PartitionKey = _signMessageRequest.RtgsGlobalId,
 			RowKey = "alias-3",
 			ConnectionId = "connection-3",
-			CreatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = referenceDate.Subtract(TimeSpan.FromDays(1)),
 			Status = "Active",
 			Role = "Inviter"
