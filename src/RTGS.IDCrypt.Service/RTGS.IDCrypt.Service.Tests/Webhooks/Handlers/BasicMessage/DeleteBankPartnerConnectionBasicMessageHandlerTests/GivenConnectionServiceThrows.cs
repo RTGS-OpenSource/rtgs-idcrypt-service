@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteConnectionBasicMessageHandlerTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteBankPartnerConnectionBasicMessageHandlerTests;
 
 public class GivenConnectionServiceThrows
 {
@@ -15,7 +15,7 @@ public class GivenConnectionServiceThrows
 		var connectionServiceMock = new Mock<IConnectionService>();
 
 		connectionServiceMock
-			.Setup(service => service.DeleteAsync(
+			.Setup(service => service.DeletePartnerAsync(
 				It.IsAny<string>(),
 				It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))

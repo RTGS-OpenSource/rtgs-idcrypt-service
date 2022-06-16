@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteConnectionBasicMessageHandlerTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteRtgsConnectionBasicMessageHandlerTests;
 
 public class GivenConnectionServiceAvailable : IAsyncLifetime
 {
@@ -15,17 +15,17 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	{
 		var connectionId = "connection-id";
 
-		var basicMessage = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
+		var basicMessage = new BasicMessageContent<DeleteRtgsConnectionBasicMessage>
 		{
-			MessageType = nameof(DeleteBankPartnerConnectionBasicMessageHandler),
-			MessageContent = new DeleteBankPartnerConnectionBasicMessage()
+			MessageType = nameof(DeleteRtgsConnectionBasicMessage),
+			MessageContent = new DeleteRtgsConnectionBasicMessage()
 		};
 
 		_connectionServiceMock
-			.Setup(service => service.DeleteAsync(connectionId, false, It.IsAny<CancellationToken>()))
+			.Setup(service => service.DeleteRtgsAsync(connectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(_connectionServiceMock.Object);
+		var handler = new DeleteRtgsConnectionBasicMessageHandler(_connectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(basicMessage);
 
@@ -35,5 +35,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsAcceptInvitationAsync() => _connectionServiceMock.Verify();
+	public void ThenCallsDeleteAsync() => _connectionServiceMock.Verify();
 }

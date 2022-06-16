@@ -56,7 +56,7 @@ public class AndNotifyingPartnerThrows
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.DeleteAsync(ConnectionId, true))
+			.Awaiting(() => _connectionService.DeletePartnerAsync(ConnectionId, true))
 			.Should()
 			.ThrowAsync<Exception>().WithMessage("Something went wrong");
 

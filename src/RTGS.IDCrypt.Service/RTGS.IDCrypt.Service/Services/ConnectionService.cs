@@ -164,7 +164,7 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task DeleteAsync(string connectionId, bool notifyPartner, CancellationToken cancellationToken = default)
+	public async Task DeletePartnerAsync(string connectionId, bool notifyPartner, CancellationToken cancellationToken = default)
 	{
 		if (notifyPartner)
 		{
@@ -198,6 +198,26 @@ public class ConnectionService : IConnectionService
 		{
 			aggregateTask?.Exception?.InnerExceptions.ToList()
 				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting connection"));
+
+			throw aggregateTask?.Exception ?? e;
+		}
+	}
+	public async Task DeleteRtgsAsync(string connectionId, CancellationToken cancellationToken = default)
+	{
+		Task aggregateTask = null;
+
+		try
+		{
+			aggregateTask = Task.WhenAll(
+				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
+				_rtgsConnectionRepository.DeleteAsync(connectionId, cancellationToken));
+
+			await aggregateTask;
+		}
+		catch (Exception e)
+		{
+			aggregateTask?.Exception?.InnerExceptions.ToList()
+				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting rtgs connection"));
 
 			throw aggregateTask?.Exception ?? e;
 		}
