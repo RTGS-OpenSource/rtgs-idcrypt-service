@@ -1,10 +1,10 @@
 ﻿using System.Text.Json;
 using Moq;
-using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.ConnectionInvitationBasicMessageHandlerTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.BankConnectionInvitationBasicMessageHandlerTests;
 
 public class GivenConnectionServiceThrows
 {
@@ -15,13 +15,13 @@ public class GivenConnectionServiceThrows
 
 		connectionServiceMock
 			.Setup(service => service.AcceptInvitationAsync(
-				It.IsAny<ConnectionInvitation>(),
+				It.IsAny<BankConnectionInvitation>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-		var handler = new ConnectionInvitationBasicMessageHandler(connectionServiceMock.Object);
+		var handler = new BankConnectionInvitationBasicMessageHandler(connectionServiceMock.Object);
 
-		var message = JsonSerializer.Serialize(new ConnectionInvitation());
+		var message = JsonSerializer.Serialize(new BankConnectionInvitation());
 
 		await FluentActions
 			.Awaiting(() => handler.HandleAsync(message, "connection-id"))

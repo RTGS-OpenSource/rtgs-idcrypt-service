@@ -3,6 +3,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -17,7 +18,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
-	private readonly Models.ConnectionInvitation _request;
+	private readonly BankConnectionInvitation _request;
 	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
 
 	public AndIdCryptApiAvailable()
@@ -34,7 +35,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			State = "invitation"
 		};
 
-		_request = new Models.ConnectionInvitation
+		_request = new BankConnectionInvitation
 		{
 			Id = "id",
 			Type = "type",

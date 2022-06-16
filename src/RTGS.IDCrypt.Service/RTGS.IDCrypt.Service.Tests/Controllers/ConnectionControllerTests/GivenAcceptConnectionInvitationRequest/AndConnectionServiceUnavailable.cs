@@ -1,6 +1,7 @@
 ﻿using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 
@@ -16,7 +17,7 @@ public class AndConnectionServiceUnavailable
 
 		connectionServiceMock
 			.Setup(service => service.AcceptInvitationAsync(
-				It.IsAny<Models.ConnectionInvitation>(),
+				It.IsAny<BankConnectionInvitation>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 

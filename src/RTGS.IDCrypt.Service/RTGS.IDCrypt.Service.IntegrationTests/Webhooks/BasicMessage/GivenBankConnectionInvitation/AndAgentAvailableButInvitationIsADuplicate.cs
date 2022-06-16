@@ -3,19 +3,18 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
-using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenBankConnectionInvitation;
 
-public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
+public class AndAgentAvailableButInvitationIsADuplicate : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
+	private HttpResponseMessage _secondHttpResponse;
 
-	private HttpResponseMessage _httpResponse;
-
-	public AndAcceptInvitationApiUnavailable(AcceptInvitationEndpointUnavailableFixture testFixture)
+	public AndAgentAvailableButInvitationIsADuplicate(ConnectionInvitationFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -24,7 +23,7 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 
 	public async Task InitializeAsync()
 	{
-		var connectionInvitation = new ConnectionInvitation
+		var connectionInvitation = new BankConnectionInvitation
 		{
 			Alias = "alias",
 			ImageUrl = "image-url",
@@ -42,14 +41,15 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 		var basicMessage = new IdCryptBasicMessage
 		{
 			ConnectionId = "connection_id",
-			Content = JsonSerializer.Serialize(new BasicMessageContent<ConnectionInvitation>
+			Content = JsonSerializer.Serialize(new BasicMessageContent<BankConnectionInvitation>
 			{
-				MessageType = nameof(ConnectionInvitation),
+				MessageType = nameof(BankConnectionInvitation),
 				MessageContent = connectionInvitation
 			})
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);
+		await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);
+		_secondHttpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", basicMessage);
 	}
 
 	public Task DisposeAsync() =>
@@ -60,10 +60,10 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 	{
 		using var _ = new AssertionScope();
 
-		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+		_secondHttpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
-		var content = await _httpResponse.Content.ReadAsStringAsync();
+		var content = await _secondHttpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Error accepting invitation\"}");
+		content.Should().Contain("{\"error\":\"The specified entity already exists.");
 	}
 }

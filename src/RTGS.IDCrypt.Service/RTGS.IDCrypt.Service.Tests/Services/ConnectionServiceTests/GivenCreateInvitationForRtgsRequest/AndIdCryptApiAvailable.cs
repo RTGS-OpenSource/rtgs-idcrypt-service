@@ -3,6 +3,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -19,11 +20,11 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionRepositoryMock = new();
 
 	private readonly ConnectionService _connectionService;
-	private readonly Models.ConnectionInvitation _expectedResponse;
+	private readonly RtgsConnectionInvitation _expectedResponse;
 
 	private const string Alias = "alias";
 
-	private Models.ConnectionInvitation _actualResponse;
+	private RtgsConnectionInvitation _actualResponse;
 
 	public AndIdCryptApiAvailable()
 	{
@@ -32,7 +33,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			RtgsGlobalId = "rtgs-global-id"
 		});
 
-		_expectedResponse = new Models.ConnectionInvitation
+		_expectedResponse = new RtgsConnectionInvitation
 		{
 			InvitationUrl = "invitation-url",
 			ImageUrl = "image-url",
@@ -51,7 +52,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			ConnectionId = "connection-id",
 			Alias = "alias",
 			InvitationUrl = "invitation-url",
-			Invitation = new IDCryptSDK.Connections.Models.ConnectionInvitation
+			Invitation = new ConnectionInvitation
 			{
 				Id = "id",
 				Type = "type",

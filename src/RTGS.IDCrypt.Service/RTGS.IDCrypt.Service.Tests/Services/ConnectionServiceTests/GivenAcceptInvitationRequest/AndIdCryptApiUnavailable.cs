@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -16,7 +17,7 @@ namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenAccept
 public class AndIdCryptApiUnavailable
 {
 	private readonly ConnectionService _connectionService;
-	private readonly Models.ConnectionInvitation _request;
+	private readonly BankConnectionInvitation _request;
 	private readonly FakeLogger<ConnectionService> _logger;
 
 	public AndIdCryptApiUnavailable()
@@ -28,7 +29,7 @@ public class AndIdCryptApiUnavailable
 
 		var connectionsClientMock = new Mock<IConnectionsClient>();
 
-		_request = new Models.ConnectionInvitation
+		_request = new BankConnectionInvitation
 		{
 			Id = "id",
 			Type = "type",
