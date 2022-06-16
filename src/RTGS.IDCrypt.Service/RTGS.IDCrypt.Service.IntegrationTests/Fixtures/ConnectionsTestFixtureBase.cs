@@ -76,6 +76,7 @@ public abstract class ConnectionsTestFixtureBase : WebApplicationFactory<Program
 	protected virtual void CustomiseHost(IHostBuilder builder)
 	{
 	}
+
 	protected override void Dispose(bool disposing)
 	{
 		BankPartnerConnectionsTable.Delete();
