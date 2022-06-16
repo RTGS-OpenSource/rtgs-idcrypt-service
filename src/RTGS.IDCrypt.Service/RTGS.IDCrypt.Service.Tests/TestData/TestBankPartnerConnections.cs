@@ -12,7 +12,7 @@ public static class TestBankPartnerConnections
 			RowKey = "alias-1",
 			ConnectionId = "connection-id-1",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
-			ActivatedAt = DateTime.Parse("2022-01-01"),
+			ActivatedAt = new DateTime(2022, 01, 01).ToUniversalTime(),
 			Status = "Active",
 			Role = "Inviter"
 		},
@@ -22,7 +22,7 @@ public static class TestBankPartnerConnections
 			RowKey = "alias-2",
 			ConnectionId = "connection-id-2",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
-			ActivatedAt = DateTime.Parse("2022-01-02"),
+			ActivatedAt = new DateTime(2022, 01, 02).ToUniversalTime(),
 			Status = "Active",
 			Role = "Inviter"
 		},
@@ -41,7 +41,7 @@ public static class TestBankPartnerConnections
 			RowKey = "alias-3",
 			ConnectionId = "connection-id-4",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
-			ActivatedAt = DateTime.Parse("2022-01-03"),
+			ActivatedAt = new DateTime(2022, 01, 03).ToUniversalTime(),
 			Status = "Active",
 			Role = "Inviter"
 		},
@@ -51,7 +51,7 @@ public static class TestBankPartnerConnections
 			RowKey = "alias-4",
 			ConnectionId = "connection-id-5",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
-			ActivatedAt = DateTime.Parse("2022-01-04"),
+			ActivatedAt = new DateTime(2022, 01, 04).ToUniversalTime(),
 			Status = "Active",
 			Role = "Inviter"
 		}
