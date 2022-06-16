@@ -20,6 +20,6 @@ public class RtgsConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<RtgsConnectionInvitation>>(message);
 
-		await _connectionService.AcceptRtgsInvitationAsync(request.MessageContent, cancellationToken);
+		await _connectionService.AcceptRtgsInvitationAsync(request!.MessageContent, cancellationToken);
 	}
 }

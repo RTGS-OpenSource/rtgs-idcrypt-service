@@ -20,6 +20,6 @@ public class BankConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<BankConnectionInvitation>>(message);
 
-		await _connectionService.AcceptBankInvitationAsync(request.MessageContent, cancellationToken);
+		await _connectionService.AcceptBankInvitationAsync(request!.MessageContent, cancellationToken);
 	}
 }
