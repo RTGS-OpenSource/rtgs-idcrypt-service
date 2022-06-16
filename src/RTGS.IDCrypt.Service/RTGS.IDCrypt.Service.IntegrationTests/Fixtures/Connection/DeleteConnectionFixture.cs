@@ -28,7 +28,8 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 			RowKey = "alias-1",
 			ConnectionId = "connection-id-1",
 			Alias = "alias-1",
-			CreatedAt = aDate,
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
+			ActivatedAt = aDate,
 			PublicDid = "public-did-1",
 			Status = "Pending",
 			Role = "Inviter"

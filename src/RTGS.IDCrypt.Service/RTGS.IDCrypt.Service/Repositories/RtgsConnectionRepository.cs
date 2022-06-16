@@ -62,6 +62,7 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 			}
 
 			connection.Status = ConnectionStatuses.Active;
+			connection.ActivatedAt = _dateTimeProvider.UtcNow;
 
 			await tableClient.UpdateEntityAsync(
 				connection,
@@ -90,11 +91,11 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 			var connections = await tableClient
 				.QueryAsync<RtgsConnection>(cancellationToken: cancellationToken)
 				.Where(rtgsConnection =>
-					rtgsConnection.CreatedAt <= dateThreshold
+					rtgsConnection.ActivatedAt <= dateThreshold
 					&& rtgsConnection.Status == ConnectionStatuses.Active)
 				.ToListAsync(cancellationToken);
 
-			connection = connections.MaxBy(rtgsConnection => rtgsConnection.CreatedAt);
+			connection = connections.MaxBy(rtgsConnection => rtgsConnection.ActivatedAt);
 		}
 		catch (Exception ex)
 		{

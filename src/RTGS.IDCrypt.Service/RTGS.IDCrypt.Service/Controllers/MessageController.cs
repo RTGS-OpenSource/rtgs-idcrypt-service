@@ -58,10 +58,10 @@ public class MessageController : ControllerBase
 			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
 			.Where(bankPartnerConnection =>
 				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
-				&& bankPartnerConnection.CreatedAt <= dateThreshold
+				&& bankPartnerConnection.ActivatedAt <= dateThreshold
 				&& bankPartnerConnection.Status == ConnectionStatuses.Active).ToList();
 
-		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.CreatedAt);
+		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.ActivatedAt);
 
 		if (bankPartnerConnection is null)
 		{
