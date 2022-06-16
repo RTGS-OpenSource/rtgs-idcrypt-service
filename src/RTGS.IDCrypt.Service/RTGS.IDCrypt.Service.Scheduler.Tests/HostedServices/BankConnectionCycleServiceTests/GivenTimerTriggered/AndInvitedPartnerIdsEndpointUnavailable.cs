@@ -1,19 +1,20 @@
 ﻿using System.Net.Http;
-using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RTGS.IDCrypt.Service.Function.Tests.Http;
-using RTGS.IDCrypt.Service.Function.Tests.Logging;
-using RTGS.IDCrypt.Service.Functions;
+using RTGS.IDCrypt.Service.Scheduler.HostedServices;
+using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
+using RTGS.IDCrypt.Service.Scheduler.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Function.Tests.BankConnectionCycleFunction.GivenTimerTriggered;
+namespace RTGS.IDCrypt.Service.Scheduler.Tests.HostedServices.BankConnectionCycleServiceTests.GivenTimerTriggered;
 
 public class AndInvitedPartnerIdsEndpointUnavailable
 {
-	private readonly FakeLogger<BankConnectionCycle> _fakeLogger;
+	private readonly FakeLogger<BankConnectionCycleService> _fakeLogger;
 	private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
+	private readonly Mock<IHostApplicationLifetime> _hostApplicationLifetimeMock;
 	private readonly StatusCodeHttpHandler _statusCodeHandler;
-	private readonly BankConnectionCycle _bankConnectionCycleFunction;
+	private readonly BankConnectionCycleService _bankConnectionCycleService;
 
 	public AndInvitedPartnerIdsEndpointUnavailable()
 	{
@@ -26,15 +27,16 @@ public class AndInvitedPartnerIdsEndpointUnavailable
 			BaseAddress = new Uri("https://localhost")
 		};
 
-		_fakeLogger = new FakeLogger<BankConnectionCycle>();
+		_fakeLogger = new FakeLogger<BankConnectionCycleService>();
+		_hostApplicationLifetimeMock = new Mock<IHostApplicationLifetime>();
 
 		_httpClientFactoryMock = new Mock<IHttpClientFactory>();
 		_httpClientFactoryMock
 			.Setup(factory => factory.CreateClient("IdCryptServiceClient"))
 			.Returns(client);
 
-		_bankConnectionCycleFunction =
-			new BankConnectionCycle(_fakeLogger, _httpClientFactoryMock.Object);
+		_bankConnectionCycleService =
+			new BankConnectionCycleService(_fakeLogger, _hostApplicationLifetimeMock.Object, _httpClientFactoryMock.Object);
 	}
 
 	[Fact]
@@ -43,7 +45,7 @@ public class AndInvitedPartnerIdsEndpointUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _bankConnectionCycleFunction.RunAsync(new TimerInfo()))
+			.Awaiting(() => _bankConnectionCycleService.StartAsync(default))
 			.Should()
 			.ThrowAsync<Exception>();
 

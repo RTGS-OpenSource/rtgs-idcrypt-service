@@ -1,28 +1,24 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
+﻿using System.Net.Http.Json;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 
-namespace RTGS.IDCrypt.Service.Functions;
+namespace RTGS.IDCrypt.Service.Scheduler.HostedServices;
 
-public class BankConnectionCycle
+public class BankConnectionCycleService : IHostedService
 {
-	private readonly ILogger<BankConnectionCycle> _logger;
+	private readonly ILogger<BankConnectionCycleService> _logger;
+	private readonly IHostApplicationLifetime _hostLifetime;
 	private readonly HttpClient _httpClient;
 
-	public BankConnectionCycle(ILogger<BankConnectionCycle> logger, IHttpClientFactory clientFactory)
+	public BankConnectionCycleService(ILogger<BankConnectionCycleService> logger, IHostApplicationLifetime hostLifetime, IHttpClientFactory clientFactory)
 	{
 		_logger = logger;
+		_hostLifetime = hostLifetime;
 		_httpClient = clientFactory.CreateClient("IdCryptServiceClient");
 	}
-
-	[Function(nameof(BankConnectionCycle))]
-	[SuppressMessage("Style", "IDE0060:Remove unused parameter")]
-	public async Task RunAsync([TimerTrigger("%ConnectionCycleTriggerTime%")] TimerInfo timerInfo)
+	
+	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("BankConnectionCycle triggered at: {Time}", DateTime.Now);
 
@@ -64,5 +60,9 @@ public class BankConnectionCycle
 		{
 			throw new Exception("One or more cycling attempts failed.");
 		}
+		
+		_hostLifetime.StopApplication();
 	}
+
+	public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
 }

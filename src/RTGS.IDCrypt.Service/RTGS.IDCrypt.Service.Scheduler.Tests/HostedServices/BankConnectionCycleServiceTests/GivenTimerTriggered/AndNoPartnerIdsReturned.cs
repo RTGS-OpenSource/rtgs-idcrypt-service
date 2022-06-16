@@ -1,18 +1,19 @@
 ﻿using System.Net.Http;
-using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RTGS.IDCrypt.Service.Function.Tests.Http;
-using RTGS.IDCrypt.Service.Functions;
+using RTGS.IDCrypt.Service.Scheduler.HostedServices;
+using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 
-namespace RTGS.IDCrypt.Service.Function.Tests.BankConnectionCycleFunction.GivenTimerTriggered;
+namespace RTGS.IDCrypt.Service.Scheduler.Tests.HostedServices.BankConnectionCycleServiceTests.GivenTimerTriggered;
 
 public class AndNoPartnerIdsReturned : IAsyncLifetime
 {
-	private readonly Mock<ILogger<BankConnectionCycle>> _loggerMock;
+	private readonly Mock<ILogger<BankConnectionCycleService>> _loggerMock;
 	private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
+	private readonly Mock<IHostApplicationLifetime> _hostApplicationLifetimeMock;
 	private readonly StatusCodeHttpHandler _statusCodeHandler;
-	private readonly BankConnectionCycle _bankConnectionCycleFunction;
+	private readonly BankConnectionCycleService _bankConnectionCycleService;
 
 	public AndNoPartnerIdsReturned()
 	{
@@ -26,19 +27,20 @@ public class AndNoPartnerIdsReturned : IAsyncLifetime
 			BaseAddress = new Uri("https://localhost")
 		};
 
-		_loggerMock = new Mock<ILogger<BankConnectionCycle>>();
-
+		_loggerMock = new Mock<ILogger<BankConnectionCycleService>>();
+		_hostApplicationLifetimeMock = new Mock<IHostApplicationLifetime>();
+		
 		_httpClientFactoryMock = new Mock<IHttpClientFactory>();
 		_httpClientFactoryMock
 			.Setup(factory => factory.CreateClient("IdCryptServiceClient"))
 			.Returns(client);
 
-		_bankConnectionCycleFunction =
-			new BankConnectionCycle(_loggerMock.Object, _httpClientFactoryMock.Object);
+		_bankConnectionCycleService =
+			new BankConnectionCycleService(_loggerMock.Object, _hostApplicationLifetimeMock.Object, _httpClientFactoryMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
-		await _bankConnectionCycleFunction.RunAsync(new TimerInfo());
+		await _bankConnectionCycleService.StartAsync(default);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

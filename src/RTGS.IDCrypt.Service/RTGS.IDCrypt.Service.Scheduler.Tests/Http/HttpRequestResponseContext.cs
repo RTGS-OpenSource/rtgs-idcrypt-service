@@ -1,3 +1,3 @@
-namespace RTGS.IDCrypt.Service.Function.Tests.Http;
+namespace RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 
 public record HttpRequestResponseContext(string RequestPath, string ResponseContent);

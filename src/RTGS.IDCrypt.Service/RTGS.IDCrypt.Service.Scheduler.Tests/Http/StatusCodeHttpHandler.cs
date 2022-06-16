@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 
-namespace RTGS.IDCrypt.Service.Function.Tests.Http;
+namespace RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 
 public sealed class StatusCodeHttpHandler : DelegatingHandler
 {
