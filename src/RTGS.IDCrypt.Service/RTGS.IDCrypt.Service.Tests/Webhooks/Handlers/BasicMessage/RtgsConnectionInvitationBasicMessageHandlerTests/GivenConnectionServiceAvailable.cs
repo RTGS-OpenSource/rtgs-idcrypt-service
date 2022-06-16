@@ -5,7 +5,7 @@ using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.BankConnectionInvitationBasicMessageHandlerTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.RtgsConnectionInvitationBasicMessageHandlerTests;
 
 public class GivenConnectionServiceAvailable : IAsyncLifetime
 {
@@ -13,7 +13,7 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 
 	public async Task InitializeAsync()
 	{
-		var connectionInvitation = new BankConnectionInvitation
+		var connectionInvitation = new RtgsConnectionInvitation
 		{
 			InvitationUrl = "invitation-url",
 			ImageUrl = "image-url",
@@ -24,25 +24,24 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 			Label = "label",
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
-			Type = "type",
-			FromRtgsGlobalId = "rtgs-global-id"
+			Type = "type"
 		};
 
-		Func<BankConnectionInvitation, bool> invitationMatches = invitation =>
+		Func<RtgsConnectionInvitation, bool> invitationMatches = invitation =>
 		{
 			invitation.Should().BeEquivalentTo(connectionInvitation);
 			return true;
 		};
 
 		_connectionServiceMock
-			.Setup(service => service.AcceptBankInvitationAsync(
-				It.Is<BankConnectionInvitation>(invitation => invitationMatches(invitation)),
+			.Setup(service => service.AcceptRtgsInvitationAsync(
+				It.Is<RtgsConnectionInvitation>(invitation => invitationMatches(invitation)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var handler = new BankConnectionInvitationBasicMessageHandler(_connectionServiceMock.Object);
+		var handler = new RtgsConnectionInvitationBasicMessageHandler(_connectionServiceMock.Object);
 
-		var message = JsonSerializer.Serialize(new BasicMessageContent<BankConnectionInvitation> { MessageContent = connectionInvitation });
+		var message = JsonSerializer.Serialize(new BasicMessageContent<RtgsConnectionInvitation> { MessageContent = connectionInvitation });
 
 		await handler.HandleAsync(message, "connection-id");
 	}

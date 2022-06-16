@@ -87,7 +87,7 @@ public class ConnectionController : ControllerBase
 			FromRtgsGlobalId = request.RtgsGlobalId
 		};
 
-		await _connectionService.AcceptInvitationAsync(invitation, cancellationToken);
+		await _connectionService.AcceptBankInvitationAsync(invitation, cancellationToken);
 
 		return Accepted();
 	}

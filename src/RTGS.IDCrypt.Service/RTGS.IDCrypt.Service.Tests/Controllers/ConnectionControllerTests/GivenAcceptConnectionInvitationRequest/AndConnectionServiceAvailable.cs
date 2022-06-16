@@ -38,7 +38,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 		};
 
 		_connectionServiceMock
-			.Setup(service => service.AcceptInvitationAsync(
+			.Setup(service => service.AcceptBankInvitationAsync(
 				It.Is<BankConnectionInvitation>(request => requestMatches(request)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();

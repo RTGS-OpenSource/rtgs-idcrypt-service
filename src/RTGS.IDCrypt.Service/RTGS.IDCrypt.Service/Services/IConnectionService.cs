@@ -4,7 +4,8 @@ namespace RTGS.IDCrypt.Service.Services;
 
 public interface IConnectionService
 {
-	Task AcceptInvitationAsync(BankConnectionInvitation invitation, CancellationToken cancellationToken = default);
+	Task AcceptBankInvitationAsync(BankConnectionInvitation invitation, CancellationToken cancellationToken = default);
+	Task AcceptRtgsInvitationAsync(RtgsConnectionInvitation invitation, CancellationToken cancellationToken = default);
 	Task<BankConnectionInvitation> CreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken = default);
 	Task<RtgsConnectionInvitation> CreateConnectionInvitationForRtgsAsync(CancellationToken cancellationToken = default);
 	Task DeletePartnerAsync(string connectionId, bool notifyPartner, CancellationToken cancellationToken = default);

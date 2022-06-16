@@ -51,7 +51,7 @@ public class ConnectionService : IConnectionService
 		_rtgsGlobalId = coreOptions.Value.RtgsGlobalId;
 	}
 
-	public async Task AcceptInvitationAsync(BankConnectionInvitation invitation, CancellationToken cancellationToken = default)
+	public async Task AcceptBankInvitationAsync(BankConnectionInvitation invitation, CancellationToken cancellationToken = default)
 	{
 		try
 		{
@@ -82,7 +82,42 @@ public class ConnectionService : IConnectionService
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when accepting invitation");
+			_logger.LogError(ex, "Error occurred when accepting bank invitation");
+
+			throw;
+		}
+	}
+
+	public async Task AcceptRtgsInvitationAsync(RtgsConnectionInvitation invitation, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
+			{
+				Alias = invitation.Alias,
+				Id = invitation.Id,
+				Label = invitation.Label,
+				RecipientKeys = invitation.RecipientKeys,
+				ServiceEndpoint = invitation.ServiceEndpoint,
+				Type = invitation.Type
+			};
+
+			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+
+			var connection = new RtgsConnection
+			{
+				PartitionKey = invitation.Alias,
+				RowKey = response.ConnectionId,
+				ConnectionId = response.ConnectionId,
+				Alias = response.Alias,
+				Status = ConnectionStatuses.Pending,
+			};
+
+			await _rtgsConnectionRepository.CreateAsync(connection, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when accepting rtgs invitation");
 
 			throw;
 		}

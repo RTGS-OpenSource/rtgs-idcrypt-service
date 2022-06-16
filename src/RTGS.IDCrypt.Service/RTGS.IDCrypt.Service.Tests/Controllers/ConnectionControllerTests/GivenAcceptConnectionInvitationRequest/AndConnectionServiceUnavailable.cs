@@ -16,7 +16,7 @@ public class AndConnectionServiceUnavailable
 		var connectionServiceMock = new Mock<IConnectionService>();
 
 		connectionServiceMock
-			.Setup(service => service.AcceptInvitationAsync(
+			.Setup(service => service.AcceptBankInvitationAsync(
 				It.IsAny<BankConnectionInvitation>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
