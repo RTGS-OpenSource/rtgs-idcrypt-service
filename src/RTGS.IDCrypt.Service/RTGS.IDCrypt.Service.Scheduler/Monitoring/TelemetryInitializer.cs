@@ -9,7 +9,7 @@ public class TelemetryInitializer : ITelemetryInitializer
 	{
 		//TODO: config for instance?	
 	}
-	
+
 	public void Initialize(ITelemetry telemetry)
 	{
 		telemetry.Context.Cloud.RoleName = "IDCrypt Scheduler";

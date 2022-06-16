@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
 		);
 		services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer());
 		services.AddApplicationInsightsTelemetryWorkerService();
-		
+
 		return services;
 	}
 }

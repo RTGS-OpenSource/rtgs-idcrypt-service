@@ -29,7 +29,7 @@ public class AndNoPartnerIdsReturned : IAsyncLifetime
 
 		_loggerMock = new Mock<ILogger<BankConnectionCycleService>>();
 		_hostApplicationLifetimeMock = new Mock<IHostApplicationLifetime>();
-		
+
 		_httpClientFactoryMock = new Mock<IHttpClientFactory>();
 		_httpClientFactoryMock
 			.Setup(factory => factory.CreateClient("IdCryptServiceClient"))

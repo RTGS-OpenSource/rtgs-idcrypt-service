@@ -17,7 +17,7 @@ public class BankConnectionCycleService : IHostedService
 		_hostLifetime = hostLifetime;
 		_httpClient = clientFactory.CreateClient("IdCryptServiceClient");
 	}
-	
+
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("BankConnectionCycle triggered at: {Time}", DateTime.Now);
@@ -60,7 +60,7 @@ public class BankConnectionCycleService : IHostedService
 		{
 			throw new Exception("One or more cycling attempts failed.");
 		}
-		
+
 		_hostLifetime.StopApplication();
 	}
 
