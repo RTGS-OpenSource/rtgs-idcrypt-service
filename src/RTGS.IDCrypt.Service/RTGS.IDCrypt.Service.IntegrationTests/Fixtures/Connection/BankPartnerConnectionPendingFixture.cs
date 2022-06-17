@@ -51,7 +51,8 @@ public class BankPartnerConnectionPendingFixture : ConnectionsTestFixtureBase
 			RowKey = "rtgs-connection-id-1",
 			Alias = "rtgs-alias-1",
 			ConnectionId = "rtgs-connection-id-1",
-			CreatedAt = DateTime.UtcNow.Subtract(minimumConnectionAge),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
+			ActivatedAt = DateTime.UtcNow.Subtract(minimumConnectionAge),
 			Status = "Active"
 		});
 	}

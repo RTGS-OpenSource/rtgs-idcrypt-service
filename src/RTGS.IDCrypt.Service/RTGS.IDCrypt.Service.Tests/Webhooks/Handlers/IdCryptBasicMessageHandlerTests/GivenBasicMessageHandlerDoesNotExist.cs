@@ -5,6 +5,7 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
+using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests;
 
@@ -19,9 +20,12 @@ public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 
 		var basicMessage = new IdCryptBasicMessage
 		{
-			MessageType = "invalid-message-type",
 			ConnectionId = "connection-id",
-			Content = "hello"
+			Content = JsonSerializer.Serialize(new BasicMessageContent<string>
+			{
+				MessageType = "invalid-message-type",
+				MessageContent = "hello"
+			})
 		};
 
 		_mockBasicMessageHandler = new Mock<IBasicMessageHandler>();
@@ -37,13 +41,14 @@ public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenLogsExpected()
-	{
-		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo("Received invalid-message-type BasicMessage.");
-		_logger.Logs[LogLevel.Debug].Should().BeEquivalentTo("No BasicMessage handler found for message type invalid-message-type.");
-	}
+	public void ThenLogsExpected() =>
+		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo(new[]
+		{
+			"Received invalid-message-type BasicMessage from ConnectionId connection-id",
+			"No BasicMessage handler found for message type invalid-message-type"
+		}, options => options.WithStrictOrdering());
 
 	[Fact]
-	public void ThenCallsHandleAsync() => _mockBasicMessageHandler
-		.Verify(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+	public void ThenDoesNotCallHandleAsync() => _mockBasicMessageHandler
+		.Verify(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 }

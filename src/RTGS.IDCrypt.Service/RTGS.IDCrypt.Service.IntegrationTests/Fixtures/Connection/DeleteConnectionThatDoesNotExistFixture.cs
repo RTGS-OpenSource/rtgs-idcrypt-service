@@ -11,6 +11,7 @@ public class DeleteConnectionThatDoesNotExistFixture : ConnectionsTestFixtureBas
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithNotFoundResponse(DeleteConnection.Path)
+			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
 			.Build();
 	}
 

@@ -49,7 +49,9 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IMessageHandler, IdCryptBasicMessageHandler>();
 		services.AddSingleton<IMessageHandler, PresentProofMessageHandler>();
 
-		services.AddSingleton<IBasicMessageHandler, ConnectionInvitationBasicMessageHandler>();
+		services.AddSingleton<IBasicMessageHandler, BankConnectionInvitationBasicMessageHandler>();
+		services.AddSingleton<IBasicMessageHandler, RtgsConnectionInvitationBasicMessageHandler>();
+		services.AddSingleton<IBasicMessageHandler, DeleteBankPartnerConnectionBasicMessageHandler>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),

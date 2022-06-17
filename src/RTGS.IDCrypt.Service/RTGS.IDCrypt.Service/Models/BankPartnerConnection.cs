@@ -13,6 +13,7 @@ public class BankPartnerConnection : ITableEntity
 	public string Status { get; set; }
 	public string Role { get; set; }
 	public DateTime CreatedAt { get; set; }
+	public DateTime? ActivatedAt { get; set; }
 	public DateTimeOffset? Timestamp { get; set; }
 	public ETag ETag { get; set; }
 }

@@ -12,56 +12,31 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(DeleteConnection.HttpRequestResponseContext)
+			.WithOkResponse(SendBasicMessage.HttpRequestResponseContext)
 			.Build();
 	}
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
-	protected override async Task Seed()
+	public async Task TestSeed()
 	{
 		var aDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
-		var bankPartnerConnections = new List<BankPartnerConnection>
+		var bankPartnerConnection = new BankPartnerConnection
 		{
-			new()
-			{
-				PartitionKey = "rtgs-global-id",
-				RowKey = "alias",
-				ConnectionId = "connection-id",
-				Alias = "alias",
-				CreatedAt = aDate,
-				PublicDid = "public-did",
-				Status = "Active",
-				Role = "Inviter"
-			},
-			new()
-			{
-				PartitionKey = "rtgs-global-id",
-				RowKey = "alias-1",
-				ConnectionId = "connection-id-1",
-				Alias = "alias-1",
-				CreatedAt = aDate,
-				PublicDid = "public-did-1",
-				Status = "Pending",
-				Role = "Inviter"
-			},
-			new()
-			{
-				PartitionKey = "rtgs-global-id-1",
-				RowKey = "alias-2",
-				ConnectionId = "connection-id-2",
-				Alias = "alias-2",
-				CreatedAt = aDate,
-				PublicDid = "public-did-2",
-				Status = "Active",
-				Role = "Inviter"
-			}
+			PartitionKey = "rtgs-global-id",
+			RowKey = "alias-1",
+			ConnectionId = "connection-id-1",
+			Alias = "alias-1",
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
+			ActivatedAt = aDate,
+			PublicDid = "public-did-1",
+			Status = "Pending",
+			Role = "Inviter"
 		};
 
-		foreach (var connection in bankPartnerConnections)
-		{
-			await InsertBankPartnerConnectionAsync(connection);
-		}
+		await InsertBankPartnerConnectionAsync(bankPartnerConnection);
+
 	}
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>

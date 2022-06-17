@@ -2,6 +2,7 @@
 using System.Text.Json;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
+using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.Webhooks.Handlers;
 
@@ -23,18 +24,19 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 	public async Task HandleAsync(string jsonMessage, CancellationToken cancellationToken)
 	{
 		var message = JsonSerializer.Deserialize<IdCryptBasicMessage>(jsonMessage);
+		var messageContent = JsonSerializer.Deserialize<BasicMessageContent>(message!.Content);
 
-		_logger.LogInformation("Received {MessageType} BasicMessage.", message!.MessageType);
+		_logger.LogInformation("Received {MessageType} BasicMessage from ConnectionId {ConnectionId}", messageContent!.MessageType, message.ConnectionId);
 
-		if (_handlers.TryGetValue(message.MessageType, out var handler))
+		if (_handlers.TryGetValue(messageContent.MessageType, out var handler))
 		{
-			await handler.HandleAsync(message.Content, cancellationToken);
+			await handler.HandleAsync(message.Content, message.ConnectionId, cancellationToken);
 
-			_logger.LogInformation("Handled {MessageType} BasicMessage.", message.MessageType);
+			_logger.LogInformation("Handled {MessageType} BasicMessage", messageContent.MessageType);
 		}
 		else
 		{
-			_logger.LogDebug("No BasicMessage handler found for message type {MessageType}.", message.MessageType);
+			_logger.LogInformation("No BasicMessage handler found for message type {MessageType}", messageContent.MessageType);
 		}
 	}
 }

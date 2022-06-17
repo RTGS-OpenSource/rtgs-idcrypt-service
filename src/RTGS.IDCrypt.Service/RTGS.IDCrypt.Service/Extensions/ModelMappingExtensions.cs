@@ -1,11 +1,12 @@
 ﻿using RTGS.IDCrypt.Service.Contracts.Connection;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 
 namespace RTGS.IDCrypt.Service.Extensions;
 
 public static class ModelMappingExtensions
 {
 	public static CreateConnectionInvitationResponse MapToContract(
-		this Models.ConnectionInvitation model) =>
+		this ConnectionInvitationBase model) =>
 			new()
 			{
 				FromRtgsGlobalId = model.FromRtgsGlobalId,
@@ -24,10 +25,10 @@ public static class ModelMappingExtensions
 				}
 			};
 
-	public static Models.ConnectionInvitation MapToConnectionInvitation(
+	public static T MapToConnectionInvitation<T>(
 		this IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse createConnectionInvitationResponse,
 		string publicDid,
-		string fromRtgsGlobalId) =>
+		string fromRtgsGlobalId) where T : ConnectionInvitationBase, new() =>
 			new()
 			{
 				Type = createConnectionInvitationResponse.Invitation.Type,
