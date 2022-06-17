@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Extensions;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 
@@ -74,7 +75,7 @@ public class ConnectionController : ControllerBase
 		AcceptConnectionInvitationRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		var invitation = new Models.ConnectionInvitation
+		var invitation = new BankConnectionInvitation
 		{
 			Alias = request.Alias,
 			Id = request.Id,
@@ -86,7 +87,7 @@ public class ConnectionController : ControllerBase
 			FromRtgsGlobalId = request.RtgsGlobalId
 		};
 
-		await _connectionService.AcceptInvitationAsync(invitation, cancellationToken);
+		await _connectionService.AcceptBankInvitationAsync(invitation, cancellationToken);
 
 		return Accepted();
 	}
@@ -102,7 +103,7 @@ public class ConnectionController : ControllerBase
 		string connectionId,
 		CancellationToken cancellationToken = default)
 	{
-		await _connectionService.DeleteAsync(connectionId, cancellationToken);
+		await _connectionService.DeletePartnerAsync(connectionId, true, cancellationToken);
 
 		return NoContent();
 	}

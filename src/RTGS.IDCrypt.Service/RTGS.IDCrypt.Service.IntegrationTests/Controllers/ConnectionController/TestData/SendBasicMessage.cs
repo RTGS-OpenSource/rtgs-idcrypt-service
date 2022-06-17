@@ -4,7 +4,7 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController
 
 public static class SendBasicMessage
 {
-	public const string Path = "/connections/rtgs-connection-id-1/send-message";
+	public const string Path = "/connections/connection-id-1/send-message";
 
 	private static string Response => "{}";
 

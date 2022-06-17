@@ -12,8 +12,15 @@
 				"StorageConnection": "UseDevelopmentStorage=true",
 				"AgentApiAddress": "http://localhost",
 				"AgentApiKey": "AgentApiKey",
-				"AgentServiceEndpointAddress": "http://localhost",
-				"RTGSGlobalId": "Matt-Banks"
+				"AgentServiceEndpointAddress": "http://localhost"
+			}
+		},
+		"IIS Express": {
+			"commandName": "IISExpress",
+			"launchBrowser": true,
+			"launchUrl": "swagger",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
 			}
 		}
 	}

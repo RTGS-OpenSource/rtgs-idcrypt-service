@@ -37,7 +37,8 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 			RowKey = "alias-1",
 			ConnectionId = "connection-1",
 			Alias = "alias-1",
-			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3)),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
+			ActivatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3)),
 			PublicDid = "public-did-1",
 			Status = "Active",
 			Role = "Inviter"
@@ -49,7 +50,8 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 			RowKey = "alias-2",
 			ConnectionId = "connection-2",
 			Alias = "alias-2",
-			CreatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3)),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
+			ActivatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3)),
 			PublicDid = "public-did-2",
 			Status = "Active",
 			Role = "Inviter"
@@ -61,7 +63,8 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 			RowKey = "alias-3",
 			ConnectionId = "connection-3",
 			Alias = "alias-3",
-			CreatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1)),
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
+			ActivatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1)),
 			PublicDid = "public-did-3",
 			Status = "Active",
 			Role = "Inviter"

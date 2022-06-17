@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
@@ -32,7 +33,9 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			var connection = await GetFromTableAsync(connectionId, cancellationToken);
+			var connection = await GetFromTableAsync(
+				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
+				cancellationToken);
 
 			if (connection is null)
 			{
@@ -41,6 +44,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			}
 
 			connection.Status = ConnectionStatuses.Active;
+			connection.ActivatedAt = _dateTimeProvider.UtcNow;
 
 			await tableClient.UpdateEntityAsync(
 				connection,
@@ -105,15 +109,17 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
-			var connection = await GetFromTableAsync(connectionId, cancellationToken);
+			var connection = await GetFromTableAsync(
+				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
+				cancellationToken);
 
 			if (connection is null)
 			{
 				_logger.LogWarning("Unable to delete connection from table storage as the bank partner connection was not found");
 				return;
 			}
+
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 			await tableClient.DeleteEntityAsync(connection.PartitionKey, connection.RowKey, connection.ETag, cancellationToken);
 		}
@@ -131,7 +137,9 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 		try
 		{
-			connection = await GetFromTableAsync(connectionId, cancellationToken);
+			connection = await GetFromTableAsync(
+				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
+				cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -179,14 +187,12 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		return connection;
 	}
 
-	private async Task<BankPartnerConnection> GetFromTableAsync(string connectionId, CancellationToken cancellationToken)
+	private async Task<BankPartnerConnection> GetFromTableAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{
 		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 		var connection = await tableClient
-			.QueryAsync<BankPartnerConnection>(bankPartnerConnection =>
-					bankPartnerConnection.ConnectionId == connectionId,
-				cancellationToken: cancellationToken)
+			.QueryAsync(filterExpression, cancellationToken: cancellationToken)
 			.SingleOrDefaultAsync(cancellationToken);
 
 		return connection;
@@ -203,12 +209,12 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		var bankPartnerConnections = await bankPartnerConnectionsTable
 			.QueryAsync<BankPartnerConnection>(bankPartnerConnection =>
 					bankPartnerConnection.PartitionKey == rtgsGlobalId
-					&& bankPartnerConnection.CreatedAt <= dateThreshold
+					&& bankPartnerConnection.ActivatedAt <= dateThreshold
 					&& bankPartnerConnection.Status == ConnectionStatuses.Active,
 				cancellationToken: cancellationToken)
 			.ToListAsync(cancellationToken);
 
-		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.CreatedAt);
+		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.ActivatedAt);
 		return bankPartnerConnection;
 	}
 }

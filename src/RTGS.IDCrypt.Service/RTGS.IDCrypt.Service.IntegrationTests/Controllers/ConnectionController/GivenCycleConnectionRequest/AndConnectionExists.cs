@@ -98,7 +98,7 @@ public class AndConnectionExists : IClassFixture<ConnectionCycleFixture>, IAsync
 	{
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SendBasicMessage.Path].Single().Content!.ReadAsStringAsync();
 
-		content.Should().Be(@"{""content"":""{\u0022MessageType\u0022:\u0022CycleConnectionRequest\u0022,\u0022MessageContent\u0022:{\u0022Id\u0022:\u0022id\u0022,\u0022Type\u0022:\u0022type\u0022,\u0022Alias\u0022:\u0022alias\u0022,\u0022Label\u0022:\u0022label\u0022,\u0022RecipientKeys\u0022:[\u0022recipient-key-1\u0022],\u0022ServiceEndpoint\u0022:\u0022service-endpoint\u0022,\u0022PublicDid\u0022:\u0022Test Did\u0022,\u0022ImageUrl\u0022:null,\u0022Did\u0022:null,\u0022InvitationUrl\u0022:null,\u0022FromRtgsGlobalId\u0022:\u0022rtgs-global-id\u0022}}""}");
+		content.Should().Be(@"{""content"":""{\u0022MessageContent\u0022:{\u0022Id\u0022:\u0022id\u0022,\u0022Type\u0022:\u0022type\u0022,\u0022Alias\u0022:\u0022alias\u0022,\u0022Label\u0022:\u0022label\u0022,\u0022RecipientKeys\u0022:[\u0022recipient-key-1\u0022],\u0022ServiceEndpoint\u0022:\u0022service-endpoint\u0022,\u0022PublicDid\u0022:\u0022Test Did\u0022,\u0022ImageUrl\u0022:null,\u0022Did\u0022:null,\u0022InvitationUrl\u0022:null,\u0022FromRtgsGlobalId\u0022:\u0022rtgs-global-id\u0022},\u0022MessageType\u0022:\u0022ConnectionInvitation\u0022}""}");
 	}
 
 	[Fact]

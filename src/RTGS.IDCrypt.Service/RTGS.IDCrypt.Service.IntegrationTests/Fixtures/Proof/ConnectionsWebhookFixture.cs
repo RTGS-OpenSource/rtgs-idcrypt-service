@@ -29,7 +29,7 @@ public class ConnectionsWebhookFixture : ConnectionsTestFixtureBase
 			RowKey = "connection-id",
 			Alias = "alias",
 			ConnectionId = "connection-id",
-			CreatedAt = DateTime.UtcNow,
+			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			Status = "Pending"
 		});
 }
