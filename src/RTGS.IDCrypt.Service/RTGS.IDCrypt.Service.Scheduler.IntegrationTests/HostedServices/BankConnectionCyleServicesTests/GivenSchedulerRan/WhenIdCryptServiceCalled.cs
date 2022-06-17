@@ -46,18 +46,18 @@ public class WhenIdCryptServiceCalled : IClassFixture<TestFixture>
 				Response.Create()
 					.WithStatusCode(200)
 			);
-		
+
 		Environment.SetEnvironmentVariable("IdCryptServiceBaseAddress", _testFixture.Url);
-		
+
 		var exitCode = await _testFixture.RunProgramAsync();
 		exitCode.Should().Be(0, "exit code should be 0, if not something went wrong");
 	}
-	
+
 	[Fact]
 	public async Task ThenBaseAddressIsNotSet()
 	{
 		Environment.SetEnvironmentVariable("IdCryptServiceBaseAddress", string.Empty);
-	
+
 		var exitCode = await _testFixture.RunProgramAsync();
 		exitCode.Should().Be(1, "exit code should be 1, if not there is an exception missing");
 	}

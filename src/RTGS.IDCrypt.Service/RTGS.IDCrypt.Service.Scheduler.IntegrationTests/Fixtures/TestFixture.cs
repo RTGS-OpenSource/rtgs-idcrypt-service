@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using WireMock.Server;
+﻿using WireMock.Server;
 
 namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Fixtures;
 
@@ -13,13 +12,13 @@ public class TestFixture : IDisposable
 	{
 		_server = WireMockServer.Start(Port);
 	}
-	
+
 	public string Url => $"http://localhost:{Port}";
 	public WireMockServer Server => _server;
 
 	public void Dispose()
 	{
-		if (_server is {IsStarted: true})
+		if (_server is { IsStarted: true })
 		{
 			_server.Stop();
 		}
