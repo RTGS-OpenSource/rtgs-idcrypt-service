@@ -3,13 +3,13 @@ using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Extensions;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
-using ConnectionInvitation = RTGS.IDCrypt.Service.Models.ConnectionInvitation;
 using CreateConnectionInvitationResponse = RTGS.IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse;
 
 namespace RTGS.IDCrypt.Service.Services;
@@ -51,7 +51,7 @@ public class ConnectionService : IConnectionService
 		_rtgsGlobalId = coreOptions.Value.RtgsGlobalId;
 	}
 
-	public async Task AcceptInvitationAsync(ConnectionInvitation invitation, CancellationToken cancellationToken = default)
+	public async Task AcceptBankInvitationAsync(BankConnectionInvitation invitation, CancellationToken cancellationToken = default)
 	{
 		try
 		{
@@ -82,13 +82,48 @@ public class ConnectionService : IConnectionService
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when accepting invitation");
+			_logger.LogError(ex, "Error occurred when accepting bank invitation");
 
 			throw;
 		}
 	}
 
-	public async Task<ConnectionInvitation> CreateConnectionInvitationForBankAsync(
+	public async Task AcceptRtgsInvitationAsync(RtgsConnectionInvitation invitation, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var receiveAndAcceptInvitationRequest = new ReceiveAndAcceptInvitationRequest
+			{
+				Alias = invitation.Alias,
+				Id = invitation.Id,
+				Label = invitation.Label,
+				RecipientKeys = invitation.RecipientKeys,
+				ServiceEndpoint = invitation.ServiceEndpoint,
+				Type = invitation.Type
+			};
+
+			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+
+			var connection = new RtgsConnection
+			{
+				PartitionKey = invitation.Alias,
+				RowKey = response.ConnectionId,
+				ConnectionId = response.ConnectionId,
+				Alias = response.Alias,
+				Status = ConnectionStatuses.Pending,
+			};
+
+			await _rtgsConnectionRepository.CreateAsync(connection, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when accepting rtgs invitation");
+
+			throw;
+		}
+	}
+
+	public async Task<BankConnectionInvitation> CreateConnectionInvitationForBankAsync(
 		string toRtgsGlobalId,
 		CancellationToken cancellationToken = default)
 	{
@@ -128,7 +163,7 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	public async Task<ConnectionInvitation> CreateConnectionInvitationForRtgsAsync(
+	public async Task<RtgsConnectionInvitation> CreateConnectionInvitationForRtgsAsync(
 		CancellationToken cancellationToken = default)
 	{
 		var alias = _aliasProvider.Provide();
@@ -150,7 +185,7 @@ public class ConnectionService : IConnectionService
 
 			await _rtgsConnectionRepository.CreateAsync(connection, cancellationToken);
 
-			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
+			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation<RtgsConnectionInvitation>(publicDid, _rtgsGlobalId);
 
 			return connectionInvitation;
 		}
@@ -223,7 +258,7 @@ public class ConnectionService : IConnectionService
 		}
 	}
 
-	private async Task<ConnectionInvitation> DoCreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken)
+	private async Task<BankConnectionInvitation> DoCreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken)
 	{
 		var alias = _aliasProvider.Provide();
 		var createConnectionInvitationResponse = await CreateAgentConnectionInvitationAsync(alias, cancellationToken);
@@ -243,7 +278,7 @@ public class ConnectionService : IConnectionService
 
 		await _bankPartnerConnectionRepository.CreateAsync(connection, cancellationToken);
 
-		var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation(publicDid, _rtgsGlobalId);
+		var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation<BankConnectionInvitation>(publicDid, _rtgsGlobalId);
 
 		return connectionInvitation;
 	}

@@ -3,11 +3,11 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
-using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenRtgsConnectionInvitation;
 
 public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationEndpointUnavailableFixture>, IAsyncLifetime
 {
@@ -24,7 +24,7 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 
 	public async Task InitializeAsync()
 	{
-		var connectionInvitation = new ConnectionInvitation
+		var connectionInvitation = new RtgsConnectionInvitation
 		{
 			Alias = "alias",
 			ImageUrl = "image-url",
@@ -35,16 +35,15 @@ public class AndAcceptInvitationApiUnavailable : IClassFixture<AcceptInvitationE
 			ServiceEndpoint = "service-endpoint",
 			Id = "id",
 			PublicDid = "public-did",
-			Type = "type",
-			FromRtgsGlobalId = "rtgs-global-id"
+			Type = "type"
 		};
 
 		var basicMessage = new IdCryptBasicMessage
 		{
 			ConnectionId = "connection_id",
-			Content = JsonSerializer.Serialize(new BasicMessageContent<ConnectionInvitation>
+			Content = JsonSerializer.Serialize(new BasicMessageContent<RtgsConnectionInvitation>
 			{
-				MessageType = nameof(ConnectionInvitation),
+				MessageType = nameof(RtgsConnectionInvitation),
 				MessageContent = connectionInvitation
 			})
 		};

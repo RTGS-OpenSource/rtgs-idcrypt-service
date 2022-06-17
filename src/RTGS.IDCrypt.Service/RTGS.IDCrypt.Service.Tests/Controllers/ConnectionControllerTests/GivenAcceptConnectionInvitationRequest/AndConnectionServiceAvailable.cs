@@ -2,6 +2,7 @@
 using Moq;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 using RTGS.IDCrypt.Service.Controllers;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCryptSDK.Connections.Models;
@@ -29,7 +30,7 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			ServiceEndpoint = "service-endpoint"
 		};
 
-		Func<Models.ConnectionInvitation, bool> requestMatches = request =>
+		Func<BankConnectionInvitation, bool> requestMatches = request =>
 		{
 			request.Should().BeEquivalentTo(expectedRequest);
 
@@ -37,8 +38,8 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 		};
 
 		_connectionServiceMock
-			.Setup(service => service.AcceptInvitationAsync(
-				It.Is<Models.ConnectionInvitation>(request => requestMatches(request)),
+			.Setup(service => service.AcceptBankInvitationAsync(
+				It.Is<BankConnectionInvitation>(request => requestMatches(request)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 

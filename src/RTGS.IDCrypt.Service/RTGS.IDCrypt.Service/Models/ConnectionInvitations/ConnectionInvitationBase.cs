@@ -1,6 +1,6 @@
-﻿namespace RTGS.IDCrypt.Service.Models;
+﻿namespace RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 
-public class ConnectionInvitation
+public abstract class ConnectionInvitationBase
 {
 	public string Id { get; init; }
 	public string Type { get; init; }

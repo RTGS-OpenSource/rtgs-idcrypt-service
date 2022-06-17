@@ -20,7 +20,7 @@
 				"StorageConnection": "UseDevelopmentStorage=true",
 				"AgentApiAddress": "http://localhost",
 				"AgentApiKey": "AgentApiKey",
-				"AgentServiceEndpointAddress": "http://localhost",
+				"AgentServiceEndpointAddress": "http://localhost"
 			}
 		},
 		"IIS Express": {

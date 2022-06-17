@@ -5,17 +5,18 @@ using System.Text.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenConnectionInvitation;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenBankConnectionInvitation;
 
 public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionInvitationFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
-	private ConnectionInvitation _connectionInvitation;
+	private BankConnectionInvitation _connectionInvitation;
 
 	public AndAgentAvailable(ConnectionInvitationFixture testFixture)
 	{
@@ -31,7 +32,7 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 
 	public async Task InitializeAsync()
 	{
-		_connectionInvitation = new ConnectionInvitation
+		_connectionInvitation = new BankConnectionInvitation
 		{
 			Alias = "alias",
 			ImageUrl = "image-url",
@@ -49,9 +50,9 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 		var basicMessage = new IdCryptBasicMessage
 		{
 			ConnectionId = "connection_id",
-			Content = JsonSerializer.Serialize(new BasicMessageContent<ConnectionInvitation>
+			Content = JsonSerializer.Serialize(new BasicMessageContent<BankConnectionInvitation>
 			{
-				MessageType = nameof(ConnectionInvitation),
+				MessageType = nameof(BankConnectionInvitation),
 				MessageContent = _connectionInvitation
 			})
 		};
@@ -62,12 +63,10 @@ public class AndAgentAvailable : IClassFixture<ConnectionInvitationFixture>, IAs
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void WhenPosting_ThenExpectedIdCryptAgentPathsAreCalled()
-	{
+	public void WhenPosting_ThenExpectedIdCryptAgentPathsAreCalled() =>
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKeys(
 			"/connections/receive-invitation",
 			"/connections/connection-id/accept-invitation");
-	}
 
 	[Fact]
 	public void WhenPosting_ThenIdCryptAgentBaseAddressIsExpected()

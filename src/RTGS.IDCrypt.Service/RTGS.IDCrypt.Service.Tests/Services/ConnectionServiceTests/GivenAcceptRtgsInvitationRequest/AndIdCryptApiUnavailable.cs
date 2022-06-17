@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -11,12 +12,12 @@ using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenAcceptInvitationRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenAcceptRtgsInvitationRequest;
 
 public class AndIdCryptApiUnavailable
 {
 	private readonly ConnectionService _connectionService;
-	private readonly Models.ConnectionInvitation _request;
+	private readonly RtgsConnectionInvitation _request;
 	private readonly FakeLogger<ConnectionService> _logger;
 
 	public AndIdCryptApiUnavailable()
@@ -28,7 +29,7 @@ public class AndIdCryptApiUnavailable
 
 		var connectionsClientMock = new Mock<IConnectionsClient>();
 
-		_request = new Models.ConnectionInvitation
+		_request = new RtgsConnectionInvitation
 		{
 			Id = "id",
 			Type = "type",
@@ -39,8 +40,7 @@ public class AndIdCryptApiUnavailable
 			InvitationUrl = "invitation-url",
 			Did = "did",
 			ImageUrl = "image-url",
-			PublicDid = "public-did",
-			FromRtgsGlobalId = "rtgs-global-id"
+			PublicDid = "public-did"
 		};
 
 		connectionsClientMock
@@ -66,7 +66,7 @@ public class AndIdCryptApiUnavailable
 	[Fact]
 	public async Task WhenInvoked_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _connectionService.AcceptInvitationAsync(_request))
+			.Awaiting(() => _connectionService.AcceptRtgsInvitationAsync(_request))
 			.Should()
 			.ThrowAsync<Exception>();
 
@@ -76,10 +76,10 @@ public class AndIdCryptApiUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _connectionService.AcceptInvitationAsync(_request))
+			.Awaiting(() => _connectionService.AcceptRtgsInvitationAsync(_request))
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when accepting invitation");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when accepting rtgs invitation");
 	}
 }

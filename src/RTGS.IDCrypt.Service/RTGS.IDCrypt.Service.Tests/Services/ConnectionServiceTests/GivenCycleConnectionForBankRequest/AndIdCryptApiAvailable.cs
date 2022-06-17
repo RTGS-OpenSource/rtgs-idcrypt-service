@@ -3,6 +3,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -111,7 +112,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.ReturnsAsync(establishedBankConnection)
 			.Verifiable();
 
-		var expectedMessage = new Models.ConnectionInvitation
+		var expectedMessage = new BankConnectionInvitation
 		{
 			Alias = createConnectionInvitationResponse.Alias,
 			Did = createConnectionInvitationResponse.Invitation.Did,
@@ -126,7 +127,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			PublicDid = publicDid
 		};
 
-		Func<Models.ConnectionInvitation, bool> messageMatches = actualMessage =>
+		Func<BankConnectionInvitation, bool> messageMatches = actualMessage =>
 		{
 			actualMessage.Should().BeEquivalentTo(expectedMessage);
 
@@ -143,7 +144,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.Setup(client => client.SendAsync(
 				establishedBankConnection.ConnectionId,
 				nameof(ConnectionInvitation),
-				It.Is<Models.ConnectionInvitation>(message => messageMatches(message)),
+				It.Is<BankConnectionInvitation>(message => messageMatches(message)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 

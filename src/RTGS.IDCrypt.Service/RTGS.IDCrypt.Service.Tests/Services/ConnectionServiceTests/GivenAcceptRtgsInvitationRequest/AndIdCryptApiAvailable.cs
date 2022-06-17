@@ -3,6 +3,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Tests.Logging;
@@ -11,14 +12,14 @@ using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenAcceptInvitationRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenAcceptRtgsInvitationRequest;
 
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly ConnectionService _connectionService;
-	private readonly Models.ConnectionInvitation _request;
-	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionRepositoryMock = new();
+	private readonly RtgsConnectionInvitation _request;
+	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionRepositoryMock = new();
 
 	public AndIdCryptApiAvailable()
 	{
@@ -34,7 +35,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			State = "invitation"
 		};
 
-		_request = new Models.ConnectionInvitation
+		_request = new RtgsConnectionInvitation
 		{
 			Id = "id",
 			Type = "type",
@@ -45,8 +46,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			InvitationUrl = "invitation-url",
 			Did = "did",
 			ImageUrl = "image-url",
-			PublicDid = "public-did",
-			FromRtgsGlobalId = "rtgs-global-id"
+			PublicDid = "public-did"
 		};
 
 		var expectedReceiveAndAcceptRequest = new ReceiveAndAcceptInvitationRequest
@@ -73,18 +73,16 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			.ReturnsAsync(connectionResponse)
 			.Verifiable();
 
-		var expectedConnection = new BankPartnerConnection
+		var expectedConnection = new RtgsConnection
 		{
-			PartitionKey = _request.FromRtgsGlobalId,
-			RowKey = connectionResponse.Alias,
+			PartitionKey = connectionResponse.Alias,
+			RowKey = connectionResponse.ConnectionId,
 			ConnectionId = connectionResponse.ConnectionId,
 			Alias = connectionResponse.Alias,
-			PublicDid = _request.PublicDid,
 			Status = "Pending",
-			Role = "Invitee"
 		};
 
-		Func<BankPartnerConnection, bool> connectionMatches = actualConnection =>
+		Func<RtgsConnection, bool> connectionMatches = actualConnection =>
 		{
 			actualConnection.Should().BeEquivalentTo(expectedConnection, options =>
 			{
@@ -97,9 +95,9 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_bankPartnerConnectionRepositoryMock
+		_rtgsConnectionRepositoryMock
 			.Setup(service => service.CreateAsync(
-				It.Is<BankPartnerConnection>(connection => connectionMatches(connection)),
+				It.Is<RtgsConnection>(connection => connectionMatches(connection)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
@@ -108,8 +106,8 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 		_connectionService = new ConnectionService(
 			_connectionsClientMock.Object,
 			logger,
-			_bankPartnerConnectionRepositoryMock.Object,
-			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>(),
+			_rtgsConnectionRepositoryMock.Object,
 			Mock.Of<IAliasProvider>(),
 			Mock.Of<IWalletClient>(),
 			coreOptions,
@@ -117,7 +115,7 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		await _connectionService.AcceptInvitationAsync(_request);
+		await _connectionService.AcceptRtgsInvitationAsync(_request);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
@@ -126,5 +124,5 @@ public class AndIdCryptApiAvailable : IAsyncLifetime
 	public void WhenInvoked_ThenCallReceiveAndAcceptInvitationAsyncWithExpected() => _connectionsClientMock.Verify();
 
 	[Fact]
-	public void WhenInvoked_ThenCallSaveBankPartnerConnectionAsyncWithExpected() => _bankPartnerConnectionRepositoryMock.Verify();
+	public void WhenInvoked_ThenCallRepositoryCreateAsyncWithExpected() => _rtgsConnectionRepositoryMock.Verify();
 }
