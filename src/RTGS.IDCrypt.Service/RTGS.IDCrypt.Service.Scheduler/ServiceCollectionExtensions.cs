@@ -10,8 +10,14 @@ public static class ServiceCollectionExtensions
 	public static IServiceCollection AddRtgsDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddHttpClient("IdCryptServiceClient", cfg =>
-			cfg.BaseAddress = new Uri(configuration.GetValue<string>("IdCryptServiceBaseAddress"))
-		);
+		{
+			var baseAddress = configuration.GetValue<string>("IdCryptServiceBaseAddress");
+			if (string.IsNullOrEmpty(baseAddress))
+			{
+				throw new Exception("IdCryptServiceBaseAddress address not set.");
+			}
+			cfg.BaseAddress = new Uri(configuration.GetValue<string>("IdCryptServiceBaseAddress"));
+		});
 		services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer());
 		services.AddApplicationInsightsTelemetryWorkerService();
 

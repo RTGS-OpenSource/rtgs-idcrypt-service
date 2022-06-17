@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Execution;
-using RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Helpers;
+using RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Fixtures;
+using WireMock.RequestBuilders;
+using WireMock.ResponseBuilders;
 
 namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.HostedServices.BankConnectionCyleServicesTests.GivenSchedulerRan;
 
@@ -16,16 +17,48 @@ public class WhenIdCryptServiceCalled : IClassFixture<TestFixture>
 	[Fact]
 	public async Task ThenBaseAddressSet()
 	{
-		await _testFixture.RunProgramAsync();
+		_testFixture.Server
+			.Given(Request.Create().WithPath("/api/connection/InvitedPartnerIds"))
+			.RespondWith(
+				Response.Create()
+					.WithStatusCode(200)
+					.WithBody("[\"12345\",\"67890\"]")
+			);
 
-		using var _ = new AssertionScope();
+		_testFixture.Server
+			.Given(Request.Create()
+				.WithHeader("Content-Type", "application/json; charset=utf-8")
+				.WithPath("/api/connection/cycle")
+				.WithBody("{\"rtgsGlobalId\":\"12345\"}")
+			)
+			.RespondWith(
+				Response.Create()
+					.WithStatusCode(200)
+			);
 
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests["/api/connection/InvitedPartnerIds"]
-			.RequestUri!.GetLeftPart(UriPartial.Authority)
-			.Should().Be(_testFixture.Configuration["IdCryptServiceBaseAddress"]);
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Requests["/api/connection/cycle"]
-			.RequestUri!.GetLeftPart(UriPartial.Authority)
-			.Should().Be(_testFixture.Configuration["IdCryptServiceBaseAddress"]);
+		_testFixture.Server
+			.Given(Request.Create()
+				.WithHeader("Content-Type", "application/json; charset=utf-8")
+				.WithPath("/api/connection/cycle")
+				.WithBody("{\"rtgsGlobalId\":\"67890\"}")
+			)
+			.RespondWith(
+				Response.Create()
+					.WithStatusCode(200)
+			);
+		
+		Environment.SetEnvironmentVariable("IdCryptServiceBaseAddress", _testFixture.Url);
+		
+		var exitCode = await _testFixture.RunProgramAsync();
+		exitCode.Should().Be(0, "exit code should be 0, if not something went wrong");
+	}
+	
+	[Fact]
+	public async Task ThenBaseAddressIsNotSet()
+	{
+		Environment.SetEnvironmentVariable("IdCryptServiceBaseAddress", string.Empty);
+	
+		var exitCode = await _testFixture.RunProgramAsync();
+		exitCode.Should().Be(1, "exit code should be 1, if not there is an exception missing");
 	}
 }
