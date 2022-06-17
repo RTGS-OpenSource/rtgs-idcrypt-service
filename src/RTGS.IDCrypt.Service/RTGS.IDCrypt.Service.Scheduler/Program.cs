@@ -7,7 +7,7 @@ using Serilog.Events;
 
 namespace RTGS.IDCrypt.Service.Scheduler;
 
-public class Program
+public static class Program
 {
 	public static async Task<int> Main(string[] args)
 	{
@@ -31,9 +31,8 @@ public class Program
 					services.AddHostedService<BankConnectionCycleService>();
 				})
 				.UseSerilog((_, provider, _) =>
-				{
-					telemetryClient = provider.GetRequiredService<TelemetryClient>();
-				})
+					telemetryClient = provider.GetRequiredService<TelemetryClient>()
+				)
 				.Build();
 
 			await host.RunAsync();

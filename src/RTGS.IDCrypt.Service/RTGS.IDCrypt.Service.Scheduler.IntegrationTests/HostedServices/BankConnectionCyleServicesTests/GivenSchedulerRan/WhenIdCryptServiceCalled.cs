@@ -47,7 +47,7 @@ public class WhenIdCryptServiceCalled : IClassFixture<TestFixture>
 					.WithStatusCode(200)
 			);
 
-		Environment.SetEnvironmentVariable("IdCryptServiceBaseAddress", _testFixture.Url);
+		Environment.SetEnvironmentVariable("IdCryptServiceBaseAddress", TestFixture.Url);
 
 		var exitCode = await _testFixture.RunProgramAsync();
 		exitCode.Should().Be(0, "exit code should be 0, if not something went wrong");

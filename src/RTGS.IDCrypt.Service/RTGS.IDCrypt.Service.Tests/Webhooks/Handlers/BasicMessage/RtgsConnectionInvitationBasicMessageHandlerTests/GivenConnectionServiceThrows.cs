@@ -4,7 +4,6 @@ using RTGS.IDCrypt.Service.Models.ConnectionInvitations;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
-
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.RtgsConnectionInvitationBasicMessageHandlerTests;
 
 public class GivenConnectionServiceThrows

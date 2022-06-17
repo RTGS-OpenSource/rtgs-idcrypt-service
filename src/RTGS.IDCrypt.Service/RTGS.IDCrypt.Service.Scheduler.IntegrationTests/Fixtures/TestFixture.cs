@@ -2,25 +2,24 @@
 
 namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Fixtures;
 
-public class TestFixture : IDisposable
+public sealed class TestFixture : IDisposable
 {
 	private const int Port = 7999;
 
-	private readonly WireMockServer _server;
-
 	public TestFixture()
 	{
-		_server = WireMockServer.Start(Port);
+		Server = WireMockServer.Start(Port);
 	}
 
-	public string Url => $"http://localhost:{Port}";
-	public WireMockServer Server => _server;
+	public static string Url => $"http://localhost:{Port}";
+
+	public WireMockServer Server { get; }
 
 	public void Dispose()
 	{
-		if (_server is { IsStarted: true })
+		if (Server is { IsStarted: true })
 		{
-			_server.Stop();
+			Server.Stop();
 		}
 	}
 

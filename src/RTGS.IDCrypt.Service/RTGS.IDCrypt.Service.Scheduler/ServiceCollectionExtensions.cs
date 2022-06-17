@@ -11,14 +11,14 @@ public static class ServiceCollectionExtensions
 	{
 		services.AddHttpClient("IdCryptServiceClient", cfg =>
 		{
-			var baseAddress = configuration.GetValue<string>("IdCryptServiceBaseAddress");
+			var baseAddress = configuration.GetValue<string>("IdCryptServiceAddress");
 			if (string.IsNullOrEmpty(baseAddress))
 			{
-				throw new Exception("IdCryptServiceBaseAddress address not set.");
+				throw new Exception("IdCryptServiceAddress not set.");
 			}
-			cfg.BaseAddress = new Uri(configuration.GetValue<string>("IdCryptServiceBaseAddress"));
+			cfg.BaseAddress = new Uri(baseAddress);
 		});
-		services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer());
+		services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer(configuration));
 		services.AddApplicationInsightsTelemetryWorkerService();
 
 		return services;

@@ -13,7 +13,7 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 
 	public async Task InitializeAsync()
 	{
-		var connectionId = "connection-id";
+		const string connectionId = "connection-id";
 
 		var basicMessage = new BasicMessageContent<DeleteRtgsConnectionBasicMessage>
 		{

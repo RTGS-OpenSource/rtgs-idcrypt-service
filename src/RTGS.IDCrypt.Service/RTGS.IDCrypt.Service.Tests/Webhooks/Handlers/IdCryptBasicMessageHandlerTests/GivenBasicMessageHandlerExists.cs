@@ -17,7 +17,7 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 	public async Task InitializeAsync()
 	{
 		_logger = new FakeLogger<IdCryptBasicMessageHandler>();
-		var connectionId = "connection-id";
+		const string connectionId = "connection-id";
 		var basicMessage = new IdCryptBasicMessage
 		{
 			ConnectionId = connectionId,

@@ -54,7 +54,6 @@ public class AndConnectionExists : IClassFixture<DeleteConnectionFixture>, IAsyn
 			.Should().Be(_testFixture.Configuration["AgentApiAddress"]);
 	}
 
-
 	[Fact]
 	public void WhenCallingIdCryptAgent_ThenApiKeyHeadersAreExpected()
 	{
@@ -70,7 +69,6 @@ public class AndConnectionExists : IClassFixture<DeleteConnectionFixture>, IAsyn
 			.Should().ContainSingle()
 			.Which.Should().Be(_testFixture.Configuration["AgentApiKey"]);
 	}
-
 
 	[Fact]
 	public void WhenDeleting_ThenDeleteFromTableStorage() =>

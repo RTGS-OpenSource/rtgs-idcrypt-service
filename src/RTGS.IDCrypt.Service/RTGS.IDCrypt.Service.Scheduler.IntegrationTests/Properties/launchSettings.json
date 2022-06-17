@@ -9,16 +9,14 @@
     }
   },
   "profiles": {
-    "RTGS.IDCrypt.Service": {
+    "RTGS.IDCrypt.Service.Scheduler": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "AgentApiKey": "AgentApiKey",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "StorageConnection": "UseDevelopmentStorage=true",
-        "AgentApiAddress": "http://localhost",
-        "AgentServiceEndpointAddress": "http://localhost"
+        "IdCryptServiceAddress": "http://localhost",
+        "RtgsGlobalId": "rtgs-global-id"
       },
       "applicationUrl": "https://localhost:7107;http://localhost:5107",
       "dotnetRunMessages": true
