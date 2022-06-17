@@ -5,15 +5,15 @@ namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
 public class DeleteBankPartnerConnectionBasicMessageHandler : IBasicMessageHandler
 {
-	private readonly IBankConnectionService _connectionService;
+	private readonly IBankConnectionService _bankConnectionService;
 
-	public DeleteBankPartnerConnectionBasicMessageHandler(IBankConnectionService connectionService)
+	public DeleteBankPartnerConnectionBasicMessageHandler(IBankConnectionService bankConnectionService)
 	{
-		_connectionService = connectionService;
+		_bankConnectionService = bankConnectionService;
 	}
 
 	public string MessageType => nameof(DeleteBankPartnerConnectionBasicMessage);
 
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default) =>
-		await _connectionService.DeleteAsync(connectionId, false, cancellationToken);
+		await _bankConnectionService.DeleteAsync(connectionId, false, cancellationToken);
 }
