@@ -1,11 +1,31 @@
-﻿namespace RTGS.IDCrypt.Service.Schedulr.IntegrationTests.HostedServices.BankConnectionCyleServicesTests.GivenSchedulerRan;
+﻿using FluentAssertions;
+using FluentAssertions.Execution;
+using RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Helpers;
 
-public class WhenIdCryptServiceCalled
+namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.HostedServices.BankConnectionCyleServicesTests.GivenSchedulerRan;
+
+public class WhenIdCryptServiceCalled : IClassFixture<TestFixture>
 {
+	private readonly TestFixture _testFixture;
 
-
-	public void ThenBaseAddressSet()
+	public WhenIdCryptServiceCalled(TestFixture testFixture)
 	{
-		
+		_testFixture = testFixture;
+	}
+
+	[Fact]
+	public async Task ThenBaseAddressSet()
+	{
+		await _testFixture.RunProgramAsync();
+
+		using var _ = new AssertionScope();
+
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests["/api/connection/InvitedPartnerIds"]
+			.RequestUri!.GetLeftPart(UriPartial.Authority)
+			.Should().Be(_testFixture.Configuration["IdCryptServiceBaseAddress"]);
+
+		_testFixture.IdCryptStatusCodeHttpHandler.Requests["/api/connection/cycle"]
+			.RequestUri!.GetLeftPart(UriPartial.Authority)
+			.Should().Be(_testFixture.Configuration["IdCryptServiceBaseAddress"]);
 	}
 }

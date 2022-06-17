@@ -64,5 +64,10 @@ public class BankConnectionCycleService : IHostedService
 		_hostLifetime.StopApplication();
 	}
 
-	public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+	public Task StopAsync(CancellationToken cancellationToken)
+	{
+		_logger.LogInformation("Stopped ID Crypt Service Scheduler");
+
+		return Task.CompletedTask;
+	}
 }
