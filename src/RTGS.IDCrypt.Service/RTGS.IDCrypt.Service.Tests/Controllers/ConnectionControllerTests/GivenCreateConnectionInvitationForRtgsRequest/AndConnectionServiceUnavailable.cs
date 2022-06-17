@@ -11,14 +11,17 @@ public class AndConnectionServiceUnavailable
 
 	public AndConnectionServiceUnavailable()
 	{
-		var connectionServiceMock = new Mock<IConnectionService>();
+		var rtgsConnectionServiceMock = new Mock<IRtgsConnectionService>();
 
-		connectionServiceMock
-			.Setup(connectionsClient => connectionsClient.CreateConnectionInvitationForRtgsAsync(
+		rtgsConnectionServiceMock
+			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		_connectionController = new ConnectionController(connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
+		_connectionController = new ConnectionController(
+			rtgsConnectionServiceMock.Object,
+			Mock.Of<IBankConnectionService>(),
+			Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	[Fact]

@@ -7,9 +7,9 @@ namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
 public class BankConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 {
-	private readonly IConnectionService _connectionService;
+	private readonly IBankConnectionService _connectionService;
 
-	public BankConnectionInvitationBasicMessageHandler(IConnectionService connectionService)
+	public BankConnectionInvitationBasicMessageHandler(IBankConnectionService connectionService)
 	{
 		_connectionService = connectionService;
 	}
@@ -20,6 +20,6 @@ public class BankConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<BankConnectionInvitation>>(message);
 
-		await _connectionService.AcceptBankInvitationAsync(request!.MessageContent, cancellationToken);
+		await _connectionService.AcceptInvitationAsync(request!.MessageContent, cancellationToken);
 	}
 }

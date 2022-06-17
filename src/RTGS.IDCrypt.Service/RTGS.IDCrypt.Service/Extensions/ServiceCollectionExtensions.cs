@@ -39,7 +39,8 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IBankPartnerConnectionRepository, BankPartnerConnectionRepository>();
 		services.AddSingleton<IRtgsConnectionRepository, RtgsConnectionRepository>();
 
-		services.AddSingleton<IConnectionService, ConnectionService>();
+		services.AddSingleton<IBankConnectionService, BankConnectionService>();
+		services.AddSingleton<IRtgsConnectionService, RtgsConnectionService>();
 		services.AddSingleton<IStorageTableResolver, StorageTableResolver>();
 		services.AddSingleton<IAliasProvider, AliasProvider>();
 		services.AddSingleton<IDateTimeProvider, DateTimeProvider>();

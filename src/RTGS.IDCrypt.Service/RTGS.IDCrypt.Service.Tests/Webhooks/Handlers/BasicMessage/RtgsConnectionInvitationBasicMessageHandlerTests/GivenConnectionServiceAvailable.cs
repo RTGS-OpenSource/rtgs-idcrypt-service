@@ -9,7 +9,7 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.RtgsConnecti
 
 public class GivenConnectionServiceAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionService> _connectionServiceMock = new();
+	private readonly Mock<IRtgsConnectionService> _rtgsConnectionServiceMock = new();
 
 	public async Task InitializeAsync()
 	{
@@ -33,13 +33,13 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_connectionServiceMock
-			.Setup(service => service.AcceptRtgsInvitationAsync(
+		_rtgsConnectionServiceMock
+			.Setup(service => service.AcceptInvitationAsync(
 				It.Is<RtgsConnectionInvitation>(invitation => invitationMatches(invitation)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var handler = new RtgsConnectionInvitationBasicMessageHandler(_connectionServiceMock.Object);
+		var handler = new RtgsConnectionInvitationBasicMessageHandler(_rtgsConnectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(new BasicMessageContent<RtgsConnectionInvitation> { MessageContent = connectionInvitation });
 
@@ -49,5 +49,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsAcceptInvitationAsync() => _connectionServiceMock.Verify();
+	public void ThenCallsAcceptInvitationAsync() => _rtgsConnectionServiceMock.Verify();
 }

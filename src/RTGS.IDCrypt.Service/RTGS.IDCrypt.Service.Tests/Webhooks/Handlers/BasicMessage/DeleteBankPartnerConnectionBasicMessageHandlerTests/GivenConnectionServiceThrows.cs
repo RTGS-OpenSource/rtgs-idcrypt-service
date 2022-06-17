@@ -12,16 +12,16 @@ public class GivenConnectionServiceThrows
 	[Fact]
 	public async Task ThenThrows()
 	{
-		var connectionServiceMock = new Mock<IConnectionService>();
+		var bankConnectionServiceMock = new Mock<IBankConnectionService>();
 
-		connectionServiceMock
-			.Setup(service => service.DeletePartnerAsync(
+		bankConnectionServiceMock
+			.Setup(service => service.DeleteAsync(
 				It.IsAny<string>(),
 				It.IsAny<bool>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(connectionServiceMock.Object);
+		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(bankConnectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>());
 
