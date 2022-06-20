@@ -29,7 +29,7 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 
 		var response = new HttpResponseMessage(responseMock.HttpStatusCode)
 		{
-			Content = responseMock.Content,
+			Content = new StringContent(responseMock.Content),
 			RequestMessage = request
 		};
 
@@ -48,7 +48,7 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 		public Builder WithOkResponse(HttpRequestResponseContext httpRequestResponseContext) =>
 			WithResponse(
 				httpRequestResponseContext.RequestPath,
-				new StringContent(httpRequestResponseContext.ResponseContent),
+				httpRequestResponseContext.ResponseContent,
 				HttpStatusCode.OK);
 
 		public Builder WithNotFoundResponse(string path) =>
@@ -56,7 +56,7 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 
 		public StatusCodeHttpHandler Build() => new(Responses);
 
-		private Builder WithResponse(string path, HttpContent content, HttpStatusCode statusCode)
+		private Builder WithResponse(string path, string content, HttpStatusCode statusCode)
 		{
 			var mockResponse = new MockHttpResponse
 			{

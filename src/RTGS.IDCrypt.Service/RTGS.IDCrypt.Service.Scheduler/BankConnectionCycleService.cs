@@ -36,25 +36,27 @@ public class BankConnectionCycleService : IHostedService
 
 		var failed = false;
 
-		foreach (var partnerId in partnerIds)
+		await Parallel.ForEachAsync(partnerIds, cancellationToken, async (partnerId, innerCancellationToken) =>
 		{
-			var cycleConnectionRequest = new CycleConnectionRequest { RtgsGlobalId = partnerId };
-
-			_logger.LogInformation("Cycling connection for {RtgsGlobalId}", partnerId);
-
-			try
 			{
-				var response = await _httpClient.PostAsJsonAsync("/api/connection/cycle", cycleConnectionRequest, cancellationToken);
+				var cycleConnectionRequest = new CycleConnectionRequest { RtgsGlobalId = partnerId };
 
-				response.EnsureSuccessStatusCode();
-			}
-			catch (Exception exception)
-			{
-				failed = true;
+				_logger.LogInformation("Cycling connection for {RtgsGlobalId}", partnerId);
 
-				_logger.LogError(exception, "Error cycling connection for {RtgsGlobalId}", partnerId);
+				try
+				{
+					var response = await _httpClient.PostAsJsonAsync("/api/connection/cycle", cycleConnectionRequest, innerCancellationToken);
+
+					response.EnsureSuccessStatusCode();
+				}
+				catch (Exception exception)
+				{
+					failed = true;
+
+					_logger.LogError(exception, "Error cycling connection for {RtgsGlobalId}", partnerId);
+				}
 			}
-		}
+		});
 
 		if (failed)
 		{
