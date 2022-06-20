@@ -1,9 +1,11 @@
-﻿namespace RTGS.IDCrypt.Service.Scheduler;
+﻿using System.Runtime.Serialization;
+
+namespace RTGS.IDCrypt.Service.Scheduler;
 
 [Serializable]
 public class BankConnectionCycleException : Exception
 {
-	public BankConnectionCycleException() : base()
+	public BankConnectionCycleException()
 	{
 	}
 
@@ -12,6 +14,11 @@ public class BankConnectionCycleException : Exception
 	}
 
 	public BankConnectionCycleException(string message, Exception innerException) : base(message, innerException)
+	{
+	}
+
+	protected BankConnectionCycleException(SerializationInfo info, StreamingContext context)
+		: base(info, context)
 	{
 	}
 }
