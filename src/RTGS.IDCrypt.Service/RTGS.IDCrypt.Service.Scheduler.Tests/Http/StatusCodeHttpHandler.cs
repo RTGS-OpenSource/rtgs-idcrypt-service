@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Http;
 
 namespace RTGS.IDCrypt.Service.Scheduler.Tests.Http;
@@ -7,11 +8,11 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 {
 	private readonly Dictionary<string, MockHttpResponse> _mockHttpResponses;
 
-	public Dictionary<string, IList<HttpRequestMessage>> Requests { get; }
+	public ConcurrentDictionary<string, ConcurrentBag<HttpRequestMessage>> Requests { get; }
 
 	private StatusCodeHttpHandler(Dictionary<string, MockHttpResponse> mockHttpResponses)
 	{
-		Requests = new Dictionary<string, IList<HttpRequestMessage>>();
+		Requests = new ConcurrentDictionary<string, ConcurrentBag<HttpRequestMessage>>();
 		_mockHttpResponses = mockHttpResponses;
 	}
 
@@ -19,10 +20,7 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 	{
 		var requestPath = request.RequestUri!.LocalPath;
 
-		if (!Requests.ContainsKey(requestPath))
-		{
-			Requests[requestPath] = new List<HttpRequestMessage>();
-		}
+		Requests.TryAdd(requestPath, new ConcurrentBag<HttpRequestMessage>());
 		Requests[requestPath].Add(request);
 
 		var responseMock = _mockHttpResponses[requestPath];
