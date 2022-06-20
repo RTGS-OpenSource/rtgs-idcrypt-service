@@ -10,13 +10,11 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
-using CreateConnectionInvitationResponse = RTGS.IDCryptSDK.Connections.Models.CreateConnectionInvitationResponse;
 
 namespace RTGS.IDCrypt.Service.Services;
 
-public class BankConnectionService : IBankConnectionService
+public class BankConnectionService : ConnectionServiceBase, IBankConnectionService
 {
-	private readonly IConnectionsClient _connectionsClient;
 	private readonly ILogger<BankConnectionService> _logger;
 	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
@@ -32,8 +30,8 @@ public class BankConnectionService : IBankConnectionService
 		IWalletClient walletClient,
 		IOptions<CoreConfig> coreOptions,
 		IBasicMessageClient basicMessageClient)
+		: base(connectionsClient)
 	{
-		_connectionsClient = connectionsClient;
 		_logger = logger;
 		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 		_aliasProvider = aliasProvider;
@@ -62,7 +60,7 @@ public class BankConnectionService : IBankConnectionService
 				Type = invitation.Type
 			};
 
-			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+			var response = await ConnectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
 
 			var connection = new BankPartnerConnection
 			{
@@ -150,7 +148,7 @@ public class BankConnectionService : IBankConnectionService
 		try
 		{
 			aggregateTask = Task.WhenAll(
-				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
+				ConnectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
 				_bankPartnerConnectionRepository.DeleteAsync(connectionId, cancellationToken));
 
 			await aggregateTask;
@@ -189,21 +187,5 @@ public class BankConnectionService : IBankConnectionService
 		return connectionInvitation;
 	}
 
-	private async Task<CreateConnectionInvitationResponse> CreateAgentConnectionInvitationAsync(
-		string alias,
-		CancellationToken cancellationToken)
-	{
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
 
-		var createConnectionInvitationResponse = await _connectionsClient.CreateConnectionInvitationAsync(
-				alias,
-				autoAccept,
-				multiUse,
-				usePublicDid,
-				cancellationToken);
-
-		return createConnectionInvitationResponse;
-	}
 }

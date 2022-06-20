@@ -63,6 +63,6 @@ public class AndIdCryptApiUnavailable
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when creating connection invitation for RTGS.global");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when creating connection invitation for RTGS");
 	}
 }

@@ -10,7 +10,7 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCreateInvitationForBankRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.BankConnectionServiceTests.GivenCreateInvitationRequest;
 
 public class AndIdCryptApiUnavailable
 {

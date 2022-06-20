@@ -75,6 +75,6 @@ public class AndIdCryptApiUnavailable
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when accepting rtgs invitation");
+		_logger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error occurred when accepting RTGS invitation");
 	}
 }

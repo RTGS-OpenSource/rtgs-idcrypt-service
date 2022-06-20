@@ -9,7 +9,7 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenDeleteRequest.WithoutNotifyingPartner;
+namespace RTGS.IDCrypt.Service.Tests.Services.BankConnectionServiceTests.GivenDeleteRequest.WithoutNotifyingPartner;
 
 public class AndConnectionExists : IAsyncLifetime
 {

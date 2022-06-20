@@ -12,7 +12,7 @@ using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Connections.Models;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.BankConnectionServiceTests.GivenAcceptBankInvitationRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.BankConnectionServiceTests.GivenAcceptInvitationRequest;
 
 public class AndIdCryptApiAvailable : IAsyncLifetime
 {

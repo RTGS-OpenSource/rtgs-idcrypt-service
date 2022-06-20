@@ -10,7 +10,7 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCycleConnectionForBankRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.BankConnectionServiceTests.GivenCycleRequest;
 
 public class AndIdCryptBasicMessageApiUnavailable
 {
@@ -68,7 +68,6 @@ public class AndIdCryptBasicMessageApiUnavailable
 				It.IsAny<It.IsAnyType>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
-
 
 		var aliasProviderMock = new Mock<IAliasProvider>();
 		aliasProviderMock.Setup(provider => provider.Provide()).Returns(alias);

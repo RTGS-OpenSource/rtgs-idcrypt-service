@@ -10,7 +10,7 @@ using RTGS.IDCryptSDK.BasicMessage;
 using RTGS.IDCryptSDK.Connections;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Services.ConnectionServiceTests.GivenCycleConnectionForBankRequest;
+namespace RTGS.IDCrypt.Service.Tests.Services.BankConnectionServiceTests.GivenCycleRequest;
 
 public class AndIdCryptWalletApiUnavailable
 {
@@ -107,11 +107,11 @@ public class AndIdCryptWalletApiUnavailable
 			.ThrowAsync<Exception>();
 
 		_basicMessageClientMock.Verify(client =>
-				client.SendAsync(
-					It.IsAny<string>(),
-					It.IsAny<string>(),
-					It.IsAny<It.IsAnyType>(),
-					It.IsAny<CancellationToken>()),
+			client.SendAsync(
+				It.IsAny<string>(),
+				It.IsAny<string>(),
+				It.IsAny<It.IsAnyType>(),
+				It.IsAny<CancellationToken>()),
 			Times.Never);
 	}
 }
