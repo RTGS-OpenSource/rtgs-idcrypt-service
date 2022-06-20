@@ -107,11 +107,11 @@ public class AndIdCryptWalletApiUnavailable
 			.ThrowAsync<Exception>();
 
 		_basicMessageClientMock.Verify(client =>
-				client.SendAsync(
-					It.IsAny<string>(),
-					It.IsAny<string>(),
-					It.IsAny<It.IsAnyType>(),
-					It.IsAny<CancellationToken>()),
+			client.SendAsync(
+				It.IsAny<string>(),
+				It.IsAny<string>(),
+				It.IsAny<It.IsAnyType>(),
+				It.IsAny<CancellationToken>()),
 			Times.Never);
 	}
 }

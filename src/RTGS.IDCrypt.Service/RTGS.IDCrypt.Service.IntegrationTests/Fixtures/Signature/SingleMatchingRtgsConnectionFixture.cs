@@ -40,6 +40,7 @@ public class SingleMatchingRtgsConnectionFixture : ConnectionsTestFixtureBase
 		});
 
 	}
+
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
 			services
