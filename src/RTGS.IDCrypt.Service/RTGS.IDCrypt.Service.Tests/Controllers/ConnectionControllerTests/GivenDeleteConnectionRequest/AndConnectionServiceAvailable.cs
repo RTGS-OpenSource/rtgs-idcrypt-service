@@ -8,7 +8,7 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 
 public class AndConnectionServiceAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionService> _connectionServiceMock;
+	private readonly Mock<IBankConnectionService> _bankConnectionServiceMock = new();
 	private readonly ConnectionController _connectionController;
 	private const string ConnectionId = "connection-id";
 
@@ -16,13 +16,14 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 
 	public AndConnectionServiceAvailable()
 	{
-		_connectionServiceMock = new Mock<IConnectionService>();
-
-		_connectionServiceMock
-			.Setup(service => service.DeletePartnerAsync(ConnectionId, true, It.IsAny<CancellationToken>()))
+		_bankConnectionServiceMock
+			.Setup(service => service.DeleteAsync(ConnectionId, true, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		_connectionController = new ConnectionController(_connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
+		_connectionController = new ConnectionController(
+			Mock.Of<IRtgsConnectionService>(),
+			_bankConnectionServiceMock.Object,
+			Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	public async Task InitializeAsync() => _response = await _connectionController.Delete(ConnectionId);
@@ -33,5 +34,5 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	public void WhenDeleting_ThenReturnNoContent() => _response.Should().BeOfType<NoContentResult>();
 
 	[Fact]
-	public void WhenDeleting_AndCallServiceDeleteAsync() => _connectionServiceMock.Verify();
+	public void WhenDeleting_AndCallServiceDeleteAsync() => _bankConnectionServiceMock.Verify();
 }

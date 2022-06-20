@@ -10,7 +10,7 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 
 public class AndConnectionServiceAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionService> _connectionServiceMock;
+	private readonly Mock<IBankConnectionService> _bankConnectionServiceMock = new();
 	private readonly ConnectionController _connectionController;
 	private readonly CreateConnectionInvitationForBankRequest _createConnectionInvitationRequest;
 
@@ -22,8 +22,6 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	public AndConnectionServiceAvailable()
 	{
 		_createConnectionInvitationRequest = new CreateConnectionInvitationForBankRequest { RtgsGlobalId = "rtgs-global-id" };
-
-		_connectionServiceMock = new Mock<IConnectionService>();
 
 		var connectionInvitation = new BankConnectionInvitation
 		{
@@ -40,14 +38,17 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			FromRtgsGlobalId = "rtgs-global-id"
 		};
 
-		_connectionServiceMock
-			.Setup(service => service.CreateConnectionInvitationForBankAsync(
+		_bankConnectionServiceMock
+			.Setup(service => service.CreateInvitationAsync(
 				_createConnectionInvitationRequest.RtgsGlobalId,
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(connectionInvitation)
 			.Verifiable();
 
-		_connectionController = new ConnectionController(_connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
+		_connectionController = new ConnectionController(
+			Mock.Of<IRtgsConnectionService>(),
+			_bankConnectionServiceMock.Object,
+			Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	public async Task InitializeAsync() =>
@@ -83,5 +84,5 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 
 	[Fact]
 	public void WhenPosting_ThenCallCreateInvitationAsyncWithExpected() =>
-		_connectionServiceMock.Verify();
+		_bankConnectionServiceMock.Verify();
 }

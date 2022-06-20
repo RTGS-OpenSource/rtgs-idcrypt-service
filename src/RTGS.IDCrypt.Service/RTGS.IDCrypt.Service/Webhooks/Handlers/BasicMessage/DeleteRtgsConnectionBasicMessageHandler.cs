@@ -5,15 +5,15 @@ namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
 public class DeleteRtgsConnectionBasicMessageHandler : IBasicMessageHandler
 {
-	private readonly IConnectionService _connectionService;
+	private readonly IRtgsConnectionService _rtgsConnectionService;
 
-	public DeleteRtgsConnectionBasicMessageHandler(IConnectionService connectionService)
+	public DeleteRtgsConnectionBasicMessageHandler(IRtgsConnectionService rtgsConnectionService)
 	{
-		_connectionService = connectionService;
+		_rtgsConnectionService = rtgsConnectionService;
 	}
 
 	public string MessageType => nameof(DeleteRtgsConnectionBasicMessage);
 
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default) =>
-		await _connectionService.DeleteRtgsAsync(connectionId, cancellationToken);
+		await _rtgsConnectionService.DeleteAsync(connectionId, cancellationToken);
 }

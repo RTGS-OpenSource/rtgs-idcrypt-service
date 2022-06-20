@@ -18,7 +18,10 @@ public class AndConnectionRepositoryThrows
 			.ThrowsAsync(new Exception());
 
 		_connectionController =
-			new ConnectionController(Mock.Of<IConnectionService>(), bankPartnerConnectionRepositoryMock.Object);
+			new ConnectionController(
+				Mock.Of<IRtgsConnectionService>(),
+				Mock.Of<IBankConnectionService>(),
+				bankPartnerConnectionRepositoryMock.Object);
 	}
 
 	[Fact]

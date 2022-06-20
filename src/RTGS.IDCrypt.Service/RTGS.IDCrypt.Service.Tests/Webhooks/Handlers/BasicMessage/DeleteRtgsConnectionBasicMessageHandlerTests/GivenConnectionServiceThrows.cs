@@ -12,15 +12,15 @@ public class GivenConnectionServiceThrows
 	[Fact]
 	public async Task ThenThrows()
 	{
-		var connectionServiceMock = new Mock<IConnectionService>();
+		var rtgsConnectionServiceMock = new Mock<IRtgsConnectionService>();
 
-		connectionServiceMock
-			.Setup(service => service.DeleteRtgsAsync(
+		rtgsConnectionServiceMock
+			.Setup(service => service.DeleteAsync(
 				It.IsAny<string>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-		var handler = new DeleteRtgsConnectionBasicMessageHandler(connectionServiceMock.Object);
+		var handler = new DeleteRtgsConnectionBasicMessageHandler(rtgsConnectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(new BasicMessageContent<DeleteRtgsConnectionBasicMessage>());
 

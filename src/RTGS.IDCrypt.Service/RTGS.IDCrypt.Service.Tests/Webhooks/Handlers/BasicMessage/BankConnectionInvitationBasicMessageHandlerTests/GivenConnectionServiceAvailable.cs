@@ -9,7 +9,7 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.BankConnecti
 
 public class GivenConnectionServiceAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionService> _connectionServiceMock = new();
+	private readonly Mock<IBankConnectionService> _bankConnectionServiceMock = new();
 
 	public async Task InitializeAsync()
 	{
@@ -34,13 +34,13 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_connectionServiceMock
-			.Setup(service => service.AcceptBankInvitationAsync(
+		_bankConnectionServiceMock
+			.Setup(service => service.AcceptInvitationAsync(
 				It.Is<BankConnectionInvitation>(invitation => invitationMatches(invitation)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var handler = new BankConnectionInvitationBasicMessageHandler(_connectionServiceMock.Object);
+		var handler = new BankConnectionInvitationBasicMessageHandler(_bankConnectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(new BasicMessageContent<BankConnectionInvitation> { MessageContent = connectionInvitation });
 
@@ -50,5 +50,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsAcceptInvitationAsync() => _connectionServiceMock.Verify();
+	public void ThenCallsAcceptInvitationAsync() => _bankConnectionServiceMock.Verify();
 }

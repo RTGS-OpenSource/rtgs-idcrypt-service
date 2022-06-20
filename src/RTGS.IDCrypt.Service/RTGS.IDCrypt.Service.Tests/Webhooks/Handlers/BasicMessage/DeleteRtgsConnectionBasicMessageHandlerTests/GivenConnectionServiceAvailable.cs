@@ -9,7 +9,7 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteRtgsCo
 
 public class GivenConnectionServiceAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionService> _connectionServiceMock = new();
+	private readonly Mock<IRtgsConnectionService> _rtgsConnectionServiceMock = new();
 
 	public async Task InitializeAsync()
 	{
@@ -21,11 +21,11 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 			MessageContent = new DeleteRtgsConnectionBasicMessage()
 		};
 
-		_connectionServiceMock
-			.Setup(service => service.DeleteRtgsAsync(connectionId, It.IsAny<CancellationToken>()))
+		_rtgsConnectionServiceMock
+			.Setup(service => service.DeleteAsync(connectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var handler = new DeleteRtgsConnectionBasicMessageHandler(_connectionServiceMock.Object);
+		var handler = new DeleteRtgsConnectionBasicMessageHandler(_rtgsConnectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(basicMessage);
 
@@ -35,5 +35,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsDeleteAsync() => _connectionServiceMock.Verify();
+	public void ThenCallsDeleteAsync() => _rtgsConnectionServiceMock.Verify();
 }

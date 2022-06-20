@@ -11,15 +11,15 @@ public class GivenConnectionServiceThrows
 	[Fact]
 	public async Task ThenThrows()
 	{
-		var connectionServiceMock = new Mock<IConnectionService>();
+		var bankConnectionServiceMock = new Mock<IBankConnectionService>();
 
-		connectionServiceMock
-			.Setup(service => service.AcceptBankInvitationAsync(
+		bankConnectionServiceMock
+			.Setup(service => service.AcceptInvitationAsync(
 				It.IsAny<BankConnectionInvitation>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-		var handler = new BankConnectionInvitationBasicMessageHandler(connectionServiceMock.Object);
+		var handler = new BankConnectionInvitationBasicMessageHandler(bankConnectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(new BankConnectionInvitation());
 

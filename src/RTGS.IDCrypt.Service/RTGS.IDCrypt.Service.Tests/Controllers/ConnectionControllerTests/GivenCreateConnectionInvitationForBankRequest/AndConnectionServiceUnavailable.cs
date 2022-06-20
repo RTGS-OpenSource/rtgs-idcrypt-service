@@ -12,15 +12,18 @@ public class AndConnectionServiceUnavailable
 
 	public AndConnectionServiceUnavailable()
 	{
-		var connectionServiceMock = new Mock<IConnectionService>();
+		var bankConnectionServiceMock = new Mock<IBankConnectionService>();
 
-		connectionServiceMock
-			.Setup(connectionsClient => connectionsClient.CreateConnectionInvitationForBankAsync(
+		bankConnectionServiceMock
+			.Setup(connectionsClient => connectionsClient.CreateInvitationAsync(
 				It.IsAny<string>(),
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		_connectionController = new ConnectionController(connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
+		_connectionController = new ConnectionController(
+			Mock.Of<IRtgsConnectionService>(),
+			bankConnectionServiceMock.Object,
+			Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	[Fact]

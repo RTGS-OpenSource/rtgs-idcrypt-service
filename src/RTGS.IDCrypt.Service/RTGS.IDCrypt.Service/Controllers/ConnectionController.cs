@@ -11,14 +11,17 @@ namespace RTGS.IDCrypt.Service.Controllers;
 [ApiController]
 public class ConnectionController : ControllerBase
 {
-	private readonly IConnectionService _connectionService;
+	private readonly IRtgsConnectionService _rtgsConnectionService;
+	private readonly IBankConnectionService _bankConnectionService;
 	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 
 	public ConnectionController(
-		IConnectionService connectionService,
+		IRtgsConnectionService rtgsConnectionService,
+		IBankConnectionService bankConnectionService,
 		IBankPartnerConnectionRepository bankPartnerConnectionRepository)
 	{
-		_connectionService = connectionService;
+		_rtgsConnectionService = rtgsConnectionService;
+		_bankConnectionService = bankConnectionService;
 		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 	}
 
@@ -31,7 +34,7 @@ public class ConnectionController : ControllerBase
 	public async Task<IActionResult> ForRtgs(
 		CancellationToken cancellationToken = default)
 	{
-		var connectionInvitation = await _connectionService.CreateConnectionInvitationForRtgsAsync(cancellationToken);
+		var connectionInvitation = await _rtgsConnectionService.CreateInvitationAsync(cancellationToken);
 
 		var response = connectionInvitation.MapToContract();
 
@@ -41,7 +44,7 @@ public class ConnectionController : ControllerBase
 	[HttpPost("cycle")]
 	public async Task<IActionResult> Cycle(CycleConnectionRequest request)
 	{
-		await _connectionService.CycleConnectionForBankAsync(request.RtgsGlobalId);
+		await _bankConnectionService.CycleAsync(request.RtgsGlobalId);
 
 		return Ok();
 	}
@@ -57,7 +60,7 @@ public class ConnectionController : ControllerBase
 		CreateConnectionInvitationForBankRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		var connectionInvitation = await _connectionService.CreateConnectionInvitationForBankAsync(request.RtgsGlobalId, cancellationToken);
+		var connectionInvitation = await _bankConnectionService.CreateInvitationAsync(request.RtgsGlobalId, cancellationToken);
 
 		var response = connectionInvitation.MapToContract();
 
@@ -87,7 +90,7 @@ public class ConnectionController : ControllerBase
 			FromRtgsGlobalId = request.RtgsGlobalId
 		};
 
-		await _connectionService.AcceptBankInvitationAsync(invitation, cancellationToken);
+		await _bankConnectionService.AcceptInvitationAsync(invitation, cancellationToken);
 
 		return Accepted();
 	}
@@ -103,7 +106,7 @@ public class ConnectionController : ControllerBase
 		string connectionId,
 		CancellationToken cancellationToken = default)
 	{
-		await _connectionService.DeletePartnerAsync(connectionId, true, cancellationToken);
+		await _bankConnectionService.DeleteAsync(connectionId, true, cancellationToken);
 
 		return NoContent();
 	}

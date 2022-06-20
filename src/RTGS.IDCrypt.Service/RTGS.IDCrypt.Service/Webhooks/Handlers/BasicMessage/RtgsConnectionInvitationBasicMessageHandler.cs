@@ -7,11 +7,11 @@ namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
 public class RtgsConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 {
-	private readonly IConnectionService _connectionService;
+	private readonly IRtgsConnectionService _rtgsConnectionService;
 
-	public RtgsConnectionInvitationBasicMessageHandler(IConnectionService connectionService)
+	public RtgsConnectionInvitationBasicMessageHandler(IRtgsConnectionService rtgsConnectionService)
 	{
-		_connectionService = connectionService;
+		_rtgsConnectionService = rtgsConnectionService;
 	}
 
 	public string MessageType => nameof(RtgsConnectionInvitation);
@@ -20,6 +20,6 @@ public class RtgsConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<RtgsConnectionInvitation>>(message);
 
-		await _connectionService.AcceptRtgsInvitationAsync(request!.MessageContent, cancellationToken);
+		await _rtgsConnectionService.AcceptInvitationAsync(request!.MessageContent, cancellationToken);
 	}
 }

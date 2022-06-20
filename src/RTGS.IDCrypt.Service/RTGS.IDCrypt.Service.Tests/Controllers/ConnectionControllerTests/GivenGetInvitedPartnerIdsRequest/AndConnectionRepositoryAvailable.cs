@@ -21,7 +21,10 @@ public class AndConnectionRepositoryAvailable : IAsyncLifetime
 			.Setup(mock => mock.GetInvitedPartnerIdsAsync(It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new[] { "id1", "id2" });
 
-		_connectionController = new ConnectionController(Mock.Of<IConnectionService>(), _bankPartnerConnectionRepositoryMock.Object);
+		_connectionController = new ConnectionController(
+			Mock.Of<IRtgsConnectionService>(),
+			Mock.Of<IBankConnectionService>(),
+			_bankPartnerConnectionRepositoryMock.Object);
 	}
 
 	public async Task InitializeAsync() => _response = await _connectionController.InvitedPartnerIds();
