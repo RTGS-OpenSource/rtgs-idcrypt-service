@@ -44,6 +44,6 @@ public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatching
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.Path);
 
 	[Fact]
-	public void ThenNotFoundResponseReceived() =>
-		_httpResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+	public void ThenInternalServerErrorResponseReceived() =>
+		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 }

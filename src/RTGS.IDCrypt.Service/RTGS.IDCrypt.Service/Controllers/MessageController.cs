@@ -1,12 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.Contracts.Message.Verify;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
-using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
 using RTGS.IDCryptSDK.Wallet;
@@ -18,8 +14,6 @@ namespace RTGS.IDCrypt.Service.Controllers;
 public class MessageController : ControllerBase
 {
 	private readonly ILogger<MessageController> _logger;
-	private readonly ConnectionsConfig _connectionsConfig;
-	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
 	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
@@ -27,16 +21,12 @@ public class MessageController : ControllerBase
 
 	public MessageController(
 		ILogger<MessageController> logger,
-		IOptions<ConnectionsConfig> connectionsConfig,
-		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient,
 		IBankPartnerConnectionRepository bankPartnerConnectionRepository,
 		IRtgsConnectionRepository rtgsConnectionRepository,
 		IWalletClient walletClient)
 	{
 		_logger = logger;
-		_connectionsConfig = connectionsConfig.Value;
-		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
 		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 		_rtgsConnectionRepository = rtgsConnectionRepository;
@@ -91,32 +81,6 @@ public class MessageController : ControllerBase
 		return Ok(signMessageResponse);
 	}
 
-	private async Task<SignMessageResponse> Sign(JsonElement message, string connectionId, string alias, CancellationToken cancellationToken)
-	{
-		SignDocumentResponse signDocumentResponse;
-
-		try
-		{
-			signDocumentResponse = await _jsonSignaturesClient.SignDocumentAsync(
-				message,
-				connectionId,
-				cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when signing JSON document");
-
-			throw;
-		}
-
-		return new SignMessageResponse
-		{
-			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
-			PublicDidSignature = signDocumentResponse.PublicDidSignature,
-			Alias = alias
-		};
-	}
-
 	/// <summary>
 	/// Endpoint to verify a document / signature.
 	/// </summary>
@@ -128,28 +92,8 @@ public class MessageController : ControllerBase
 		VerifyRequest verifyRequest,
 		CancellationToken cancellationToken = default)
 	{
-		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(
-			_connectionsConfig.BankPartnerConnectionsTableName);
-
-		var bankPartnerConnections = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-			.Where(bankPartnerConnection =>
-				bankPartnerConnection.PartitionKey == verifyRequest.RtgsGlobalId
-				&& bankPartnerConnection.RowKey == verifyRequest.Alias
-				&& bankPartnerConnection.Status == ConnectionStatuses.Active)
-			.ToList();
-
-		if (!bankPartnerConnections.Any())
-		{
-			_logger.LogError(
-				"No bank partner connection found for RTGS Global ID {RtgsGlobalId} and Alias {Alias}",
-				verifyRequest.RtgsGlobalId,
-				verifyRequest.Alias);
-
-			return NotFound();
-		}
-
-		var bankPartnerConnection = bankPartnerConnections.Single();
+		var bankPartnerConnection =
+			await _bankPartnerConnectionRepository.GetActiveAsync(verifyRequest.RtgsGlobalId, verifyRequest.Alias, cancellationToken);
 
 		bool verified;
 		try
@@ -219,5 +163,31 @@ public class MessageController : ControllerBase
 		}
 
 		return Ok(new VerifyOwnMessageResponse { Verified = verified });
+	}
+
+	private async Task<SignMessageResponse> Sign(JsonElement message, string connectionId, string alias, CancellationToken cancellationToken)
+	{
+		SignDocumentResponse signDocumentResponse;
+
+		try
+		{
+			signDocumentResponse = await _jsonSignaturesClient.SignDocumentAsync(
+				message,
+				connectionId,
+				cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when signing JSON document");
+
+			throw;
+		}
+
+		return new SignMessageResponse
+		{
+			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
+			PublicDidSignature = signDocumentResponse.PublicDidSignature,
+			Alias = alias
+		};
 	}
 }

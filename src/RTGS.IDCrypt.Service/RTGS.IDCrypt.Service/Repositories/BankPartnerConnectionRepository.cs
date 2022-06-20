@@ -31,8 +31,6 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
 			var connection = await GetFromTableAsync(
 				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
 				cancellationToken);
@@ -46,6 +44,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			connection.Status = ConnectionStatuses.Active;
 			connection.ActivatedAt = _dateTimeProvider.UtcNow;
 
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 			await tableClient.UpdateEntityAsync(
 				connection,
 				connection.ETag,
@@ -131,28 +130,38 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
-	public async Task<BankPartnerConnection> GetAsync(string connectionId, CancellationToken cancellationToken = default)
+	public async Task<BankPartnerConnection> GetActiveAsync(string rtgsGlobalId, string alias, CancellationToken cancellationToken = default)
 	{
 		BankPartnerConnection connection;
 
 		try
 		{
-			connection = await GetFromTableAsync(
-				bankPartnerConnection => bankPartnerConnection.ConnectionId == connectionId,
-				cancellationToken);
+			connection =
+				await GetFromTableAsync(
+					cnn => cnn.PartitionKey == rtgsGlobalId &&
+						   cnn.RowKey == alias &&
+						   cnn.Status == ConnectionStatuses.Active, cancellationToken);
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when getting bank partner connection");
+			_logger.LogError(
+				ex,
+				"Error occurred when getting active bank partner connection with RtgsGlobalId {RtgsGlobalId} and Alias {Alias}",
+				rtgsGlobalId,
+				alias);
 
 			throw;
 		}
 
 		if (connection is null)
 		{
-			var ex = new Exception($"Bank partner connection with ID {connectionId} not found");
+			var ex = new Exception($"Active Bank partner connection with RtgsGlobalId {rtgsGlobalId} and Alias {alias} not found");
 
-			_logger.LogError(ex, "Bank partner connection with ID {ConnectionId} not found", connectionId);
+			_logger.LogError(
+				ex,
+				"Active Bank partner connection with RtgsGlobalId {RtgsGlobalId} and Alias {Alias} not found",
+				rtgsGlobalId,
+				alias);
 
 			throw ex;
 		}

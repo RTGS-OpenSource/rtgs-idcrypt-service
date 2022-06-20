@@ -1,9 +1,7 @@
 ﻿using System.Text.Json;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Models;
@@ -66,15 +64,8 @@ public class AndIdCryptAgentApiUnavailable
 				storageTableResolver.GetTable("bankPartnerConnections"))
 			.Returns(tableClientMock.Object);
 
-		var options = Options.Create(new ConnectionsConfig
-		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
-		});
-
 		_controller = new MessageController(
 			_logger,
-			options,
-			storageTableResolverMock.Object,
 			jsonSignaturesClientMock.Object,
 			Mock.Of<IBankPartnerConnectionRepository>(),
 			Mock.Of<IRtgsConnectionRepository>(),

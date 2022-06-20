@@ -1,13 +1,10 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
-using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
@@ -65,12 +62,8 @@ public class AndMatchingRtgsConnectionExists : IAsyncLifetime
 
 		var logger = new FakeLogger<MessageController>();
 
-		var options = Options.Create(new ConnectionsConfig());
-
 		_controller = new MessageController(
 			logger,
-			options,
-			Mock.Of<IStorageTableResolver>(),
 			_jsonSignaturesClientMock.Object,
 			Mock.Of<IBankPartnerConnectionRepository>(),
 			rtgsConnectionRepositoryMock.Object,

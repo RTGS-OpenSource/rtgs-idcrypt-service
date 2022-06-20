@@ -40,22 +40,9 @@ public class GivenRequestReceived
 		_serialisedProof = JsonSerializer.Serialize(_presentedProof);
 	}
 
-	[Theory]
-	[InlineData("Inviter")]
-	[InlineData("Invitee")]
-	public async Task ThenSetConnectionActive(string role)
+	[Fact]
+	public async Task ThenSetConnectionActive()
 	{
-		var bankConnection = new BankPartnerConnection
-		{
-			PartitionKey = "rtgs-global-id",
-			ConnectionId = _presentedProof.ConnectionId,
-			Role = role
-		};
-
-		_bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.GetAsync(_presentedProof.ConnectionId, It.IsAny<CancellationToken>()))
-			.ReturnsAsync(bankConnection);
-
 		await _handler.HandleAsync(_serialisedProof, default);
 
 		_bankPartnerConnectionRepositoryMock.Verify(repo =>
