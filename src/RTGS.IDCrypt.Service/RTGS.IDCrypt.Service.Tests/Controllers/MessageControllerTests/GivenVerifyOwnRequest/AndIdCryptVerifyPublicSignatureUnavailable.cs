@@ -5,7 +5,7 @@ using Moq;
 using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.Controllers;
-using RTGS.IDCrypt.Service.Helpers;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
@@ -43,7 +43,7 @@ public class AndIdCryptVerifyPublicSignatureUnavailable
 			Mock.Of<IOptions<ConnectionsConfig>>(),
 			Mock.Of<IStorageTableResolver>(),
 			jsonSignaturesClientMock.Object,
-			Mock.Of<IDateTimeProvider>(),
+			Mock.Of<IBankPartnerConnectionRepository>(),
 			Mock.Of<IWalletClient>());
 	}
 

@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Azure.Data.Tables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -8,24 +7,25 @@ using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Storage;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenSignMessageRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenSignMessageForBankRequest;
 
 public class AndIdCryptAgentUnavailable
 {
 	private readonly MessageController _controller;
-	private readonly SignMessageRequest _signMessageRequest;
+	private readonly SignMessageForBankRequest _signMessageForBankRequest;
 	private readonly FakeLogger<MessageController> _logger = new();
 
 	public AndIdCryptAgentUnavailable()
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		_signMessageRequest = new SignMessageRequest
+		_signMessageForBankRequest = new SignMessageForBankRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
 			Message = message
@@ -47,9 +47,6 @@ public class AndIdCryptAgentUnavailable
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
-		var storageTableResolverMock = new Mock<IStorageTableResolver>();
-		var tableClientMock = new Mock<TableClient>();
-		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
 
 		jsonSignaturesClientMock
 			.Setup(client => client.SignDocumentAsync(
@@ -58,25 +55,10 @@ public class AndIdCryptAgentUnavailable
 				It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception());
 
-		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			new List<BankPartnerConnection>
-			{
-				matchingBankPartnerConnection
-			}
-			.GetEnumerator());
-
-		tableClientMock.Setup(tableClient =>
-			tableClient.Query<BankPartnerConnection>(
-				It.IsAny<string>(),
-				It.IsAny<int?>(),
-				It.IsAny<IEnumerable<string>>(),
-				It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnectionsMock.Object);
-
-		storageTableResolverMock
-			.Setup(storageTableResolver =>
-				storageTableResolver.GetTable("bankPartnerConnections"))
-			.Returns(tableClientMock.Object);
+		var bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
+		bankPartnerConnectionRepositoryMock
+			.Setup(repo => repo.GetEstablishedAsync(_signMessageForBankRequest.RtgsGlobalId, It.IsAny<CancellationToken>()))
+			.ReturnsAsync(matchingBankPartnerConnection);
 
 		var options = Options.Create(new ConnectionsConfig
 		{
@@ -87,9 +69,9 @@ public class AndIdCryptAgentUnavailable
 		_controller = new MessageController(
 			_logger,
 			options,
-			storageTableResolverMock.Object,
+			Mock.Of<IStorageTableResolver>(),
 			jsonSignaturesClientMock.Object,
-			dateTimeProviderMock.Object,
+			bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IWalletClient>());
 	}
 
@@ -99,7 +81,7 @@ public class AndIdCryptAgentUnavailable
 		using var _ = new AssertionScope();
 
 		await FluentActions
-			.Awaiting(() => _controller.Sign(_signMessageRequest, default))
+			.Awaiting(() => _controller.SignForBank(_signMessageForBankRequest, default))
 			.Should()
 			.ThrowAsync<Exception>();
 

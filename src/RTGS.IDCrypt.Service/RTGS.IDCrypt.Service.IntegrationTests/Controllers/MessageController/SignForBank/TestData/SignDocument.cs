@@ -1,7 +1,7 @@
 ﻿using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign.TestData;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank.TestData;
 
 public static class SignDocument
 {

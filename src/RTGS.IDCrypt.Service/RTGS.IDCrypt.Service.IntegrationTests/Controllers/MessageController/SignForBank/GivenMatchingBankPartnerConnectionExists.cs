@@ -3,18 +3,18 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using RTGS.IDCrypt.Service.Contracts.Message.Sign;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank;
 
-public class GivenMultipleMatchingBankPartnerConnectionsExist : IClassFixture<MultipleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
+public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly MultipleMatchingBankPartnerConnectionFixture _testFixture;
+	private readonly SingleMatchingBankPartnerConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenMultipleMatchingBankPartnerConnectionsExist(MultipleMatchingBankPartnerConnectionFixture testFixture)
+	public GivenMatchingBankPartnerConnectionExists(SingleMatchingBankPartnerConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -27,13 +27,13 @@ public class GivenMultipleMatchingBankPartnerConnectionsExist : IClassFixture<Mu
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		var request = new SignMessageRequest
+		var request = new SignMessageForBankRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
 			Message = message
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/message/sign", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-bank", request);
 	}
 
 	public Task DisposeAsync() =>
@@ -53,7 +53,7 @@ public class GivenMultipleMatchingBankPartnerConnectionsExist : IClassFixture<Mu
 	public async Task WhenCallingIdCryptAgent_ThenBodyIsExpected()
 	{
 		var content = await _testFixture.IdCryptStatusCodeHttpHandler.Requests[SignDocument.Path].Single().Content!.ReadAsStringAsync();
-		content.Should().BeEquivalentTo(@"{""connection_id"":""connection-3"",""document"":{""Message"":""I am the walrus""}}");
+		content.Should().BeEquivalentTo(@"{""connection_id"":""connection-id"",""document"":{""Message"":""I am the walrus""}}");
 	}
 
 	[Fact]
@@ -74,7 +74,7 @@ public class GivenMultipleMatchingBankPartnerConnectionsExist : IClassFixture<Mu
 
 		actualResponse.Should().BeEquivalentTo(new SignMessageResponse
 		{
-			Alias = _testFixture.ValidConnection.Alias,
+			Alias = "alias",
 			PairwiseDidSignature = SignDocument.ExpectedResponse.PairwiseDidSignature,
 			PublicDidSignature = SignDocument.ExpectedResponse.PublicDidSignature
 		});
