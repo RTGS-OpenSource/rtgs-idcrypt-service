@@ -21,7 +21,10 @@ RUN dotnet restore RTGS.IDCrypt.Service.sln
 WORKDIR "/src"
 COPY --chown=devops:devops . .
 RUN dotnet build -c Release --no-restore
-RUN dotnet test -c Release -o /app/test --no-restore --filter "RTGS.IDCrypt.Service.Scheduler.*Tests"
+RUN dotnet test -c Release -o /app/test --no-restore "./RTGS.IDCrypt.Service.Tests/RTGS.IDCrypt.Service.Tests.csproj"; \
+    exit_code=$?; \
+    dotnet test -c Release -o /app/test --no-restore "./RTGS.IDCrypt.Service.IntegrationTests/RTGS.IDCrypt.Service.IntegrationTests.csproj"; \
+    exit $(( $exit_code || $? ))
 RUN chown -R devops:devops /src/RTGS.IDCrypt.Service/obj/ \
 		&& chown -R devops:devops /src/RTGS.IDCrypt.Service/bin/
 
