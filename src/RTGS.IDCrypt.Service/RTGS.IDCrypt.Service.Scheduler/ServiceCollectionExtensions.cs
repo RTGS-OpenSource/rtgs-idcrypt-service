@@ -1,7 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RTGS.IDCrypt.Service.Scheduler.Monitoring;
 
 namespace RTGS.IDCrypt.Service.Scheduler;
 
@@ -14,7 +13,7 @@ public static class ServiceCollectionExtensions
 			var baseAddress = configuration.GetValue<string>("IdCryptServiceAddress");
 			if (string.IsNullOrEmpty(baseAddress))
 			{
-				throw new Exception("IdCryptServiceAddress not set.");
+				throw new ConfigurationException("IdCryptServiceAddress not set.");
 			}
 			cfg.BaseAddress = new Uri(baseAddress);
 		});

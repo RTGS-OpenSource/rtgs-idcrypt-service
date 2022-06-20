@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 
-namespace RTGS.IDCrypt.Service.Scheduler.HostedServices;
+namespace RTGS.IDCrypt.Service.Scheduler;
 
 public class BankConnectionCycleService : IHostedService
 {
@@ -58,7 +58,7 @@ public class BankConnectionCycleService : IHostedService
 
 		if (failed)
 		{
-			throw new Exception("One or more cycling attempts failed.");
+			throw new BankConnectionCycleException("One or more cycling attempts failed.");
 		}
 
 		_hostLifetime.StopApplication();

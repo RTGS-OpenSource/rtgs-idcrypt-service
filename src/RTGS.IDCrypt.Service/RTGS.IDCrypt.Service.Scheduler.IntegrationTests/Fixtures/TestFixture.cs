@@ -23,5 +23,5 @@ public sealed class TestFixture : IDisposable
 		}
 	}
 
-	public async Task<int> RunProgramAsync() => await Program.Main(Array.Empty<string>());
+	public static async Task<int> RunProgramAsync() => await Program.Main(Array.Empty<string>());
 }

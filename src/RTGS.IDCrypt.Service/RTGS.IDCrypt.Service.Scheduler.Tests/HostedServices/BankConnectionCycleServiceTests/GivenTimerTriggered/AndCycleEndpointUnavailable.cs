@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RTGS.IDCrypt.Service.Scheduler.HostedServices;
 using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 using RTGS.IDCrypt.Service.Scheduler.Tests.Logging;
 
@@ -50,7 +49,7 @@ public class AndCycleEndpointUnavailable
 		await FluentActions
 			.Awaiting(() => _bankConnectionCycleService.StartAsync(default))
 			.Should()
-			.ThrowAsync<Exception>()
+			.ThrowAsync<BankConnectionCycleException>()
 			.WithMessage("One or more cycling attempts failed.");
 
 		_fakeLogger.Logs[LogLevel.Error].Should().BeEquivalentTo(new List<string>

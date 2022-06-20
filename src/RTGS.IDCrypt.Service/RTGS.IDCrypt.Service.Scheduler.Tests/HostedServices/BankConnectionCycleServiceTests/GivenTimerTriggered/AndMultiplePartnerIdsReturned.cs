@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RTGS.IDCrypt.Service.Scheduler.HostedServices;
 using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 
 namespace RTGS.IDCrypt.Service.Scheduler.Tests.HostedServices.BankConnectionCycleServiceTests.GivenTimerTriggered;

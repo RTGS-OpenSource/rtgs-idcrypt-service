@@ -2,7 +2,7 @@
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 
-namespace RTGS.IDCrypt.Service.Scheduler.Monitoring;
+namespace RTGS.IDCrypt.Service.Scheduler;
 
 public class TelemetryInitializer : ITelemetryInitializer
 {

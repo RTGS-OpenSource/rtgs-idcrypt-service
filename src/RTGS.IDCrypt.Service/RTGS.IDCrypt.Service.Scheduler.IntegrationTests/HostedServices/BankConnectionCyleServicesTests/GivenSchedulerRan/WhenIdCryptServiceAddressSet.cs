@@ -5,11 +5,11 @@ using WireMock.ResponseBuilders;
 
 namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.HostedServices.BankConnectionCyleServicesTests.GivenSchedulerRan;
 
-public class WhenIdCryptServiceCalled : IClassFixture<TestFixture>
+public class WhenIdCryptServiceAddressSet : IClassFixture<TestFixture>
 {
 	private readonly TestFixture _testFixture;
 
-	public WhenIdCryptServiceCalled(TestFixture testFixture)
+	public WhenIdCryptServiceAddressSet(TestFixture testFixture)
 	{
 		_testFixture = testFixture;
 	}
@@ -49,16 +49,7 @@ public class WhenIdCryptServiceCalled : IClassFixture<TestFixture>
 
 		Environment.SetEnvironmentVariable("IdCryptServiceAddress", TestFixture.Url);
 
-		var exitCode = await _testFixture.RunProgramAsync();
+		var exitCode = await TestFixture.RunProgramAsync();
 		exitCode.Should().Be(0, "exit code should be 0, if not something went wrong");
-	}
-
-	[Fact]
-	public async Task ThenBaseAddressIsNotSet()
-	{
-		Environment.SetEnvironmentVariable("IdCryptServiceAddress", string.Empty);
-
-		var exitCode = await _testFixture.RunProgramAsync();
-		exitCode.Should().Be(1, "exit code should be 1, if not there is an exception missing");
 	}
 }

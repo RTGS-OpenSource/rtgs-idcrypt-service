@@ -1,7 +1,6 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using RTGS.IDCrypt.Service.Scheduler.HostedServices;
 using Serilog;
 using Serilog.Events;
 
@@ -47,10 +46,7 @@ public static class Program
 		{
 			if (telemetryClient != null)
 			{
-				telemetryClient.Flush();
-
-				// Flush is not blocking so estimate how long the flush requires.
-				await Task.Delay(TimeSpan.FromSeconds(5));
+				await telemetryClient.FlushAsync(default);
 			}
 
 			Log.CloseAndFlush();
