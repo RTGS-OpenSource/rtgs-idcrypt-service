@@ -69,7 +69,6 @@ public class AndIdCryptBasicMessageApiUnavailable
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-
 		var aliasProviderMock = new Mock<IAliasProvider>();
 		aliasProviderMock.Setup(provider => provider.Provide()).Returns(alias);
 

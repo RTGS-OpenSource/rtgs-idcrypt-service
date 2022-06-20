@@ -26,8 +26,7 @@ public class SingleMatchingRtgsConnectionFixture : ConnectionsTestFixtureBase
 
 	public StatusCodeHttpHandler IdCryptStatusCodeHttpHandler { get; }
 
-	protected override async Task Seed()
-	{
+	protected override async Task Seed() =>
 		await InsertRtgsConnectionAsync(new()
 		{
 			PartitionKey = "alias",
@@ -38,8 +37,6 @@ public class SingleMatchingRtgsConnectionFixture : ConnectionsTestFixtureBase
 			ActivatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(6)),
 			Status = "Active",
 		});
-
-	}
 
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>

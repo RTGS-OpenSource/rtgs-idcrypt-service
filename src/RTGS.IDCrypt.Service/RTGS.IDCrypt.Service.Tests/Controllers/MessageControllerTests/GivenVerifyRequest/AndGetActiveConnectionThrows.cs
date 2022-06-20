@@ -10,13 +10,11 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenVer
 
 public class AndGetActiveConnectionThrows
 {
-	private readonly FakeLogger<MessageController> _logger = new();
 	private readonly MessageController _controller;
-	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 
 	public AndGetActiveConnectionThrows()
 	{
-		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
+		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 
 		var bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
 		bankPartnerConnectionRepositoryMock.Setup(connection =>
@@ -24,8 +22,8 @@ public class AndGetActiveConnectionThrows
 			.ThrowsAsync(new Exception("No active connection found"));
 
 		_controller = new MessageController(
-			_logger,
-			_jsonSignaturesClientMock.Object,
+			new FakeLogger<MessageController>(),
+			jsonSignaturesClientMock.Object,
 			bankPartnerConnectionRepositoryMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IWalletClient>());
@@ -34,7 +32,7 @@ public class AndGetActiveConnectionThrows
 	[Fact]
 	public async Task WhenPosting_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _controller.Verify(new VerifyRequest(), default))
+			.Awaiting(() => _controller.Verify(new VerifyRequest()))
 			.Should()
 			.ThrowAsync<Exception>()
 			.WithMessage("No active connection found");
