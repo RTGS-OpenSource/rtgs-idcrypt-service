@@ -11,15 +11,13 @@ namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.Given
 
 public class AndConnectionServiceAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionService> _connectionServiceMock;
+	private readonly Mock<IBankConnectionService> _bankConnectionServiceMock = new();
 	private readonly ConnectionController _connectionController;
 
 	private IActionResult _response;
 
 	public AndConnectionServiceAvailable()
 	{
-		_connectionServiceMock = new Mock<IConnectionService>();
-
 		var expectedRequest = new ReceiveAndAcceptInvitationRequest
 		{
 			Id = "id",
@@ -37,13 +35,16 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 			return true;
 		};
 
-		_connectionServiceMock
-			.Setup(service => service.AcceptBankInvitationAsync(
+		_bankConnectionServiceMock
+			.Setup(service => service.AcceptInvitationAsync(
 				It.Is<BankConnectionInvitation>(request => requestMatches(request)),
 				It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		_connectionController = new ConnectionController(_connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
+		_connectionController = new ConnectionController(
+			Mock.Of<IRtgsConnectionService>(),
+			_bankConnectionServiceMock.Object,
+			Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	public async Task InitializeAsync()
@@ -71,5 +72,5 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 
 	[Fact]
 	public void WhenPosting_ThenCallReceiveAndAcceptInvitationAsyncWithExpected() =>
-		_connectionServiceMock.Verify();
+		_bankConnectionServiceMock.Verify();
 }

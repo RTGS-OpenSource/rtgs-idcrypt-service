@@ -13,15 +13,18 @@ public class AndConnectionServiceUnavailable
 
 	public AndConnectionServiceUnavailable()
 	{
-		var connectionServiceMock = new Mock<IConnectionService>();
+		var bankConnectionServiceMock = new Mock<IBankConnectionService>();
 
-		connectionServiceMock
-			.Setup(service => service.AcceptBankInvitationAsync(
+		bankConnectionServiceMock
+			.Setup(service => service.AcceptInvitationAsync(
 				It.IsAny<BankConnectionInvitation>(),
 				It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
-		_connectionController = new ConnectionController(connectionServiceMock.Object, Mock.Of<IBankPartnerConnectionRepository>());
+		_connectionController = new ConnectionController(
+			Mock.Of<IRtgsConnectionService>(),
+			bankConnectionServiceMock.Object,
+			Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	[Fact]
@@ -41,7 +44,7 @@ public class AndConnectionServiceUnavailable
 		};
 
 		await FluentActions
-			.Awaiting(() => _connectionController.Accept(request, default))
+			.Awaiting(() => _connectionController.Accept(request))
 			.Should()
 			.ThrowAsync<Exception>();
 	}

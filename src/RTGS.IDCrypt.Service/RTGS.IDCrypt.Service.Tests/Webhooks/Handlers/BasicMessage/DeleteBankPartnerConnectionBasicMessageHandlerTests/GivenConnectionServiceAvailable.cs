@@ -9,7 +9,7 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteBankPa
 
 public class GivenConnectionServiceAvailable : IAsyncLifetime
 {
-	private readonly Mock<IConnectionService> _connectionServiceMock = new();
+	private readonly Mock<IBankConnectionService> _bankConnectionServiceMock = new();
 
 	public async Task InitializeAsync()
 	{
@@ -21,11 +21,11 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 			MessageContent = new DeleteBankPartnerConnectionBasicMessage()
 		};
 
-		_connectionServiceMock
-			.Setup(service => service.DeletePartnerAsync(connectionId, false, It.IsAny<CancellationToken>()))
+		_bankConnectionServiceMock
+			.Setup(service => service.DeleteAsync(connectionId, false, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
-		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(_connectionServiceMock.Object);
+		var handler = new DeleteBankPartnerConnectionBasicMessageHandler(_bankConnectionServiceMock.Object);
 
 		var message = JsonSerializer.Serialize(basicMessage);
 
@@ -35,5 +35,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsDeleteAsync() => _connectionServiceMock.Verify();
+	public void ThenCallsDeleteAsync() => _bankConnectionServiceMock.Verify();
 }
