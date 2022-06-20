@@ -3,7 +3,7 @@ using RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Fixtures;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 
-namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.BankConnectionCyleServicesTests.GivenSchedulerRan;
+namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.BankConnectionCycleServicesTests.GivenSchedulerRan;
 
 public class WhenIdCryptServiceAddressSet : IClassFixture<TestFixture>
 {
