@@ -11,9 +11,8 @@ using RTGS.IDCryptSDK.Wallet;
 
 namespace RTGS.IDCrypt.Service.Services;
 
-public class RtgsConnectionService : IRtgsConnectionService
+public class RtgsConnectionService : ConnectionServiceBase, IRtgsConnectionService
 {
-	private readonly IConnectionsClient _connectionsClient;
 	private readonly ILogger<RtgsConnectionService> _logger;
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
@@ -27,8 +26,8 @@ public class RtgsConnectionService : IRtgsConnectionService
 		IAliasProvider aliasProvider,
 		IWalletClient walletClient,
 		IOptions<CoreConfig> coreOptions)
+		: base(connectionsClient)
 	{
-		_connectionsClient = connectionsClient;
 		_logger = logger;
 		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_aliasProvider = aliasProvider;
@@ -56,7 +55,7 @@ public class RtgsConnectionService : IRtgsConnectionService
 				Type = invitation.Type
 			};
 
-			var response = await _connectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
+			var response = await ConnectionsClient.ReceiveAndAcceptInvitationAsync(receiveAndAcceptInvitationRequest, cancellationToken);
 
 			var connection = new RtgsConnection
 			{
@@ -71,7 +70,7 @@ public class RtgsConnectionService : IRtgsConnectionService
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when accepting rtgs invitation");
+			_logger.LogError(ex, "Error occurred when accepting RTGS invitation");
 
 			throw;
 		}
@@ -107,7 +106,7 @@ public class RtgsConnectionService : IRtgsConnectionService
 		{
 			_logger.LogError(
 				ex,
-				"Error occurred when creating connection invitation for RTGS.global");
+				"Error occurred when creating connection invitation for RTGS");
 
 			throw;
 		}
@@ -120,7 +119,7 @@ public class RtgsConnectionService : IRtgsConnectionService
 		try
 		{
 			aggregateTask = Task.WhenAll(
-				_connectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
+				ConnectionsClient.DeleteConnectionAsync(connectionId, cancellationToken),
 				_rtgsConnectionRepository.DeleteAsync(connectionId, cancellationToken));
 
 			await aggregateTask;
@@ -128,27 +127,9 @@ public class RtgsConnectionService : IRtgsConnectionService
 		catch (Exception e)
 		{
 			aggregateTask?.Exception?.InnerExceptions.ToList()
-				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting rtgs connection"));
+				.ForEach(ex => _logger.LogError(ex, "Error occurred when deleting RTGS connection"));
 
 			throw aggregateTask?.Exception ?? e;
 		}
-	}
-
-	private async Task<CreateConnectionInvitationResponse> CreateAgentConnectionInvitationAsync(
-		string alias,
-		CancellationToken cancellationToken)
-	{
-		const bool autoAccept = true;
-		const bool multiUse = false;
-		const bool usePublicDid = false;
-
-		var createConnectionInvitationResponse = await _connectionsClient.CreateConnectionInvitationAsync(
-			alias,
-			autoAccept,
-			multiUse,
-			usePublicDid,
-			cancellationToken);
-
-		return createConnectionInvitationResponse;
 	}
 }
