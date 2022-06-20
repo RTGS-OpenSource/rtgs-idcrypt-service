@@ -10,51 +10,46 @@ using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenSignMessageForBankRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenSignMessageForRtgsRequest;
 
 public class AndGetEstablishedConnectionThrows
 {
 	private readonly MessageController _controller;
-	private readonly SignMessageForBankRequest _signMessageForBankRequest;
+	private readonly SignMessageForRtgsRequest _signMessageForRtgsRequest;
 
 	public AndGetEstablishedConnectionThrows()
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 		var logger = new FakeLogger<MessageController>();
 
-		_signMessageForBankRequest = new SignMessageForBankRequest
+		_signMessageForRtgsRequest = new SignMessageForRtgsRequest
 		{
-			RtgsGlobalId = "rtgs-global-id",
 			Message = message
 		};
 
 		var jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 
-		var bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
-		bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.GetEstablishedAsync(_signMessageForBankRequest.RtgsGlobalId, It.IsAny<CancellationToken>()))
+		var rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
+		rtgsConnectionRepositoryMock
+			.Setup(repo => repo.GetEstablishedAsync(It.IsAny<CancellationToken>()))
 			.ThrowsAsync(new Exception("No active connection found"));
 
-		var options = Options.Create(new ConnectionsConfig
-		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections",
-			MinimumConnectionAge = TimeSpan.FromMinutes(5)
-		});
+		var options = Options.Create(new ConnectionsConfig());
 
 		_controller = new MessageController(
 			logger,
 			options,
 			Mock.Of<IStorageTableResolver>(),
 			jsonSignaturesClientMock.Object,
-			bankPartnerConnectionRepositoryMock.Object,
-			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>(),
+			rtgsConnectionRepositoryMock.Object,
 			Mock.Of<IWalletClient>());
 	}
 
 	[Fact]
 	public async Task WhenPosting_ThenThrows() =>
 		await FluentActions
-			.Awaiting(() => _controller.SignForBank(_signMessageForBankRequest, default))
+			.Awaiting(() => _controller.SignForRtgs(_signMessageForRtgsRequest, default))
 			.Should()
 			.ThrowAsync<Exception>()
 			.WithMessage("No active connection found");

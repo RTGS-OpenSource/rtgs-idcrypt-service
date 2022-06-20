@@ -6,15 +6,15 @@ using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForRtgs;
 
-public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
+public class GivenMatchingRtgsConnectionExists : IClassFixture<SingleMatchingRtgsConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly SingleMatchingBankPartnerConnectionFixture _testFixture;
+	private readonly SingleMatchingRtgsConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenMatchingBankPartnerConnectionExists(SingleMatchingBankPartnerConnectionFixture testFixture)
+	public GivenMatchingRtgsConnectionExists(SingleMatchingRtgsConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -33,7 +33,7 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 			Message = message
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-bank", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-rtgs", request);
 	}
 
 	public Task DisposeAsync() =>

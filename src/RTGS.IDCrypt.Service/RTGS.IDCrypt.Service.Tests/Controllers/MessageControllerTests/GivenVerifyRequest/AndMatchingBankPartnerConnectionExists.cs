@@ -78,6 +78,7 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object,
 			Mock.Of<IBankPartnerConnectionRepository>(),
+			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IWalletClient>());
 	}
 

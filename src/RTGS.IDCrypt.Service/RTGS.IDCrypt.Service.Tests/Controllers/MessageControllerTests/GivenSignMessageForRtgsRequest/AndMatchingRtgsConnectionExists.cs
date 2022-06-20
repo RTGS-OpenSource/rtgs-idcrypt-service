@@ -13,22 +13,21 @@ using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
 using RTGS.IDCryptSDK.Wallet;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenSignMessageForBankRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.MessageControllerTests.GivenSignMessageForRtgsRequest;
 
-public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
+public class AndMatchingRtgsConnectionExists : IAsyncLifetime
 {
 	private readonly MessageController _controller;
-	private readonly SignMessageForBankRequest _signMessageForBankRequest;
+	private readonly SignMessageForRtgsRequest _signMessageForRtgsRequest;
 	private readonly Mock<IJsonSignaturesClient> _jsonSignaturesClientMock;
 	private IActionResult _response;
 
-	public AndMatchingBankPartnerConnectionExists()
+	public AndMatchingRtgsConnectionExists()
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		_signMessageForBankRequest = new SignMessageForBankRequest
+		_signMessageForRtgsRequest = new SignMessageForRtgsRequest
 		{
-			RtgsGlobalId = "rtgs-global-id-1",
 			Message = message
 		};
 
@@ -40,51 +39,46 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
 
-		var connection = new BankPartnerConnection
+		var connection = new RtgsConnection
 		{
-			PartitionKey = "rtgs-global-id-1",
-			RowKey = "alias-2",
+			PartitionKey = "alias-2",
+			RowKey = "connection-id-2",
 			Alias = "alias-2",
 			ConnectionId = "connection-id-2",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = new DateTime(2022, 01, 02).ToUniversalTime(),
 			Status = "Active",
-			Role = "Inviter"
 		};
 
 		_jsonSignaturesClientMock
 			.Setup(client => client.SignDocumentAsync(
-				_signMessageForBankRequest.Message,
+				_signMessageForRtgsRequest.Message,
 				"connection-id-2",
 				It.IsAny<CancellationToken>()))
 			.ReturnsAsync(signDocumentResponse)
 			.Verifiable();
 
-		var bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
-		bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.GetEstablishedAsync(_signMessageForBankRequest.RtgsGlobalId, It.IsAny<CancellationToken>()))
+		var rtgsConnectionRepositoryMock = new Mock<IRtgsConnectionRepository>();
+		rtgsConnectionRepositoryMock
+			.Setup(repo => repo.GetEstablishedAsync(It.IsAny<CancellationToken>()))
 			.ReturnsAsync(connection);
 
 		var logger = new FakeLogger<MessageController>();
 
-		var options = Options.Create(new ConnectionsConfig
-		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections",
-			MinimumConnectionAge = TimeSpan.FromMinutes(5)
-		});
+		var options = Options.Create(new ConnectionsConfig());
 
 		_controller = new MessageController(
 			logger,
 			options,
 			Mock.Of<IStorageTableResolver>(),
 			_jsonSignaturesClientMock.Object,
-			bankPartnerConnectionRepositoryMock.Object,
-			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>(),
+			rtgsConnectionRepositoryMock.Object,
 			Mock.Of<IWalletClient>());
 	}
 
 	public async Task InitializeAsync() =>
-		_response = await _controller.SignForBank(_signMessageForBankRequest, default);
+		_response = await _controller.SignForRtgs(_signMessageForRtgsRequest, default);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

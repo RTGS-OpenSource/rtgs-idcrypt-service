@@ -56,6 +56,7 @@ public class AndIdCryptAgentAvailable : IAsyncLifetime
 			Mock.Of<IStorageTableResolver>(),
 			_jsonSignaturesClientMock.Object,
 			Mock.Of<IBankPartnerConnectionRepository>(),
+			Mock.Of<IRtgsConnectionRepository>(),
 			_walletClient.Object);
 	}
 

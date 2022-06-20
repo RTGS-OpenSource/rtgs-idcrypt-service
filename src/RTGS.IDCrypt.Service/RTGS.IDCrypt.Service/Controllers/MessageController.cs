@@ -22,6 +22,7 @@ public class MessageController : ControllerBase
 	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
 	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
+	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IWalletClient _walletClient;
 
 	public MessageController(
@@ -30,6 +31,7 @@ public class MessageController : ControllerBase
 		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient,
 		IBankPartnerConnectionRepository bankPartnerConnectionRepository,
+		IRtgsConnectionRepository rtgsConnectionRepository,
 		IWalletClient walletClient)
 	{
 		_logger = logger;
@@ -37,16 +39,17 @@ public class MessageController : ControllerBase
 		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
 		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
+		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_walletClient = walletClient;
 	}
 
-	//// TODO remove this method once sdk/e2e/simulators updated to use new sign/for-bank
-	//[HttpPost("sign")]
-	//[Obsolete("Use SignForBank instead")]
-	//public async Task<IActionResult> Sign(
-	//	SignMessageRequest signMessageRequest,
-	//	CancellationToken cancellationToken) =>
-	//	await SignForBank(signMessageRequest, cancellationToken);
+	// TODO remove this method once sdk/e2e/simulators updated to use new sign/for-bank
+	[HttpPost("sign")]
+	[Obsolete("Use SignForBank instead")]
+	public async Task<IActionResult> Sign(
+		SignMessageForBankRequest signMessageRequest,
+		CancellationToken cancellationToken) =>
+		await SignForBank(signMessageRequest, cancellationToken);
 
 	/// <summary>
 	/// Endpoint to sign a document where the intended recipient is a bank.
@@ -62,7 +65,27 @@ public class MessageController : ControllerBase
 		var connection =
 			await _bankPartnerConnectionRepository.GetEstablishedAsync(signMessageForBankRequest.RtgsGlobalId, cancellationToken);
 
-		var signMessageResponse = await Sign(signMessageForBankRequest.Message, connection.ConnectionId, connection.RowKey,
+		var signMessageResponse = await Sign(signMessageForBankRequest.Message, connection.ConnectionId, connection.Alias,
+			cancellationToken);
+
+		return Ok(signMessageResponse);
+	}
+
+	/// <summary>
+	/// Endpoint to sign a document where the intended recipient is RTGS.
+	/// </summary>
+	/// <param name="signMessageForRtgsRequest">The data required to sign a message.</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="SignDocumentResponse"/></returns>
+	[HttpPost("sign/for-rtgs")]
+	public async Task<IActionResult> SignForRtgs(
+		SignMessageForRtgsRequest signMessageForRtgsRequest,
+		CancellationToken cancellationToken)
+	{
+		var connection =
+			await _rtgsConnectionRepository.GetEstablishedAsync(cancellationToken);
+
+		var signMessageResponse = await Sign(signMessageForRtgsRequest.Message, connection.ConnectionId, connection.Alias,
 			cancellationToken);
 
 		return Ok(signMessageResponse);

@@ -44,6 +44,7 @@ public class AndIdCryptVerifyPublicSignatureUnavailable
 			Mock.Of<IStorageTableResolver>(),
 			jsonSignaturesClientMock.Object,
 			Mock.Of<IBankPartnerConnectionRepository>(),
+			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IWalletClient>());
 	}
 

@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using RTGS.IDCrypt.Service.Contracts.Message.Sign;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank;

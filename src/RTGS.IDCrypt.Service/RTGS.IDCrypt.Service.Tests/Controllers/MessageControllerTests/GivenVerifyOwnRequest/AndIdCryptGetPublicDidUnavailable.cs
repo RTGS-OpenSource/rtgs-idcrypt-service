@@ -39,6 +39,7 @@ public class AndIdCryptAgentApiUnavailable
 			Mock.Of<IStorageTableResolver>(),
 			Mock.Of<IJsonSignaturesClient>(),
 			Mock.Of<IBankPartnerConnectionRepository>(),
+			Mock.Of<IRtgsConnectionRepository>(),
 			walletClient.Object);
 	}
 

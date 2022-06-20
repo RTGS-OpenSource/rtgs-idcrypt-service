@@ -6,15 +6,15 @@ using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForRtgs;
 
-public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingConnectionFixture>, IAsyncLifetime
+public class GivenNoMatchingRtgsConnectionExists : IClassFixture<NoMatchingConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly NoMatchingConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenNoMatchingBankPartnerConnectionExists(NoMatchingConnectionFixture testFixture)
+	public GivenNoMatchingRtgsConnectionExists(NoMatchingConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -25,13 +25,12 @@ public class GivenNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchi
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		var request = new SignMessageForBankRequest
+		var request = new SignMessageForRtgsRequest
 		{
-			RtgsGlobalId = "rtgs-global-id",
 			Message = message
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-bank", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-rtgs", request);
 	}
 
 	public Task DisposeAsync() =>

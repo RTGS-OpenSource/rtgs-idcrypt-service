@@ -8,13 +8,13 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.GivenVerifyRequest;
 
-public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingBankPartnerConnectionFixture>, IAsyncLifetime
+public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly NoMatchingBankPartnerConnectionFixture _testFixture;
+	private readonly NoMatchingConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public AndNoMatchingBankPartnerConnectionExists(NoMatchingBankPartnerConnectionFixture testFixture)
+	public AndNoMatchingBankPartnerConnectionExists(NoMatchingConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
