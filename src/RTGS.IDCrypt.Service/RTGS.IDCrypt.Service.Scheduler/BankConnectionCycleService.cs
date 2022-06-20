@@ -36,7 +36,7 @@ public class BankConnectionCycleService : IHostedService
 
 		var failed = false;
 
-		await Parallel.ForEachAsync(partnerIds, cancellationToken, async (partnerId, innerCancellationToken) =>
+		await Parallel.ForEachAsync(partnerIds!, cancellationToken, async (partnerId, innerCancellationToken) =>
 		{
 			{
 				var cycleConnectionRequest = new CycleConnectionRequest { RtgsGlobalId = partnerId };

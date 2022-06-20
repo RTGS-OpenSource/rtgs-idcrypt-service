@@ -4,13 +4,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 
-namespace RTGS.IDCrypt.Service.Scheduler.Tests.HostedServices.BankConnectionCycleServiceTests.GivenTimerTriggered;
+namespace RTGS.IDCrypt.Service.Scheduler.Tests.BankConnectionCycleServiceTests.GivenTimerTriggered;
 
 public class AndNoPartnerIdsReturned : IAsyncLifetime
 {
-	private readonly Mock<ILogger<BankConnectionCycleService>> _loggerMock;
-	private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
-	private readonly Mock<IHostApplicationLifetime> _hostApplicationLifetimeMock;
 	private readonly StatusCodeHttpHandler _statusCodeHandler;
 	private readonly BankConnectionCycleService _bankConnectionCycleService;
 
@@ -26,16 +23,16 @@ public class AndNoPartnerIdsReturned : IAsyncLifetime
 			BaseAddress = new Uri("https://localhost")
 		};
 
-		_loggerMock = new Mock<ILogger<BankConnectionCycleService>>();
-		_hostApplicationLifetimeMock = new Mock<IHostApplicationLifetime>();
+		var loggerMock = new Mock<ILogger<BankConnectionCycleService>>();
+		var hostApplicationLifetimeMock = new Mock<IHostApplicationLifetime>();
 
-		_httpClientFactoryMock = new Mock<IHttpClientFactory>();
-		_httpClientFactoryMock
+		var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+		httpClientFactoryMock
 			.Setup(factory => factory.CreateClient("IdCryptServiceClient"))
 			.Returns(client);
 
 		_bankConnectionCycleService =
-			new BankConnectionCycleService(_loggerMock.Object, _hostApplicationLifetimeMock.Object, _httpClientFactoryMock.Object);
+			new BankConnectionCycleService(loggerMock.Object, hostApplicationLifetimeMock.Object, httpClientFactoryMock.Object);
 	}
 
 	public async Task InitializeAsync() =>
