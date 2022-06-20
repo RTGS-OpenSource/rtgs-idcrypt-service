@@ -16,8 +16,8 @@ env:
   NUGET_URL: https://api.nuget.org/v3/index.json
   DOTNET_NOLOGO: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  SERVICE_DOCKER_FILE: ${{env.SOLUTION_FOLDER}}/RTGS.IDCrypt.Service/Dockerfile
-  SCHEDULER_DOCKER_FILE: ${{env.SOLUTION_FOLDER}}/RTGS.IDCrypt.Service.Scheduler/Dockerfile
+  SERVICE_DOCKER_FILE: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service/Dockerfile
+  SCHEDULER_DOCKER_FILE: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service.Scheduler/Dockerfile
 
 jobs:
   build-and-test:
