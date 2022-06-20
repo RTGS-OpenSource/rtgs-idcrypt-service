@@ -46,7 +46,6 @@ public class AndNotifyingPartnerThrows
 			_basicMessageClientMock.Object);
 	}
 
-
 	[Fact]
 	public async Task WhenInvoked_ThenLog()
 	{

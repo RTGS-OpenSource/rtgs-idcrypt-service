@@ -36,8 +36,8 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 		};
 
 		await InsertBankPartnerConnectionAsync(bankPartnerConnection);
-
 	}
+
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>
 			services

@@ -14,6 +14,10 @@ env:
   SOLUTION_FOLDER: src/RTGS.IDCrypt.Service/
   CONTRACTS_FOLDER: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service.Contracts/
   NUGET_URL: https://api.nuget.org/v3/index.json
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  SERVICE_DOCKER_FILE: ${{env.SOLUTION_FOLDER}}/RTGS.IDCrypt.Service/Dockerfile
+  SCHEDULER_DOCKER_FILE: ${{env.SOLUTION_FOLDER}}/RTGS.IDCrypt.Service.Scheduler/Dockerfile
 
 jobs:
   build-and-test:
@@ -29,8 +33,10 @@ jobs:
         run: dotnet format ${{env.SOLUTION_FOLDER}} --verify-no-changes
       - name: Run Azurite Table Storage
         run: docker run --name azurite -d -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite-table --tableHost 0.0.0.0 --tablePort 10002
-      - name: Build & run tests
-        run: docker build ${{env.SOLUTION_FOLDER}} --target build --network=host
+      - name: Build & run ID Crypt Service tests
+        run: docker build -f ${{env.SERVICE_DOCKER_FILE}} ${{env.SOLUTION_FOLDER}} --target build --network=host
+      - name: Build & run ID Crypt Service Scheduler tests
+        run: docker build -f ${{env.SCHEDULER_DOCKER_FILE}} ${{env.SOLUTION_FOLDER}} --target build --network=host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
 
@@ -55,12 +61,21 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Run Azurite Table Storage
         run: docker run --name azurite -d -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite-table --tableHost 0.0.0.0 --tablePort 10002
-      - name: Build and push Docker images
+      - name: Build and push Service Docker image
         uses: docker/build-push-action@v2
         with:
+          file: ${{env.SERVICE_DOCKER_FILE}}
           context: ${{env.SOLUTION_FOLDER}}
           push: true
-          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:${{ github.run_number }}
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:service-${{ github.run_number }}
+          network: host
+      - name: Build and push Scheduler Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: ${{env.SCHEDULER_DOCKER_FILE}}
+          context: ${{env.SOLUTION_FOLDER}}
+          push: true
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:scheduler-${{ github.run_number }}
           network: host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
@@ -101,12 +116,21 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Run Azurite Table Storage
         run: docker run --name azurite -d -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite-table --tableHost 0.0.0.0 --tablePort 10002
-      - name: Build and push Docker images
+      - name: Build and push Service Docker image
         uses: docker/build-push-action@v2
         with:
+          file: ${{env.SERVICE_DOCKER_FILE}}
           context: ${{env.SOLUTION_FOLDER}}
           push: true
-          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:${{ github.run_number }}
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:service-${{ github.run_number }}
+          network: host
+      - name: Build and push Scheduler Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: ${{env.SCHEDULER_DOCKER_FILE}}
+          context: ${{env.SOLUTION_FOLDER}}
+          push: true
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:scheduler-${{ github.run_number }}
           network: host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
