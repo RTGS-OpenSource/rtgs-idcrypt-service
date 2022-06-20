@@ -1,7 +1,5 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/runtime:6.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
@@ -21,9 +19,12 @@ RUN dotnet restore RTGS.IDCrypt.Service.sln
 WORKDIR "/src"
 COPY --chown=devops:devops . .
 RUN dotnet build -c Release --no-restore
-RUN dotnet test -c Release -o /app/test --no-restore --filter "RTGS.IDCrypt.Service.*Tests"
-RUN chown -R devops:devops /src/RTGS.IDCrypt.Service/obj/ \
-		&& chown -R devops:devops /src/RTGS.IDCrypt.Service/bin/
+RUN dotnet test -c Release -o /app/test --no-restore "./RTGS.IDCrypt.Service.Scheduler.Tests/RTGS.IDCrypt.Service.Scheduler.Tests.csproj"; \
+    exit_code=$?; \
+    dotnet test -c Release -o /app/test --no-restore "./RTGS.IDCrypt.Service.Scheduler.IntegrationTests/RTGS.IDCrypt.Service.Scheduler.IntegrationTests.csproj"; \
+    exit $(( $exit_code || $? ))
+RUN chown -R devops:devops /src/RTGS.IDCrypt.Service.Scheduler/obj/ \
+		&& chown -R devops:devops /src/RTGS.IDCrypt.Service.Scheduler/bin/
 
 FROM build AS publish
 WORKDIR "/src"
@@ -32,4 +33,4 @@ RUN dotnet publish "./RTGS.IDCrypt.Service.Scheduler/RTGS.IDCrypt.Service.Schedu
 FROM base AS final
 WORKDIR "/app"
 COPY --from=publish /devops/publish .
-ENTRYPOINT ["RTGS.IDCrypt.Service.Scheduler.exe"]
+ENTRYPOINT ["RTGS.IDCrypt.Service.Scheduler"]	
