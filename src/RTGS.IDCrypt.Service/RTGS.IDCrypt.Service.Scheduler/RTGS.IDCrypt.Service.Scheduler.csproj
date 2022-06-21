@@ -8,20 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="BankConnectionCycleException.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Properties\launchSettings.json" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="BankConnectionCycleException.cs">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="Properties\launchSettings.json">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         <CopyToPublishDirectory>Never</CopyToPublishDirectory>

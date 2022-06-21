@@ -6,7 +6,7 @@
       "environmentVariables": {
         "RtgsGlobalId": "rtgs-global-id",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "IdCryptServiceAddress": "http://localhost"
+        "IdCryptServiceAddress": "https://localhost:7107"
       },
       "dotnetRunMessages": true
     }
