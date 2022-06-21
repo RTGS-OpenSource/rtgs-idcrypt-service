@@ -11,26 +11,31 @@ public class ConnectionController : ControllerBase
 {
 	[HttpPost("for-rtgs")]
 	public IActionResult ForRtgs(CancellationToken cancellationToken = default) =>
-		RedirectPermanentPreserveMethod("/api/rtgs-connection/create");
+		Redirect("/api/rtgs-connection/create", cancellationToken);
 
 	[HttpPost("cycle")]
 	public IActionResult Cycle(CycleConnectionRequest request) =>
-		RedirectPermanentPreserveMethod("/api/bank-connection/cycle");
+		Redirect("/api/bank-connection/cycle", request);
 
 	[HttpPost("for-bank")]
 	public IActionResult ForBank(CreateConnectionInvitationForBankRequest request, CancellationToken cancellationToken = default) =>
-		RedirectPermanentPreserveMethod("/api/bank-connection/create");
+		Redirect("/api/bank-connection/create", request, cancellationToken);
 
 	[HttpPost("accept")]
-	public ActionResult Accept(
-		AcceptConnectionInvitationRequest request, CancellationToken cancellationToken = default) =>
-		RedirectPermanentPreserveMethod("/api/bank-connection/accept");
+	public IActionResult Accept(AcceptConnectionInvitationRequest request, CancellationToken cancellationToken = default) =>
+		Redirect("/api/bank-connection/accept", request, cancellationToken);
 
 	[HttpDelete("{connectionId}")]
 	public IActionResult Delete(string connectionId, CancellationToken cancellationToken = default) =>
-		RedirectPermanentPreserveMethod($"/api/bank-connection/{connectionId}");
+		Redirect($"/api/bank-connection/{connectionId}", connectionId, cancellationToken);
 
 	[HttpGet("InvitedPartnerIds")]
-	public ActionResult InvitedPartnerIds(CancellationToken cancellationToken = default) =>
-		RedirectPermanentPreserveMethod("/api/bank-connection/InvitedPartnerIds");
+	public IActionResult InvitedPartnerIds(CancellationToken cancellationToken = default) =>
+		Redirect("/api/bank-connection/InvitedPartnerIds", cancellationToken);
+
+	private IActionResult Redirect(string url, params object[] args)
+	{
+		Console.WriteLine(args.Length);
+		return RedirectPermanentPreserveMethod(url);
+	}
 }
