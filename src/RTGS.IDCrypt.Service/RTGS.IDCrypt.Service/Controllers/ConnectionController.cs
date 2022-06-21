@@ -24,7 +24,7 @@ public class ConnectionController : ControllerBase
 	[HttpPost("accept")]
 	public ActionResult Accept(
 		AcceptConnectionInvitationRequest request, CancellationToken cancellationToken = default) =>
-		RedirectPermanentPreserveMethod("a/pi/bank-connection/accept");
+		RedirectPermanentPreserveMethod("/api/bank-connection/accept");
 
 	[HttpDelete("{connectionId}")]
 	public IActionResult Delete(string connectionId, CancellationToken cancellationToken = default) =>
