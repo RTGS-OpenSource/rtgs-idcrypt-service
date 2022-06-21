@@ -18,7 +18,7 @@ public class WhenIdCryptServiceAddressSet : IClassFixture<TestFixture>
 	public async Task ThenBaseAddressSet()
 	{
 		_testFixture.Server
-			.Given(Request.Create().WithPath("/api/connection/InvitedPartnerIds"))
+			.Given(Request.Create().WithPath("/api/bank-connection/InvitedPartnerIds"))
 			.RespondWith(
 				Response.Create()
 					.WithStatusCode(200)
@@ -28,7 +28,7 @@ public class WhenIdCryptServiceAddressSet : IClassFixture<TestFixture>
 		_testFixture.Server
 			.Given(Request.Create()
 				.WithHeader("Content-Type", "application/json; charset=utf-8")
-				.WithPath("/api/connection/cycle")
+				.WithPath("/api/bank-connection/cycle")
 				.WithBody("{\"rtgsGlobalId\":\"12345\"}")
 			)
 			.RespondWith(
@@ -39,7 +39,7 @@ public class WhenIdCryptServiceAddressSet : IClassFixture<TestFixture>
 		_testFixture.Server
 			.Given(Request.Create()
 				.WithHeader("Content-Type", "application/json; charset=utf-8")
-				.WithPath("/api/connection/cycle")
+				.WithPath("/api/bank-connection/cycle")
 				.WithBody("{\"rtgsGlobalId\":\"67890\"}")
 			)
 			.RespondWith(

@@ -14,8 +14,8 @@ public class AndNoPartnerIdsReturned : IAsyncLifetime
 	public AndNoPartnerIdsReturned()
 	{
 		_statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithOkResponse(new HttpRequestResponseContext("/api/connection/InvitedPartnerIds", "[]"))
-			.WithOkResponse(new HttpRequestResponseContext("/api/connection/cycle", string.Empty))
+			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/InvitedPartnerIds", "[]"))
+			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/cycle", string.Empty))
 			.Build();
 
 		var client = new HttpClient(_statusCodeHandler)
@@ -42,9 +42,9 @@ public class AndNoPartnerIdsReturned : IAsyncLifetime
 
 	[Fact]
 	public void ThenShouldGetInvitedPartnersFromService() =>
-		_statusCodeHandler.Requests.Should().ContainKey("/api/connection/InvitedPartnerIds");
+		_statusCodeHandler.Requests.Should().ContainKey("/api/bank-connection/InvitedPartnerIds");
 
 	[Fact]
 	public void ThenShouldNotCallCycleForEachInvitedPartner() =>
-		_statusCodeHandler.Requests.Should().NotContainKey("/api/connection/cycle");
+		_statusCodeHandler.Requests.Should().NotContainKey("/api/bank-connection/cycle");
 }

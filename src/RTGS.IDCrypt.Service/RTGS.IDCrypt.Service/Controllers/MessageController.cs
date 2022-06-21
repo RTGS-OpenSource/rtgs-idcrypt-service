@@ -33,14 +33,6 @@ public class MessageController : ControllerBase
 		_walletClient = walletClient;
 	}
 
-	// TODO remove this method once sdk/e2e/simulators updated to use new sign/for-bank
-	[HttpPost("sign")]
-	[Obsolete("Use SignForBank instead")]
-	public async Task<IActionResult> Sign(
-		SignMessageForBankRequest signMessageRequest,
-		CancellationToken cancellationToken) =>
-		await SignForBank(signMessageRequest, cancellationToken);
-
 	/// <summary>
 	/// Endpoint to sign a document where the intended recipient is a bank.
 	/// </summary>

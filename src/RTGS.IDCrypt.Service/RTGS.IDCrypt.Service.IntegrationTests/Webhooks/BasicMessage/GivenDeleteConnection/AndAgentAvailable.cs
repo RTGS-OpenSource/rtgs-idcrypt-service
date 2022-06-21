@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.BankConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;

@@ -26,7 +26,7 @@ public class BankConnectionCycleService : IHostedService
 
 		try
 		{
-			partnerIds = await _httpClient.GetFromJsonAsync<string[]>("/api/connection/InvitedPartnerIds", cancellationToken);
+			partnerIds = await _httpClient.GetFromJsonAsync<string[]>("/api/bank-connection/InvitedPartnerIds", cancellationToken);
 		}
 		catch (Exception exception)
 		{
@@ -46,7 +46,7 @@ public class BankConnectionCycleService : IHostedService
 
 			try
 			{
-				var response = await _httpClient.PostAsJsonAsync("/api/connection/cycle", cycleConnectionRequest,
+				var response = await _httpClient.PostAsJsonAsync("/api/bank-connection/cycle", cycleConnectionRequest,
 					innerCancellationToken);
 
 				response.EnsureSuccessStatusCode();

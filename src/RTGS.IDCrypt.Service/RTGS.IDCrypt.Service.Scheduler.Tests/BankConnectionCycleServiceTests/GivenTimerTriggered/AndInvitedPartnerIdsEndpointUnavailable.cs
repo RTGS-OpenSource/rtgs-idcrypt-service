@@ -15,7 +15,7 @@ public class AndInvitedPartnerIdsEndpointUnavailable
 	public AndInvitedPartnerIdsEndpointUnavailable()
 	{
 		StatusCodeHttpHandler statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithServiceUnavailableResponse("/api/connection/InvitedPartnerIds")
+			.WithServiceUnavailableResponse("/api/bank-connection/InvitedPartnerIds")
 			.Build();
 
 		var client = new HttpClient(statusCodeHandler)
