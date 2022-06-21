@@ -28,6 +28,6 @@ public class AndConnectionsExist : IClassFixture<InvitedPartnerIdsConnectionFixt
 	{
 		var rtgsGlobalIds = await _httpResponse.Content.ReadFromJsonAsync<string[]>();
 
-		rtgsGlobalIds.Should().BeEquivalentTo("rtgs-global-id", "rtgs-global-id-1");
+		rtgsGlobalIds.Should().BeEquivalentTo("rtgs-global-id", "rtgs-global-id-1", "rtgs-global-id-2");
 	}
 }

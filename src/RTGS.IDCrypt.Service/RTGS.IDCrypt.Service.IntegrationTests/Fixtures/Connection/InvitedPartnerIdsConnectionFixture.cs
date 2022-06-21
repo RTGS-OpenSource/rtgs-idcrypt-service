@@ -27,6 +27,10 @@ public class InvitedPartnerIdsConnectionFixture : ConnectionsTestFixtureBase
 			// partner with no active connections as Invitee
 			("rtgs-global-id-2", "Pending", "Invitee"),
 			("rtgs-global-id-2", "Active", "Inviter"),
+
+			// partner with no active connections as Inviter
+			("rtgs-global-id-3", "Pending", "Invitee"),
+			("rtgs-global-id-3", "Pending", "Inviter")
 		};
 
 		var bankPartnerConnections = partners.Select(partner => new BankPartnerConnection
