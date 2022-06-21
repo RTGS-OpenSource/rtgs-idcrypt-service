@@ -69,7 +69,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 				= await tableClient.QueryAsync<BankPartnerConnection>(
 					bankPartnerConnection =>
 						bankPartnerConnection.Status == ConnectionStatuses.Active &&
-						bankPartnerConnection.Role == ConnectionRoles.Invitee,
+						bankPartnerConnection.Role == ConnectionRoles.Inviter,
 					cancellationToken: cancellationToken,
 					select: new[] { "PartitionKey" })
 				.ToListAsync(cancellationToken);
