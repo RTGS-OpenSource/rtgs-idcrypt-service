@@ -10,13 +10,7 @@ public static class Program
 {
 	public static async Task<int> Main(string[] args)
 	{
-		Log.Logger = new LoggerConfiguration()
-			.MinimumLevel.Debug()
-			.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-			.Enrich.FromLogContext()
-			.WriteTo.Console()
-			.WriteTo.ApplicationInsights(TelemetryConverter.Traces)
-			.CreateLogger();
+		CreateSerilogLogger();
 
 		TelemetryClient telemetryClient = null;
 		IHost host = null;
@@ -29,9 +23,13 @@ public static class Program
 					services.AddRtgsDependencies(context.Configuration);
 					services.AddHostedService<BankConnectionCycleService>();
 				})
-				.UseSerilog((_, provider, _) =>
-					telemetryClient = provider.GetRequiredService<TelemetryClient>()
-				)
+				.UseSerilog((_, provider, config) =>
+				{
+					telemetryClient = provider.GetRequiredService<TelemetryClient>();
+
+					ConfigureLogging(config)
+						.WriteTo.ApplicationInsights(telemetryClient, TelemetryConverter.Traces);
+				})
 				.Build();
 
 			await host.RunAsync();
@@ -53,4 +51,15 @@ public static class Program
 			host?.Dispose();
 		}
 	}
+
+	private static void CreateSerilogLogger() =>
+		Log.Logger = ConfigureLogging(new LoggerConfiguration())
+			.CreateLogger();
+
+	private static LoggerConfiguration ConfigureLogging(LoggerConfiguration loggerConfiguration) =>
+		loggerConfiguration
+			.MinimumLevel.Debug()
+			.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+			.Enrich.FromLogContext()
+			.WriteTo.Console();
 }
