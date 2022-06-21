@@ -9,6 +9,10 @@ namespace RTGS.IDCrypt.Service.Controllers;
 [Obsolete]
 public class ConnectionController : ControllerBase
 {
+	[HttpPost("for-rtgs")]
+	public IActionResult ForRtgs(CancellationToken cancellationToken = default) =>
+		RedirectPermanentPreserveMethod("/api/rtgs-connection/create");
+
 	[HttpPost("cycle")]
 	public IActionResult Cycle(CycleConnectionRequest request) =>
 		RedirectPermanentPreserveMethod("/api/bank-connection/cycle");
@@ -16,10 +20,6 @@ public class ConnectionController : ControllerBase
 	[HttpPost("for-bank")]
 	public IActionResult ForBank(CreateConnectionInvitationForBankRequest request, CancellationToken cancellationToken = default) =>
 		RedirectPermanentPreserveMethod("/api/bank-connection/create");
-
-	[HttpPost("for-rtgs")]
-	public IActionResult ForRtgs(CancellationToken cancellationToken = default) =>
-		RedirectPermanentPreserveMethod("/api/rtgs-connection/create");
 
 	[HttpPost("accept")]
 	public ActionResult Accept(
