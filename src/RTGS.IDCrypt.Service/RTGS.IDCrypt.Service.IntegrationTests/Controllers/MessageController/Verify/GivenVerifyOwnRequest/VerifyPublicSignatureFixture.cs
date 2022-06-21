@@ -1,4 +1,4 @@
-﻿using RTGS.IDCrypt.Service.IntegrationTests.Controllers.ConnectionController.TestData;
+﻿using RTGS.IDCrypt.Service.IntegrationTests.Controllers.BankConnectionController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures;

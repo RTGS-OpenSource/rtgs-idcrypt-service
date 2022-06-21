@@ -16,8 +16,8 @@ public class AndMultiplePartnerIdsReturned : IAsyncLifetime
 	public AndMultiplePartnerIdsReturned()
 	{
 		_statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithOkResponse(new HttpRequestResponseContext("/api/connection/InvitedPartnerIds", JsonSerializer.Serialize(_partnerIds)))
-			.WithOkResponse(new HttpRequestResponseContext("/api/connection/cycle", string.Empty))
+			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/InvitedPartnerIds", JsonSerializer.Serialize(_partnerIds)))
+			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/cycle", string.Empty))
 			.Build();
 
 		var client = new HttpClient(_statusCodeHandler)
@@ -44,11 +44,11 @@ public class AndMultiplePartnerIdsReturned : IAsyncLifetime
 
 	[Fact]
 	public void ThenShouldGetInvitedPartnersFromService() =>
-		_statusCodeHandler.Requests.Should().ContainKey("/api/connection/InvitedPartnerIds");
+		_statusCodeHandler.Requests.Should().ContainKey("/api/bank-connection/InvitedPartnerIds");
 
 	[Fact]
 	public async Task ThenShouldCallCycleForEachInvitedPartner() =>
-		(await Task.WhenAll(_statusCodeHandler.Requests["/api/connection/cycle"]
+		(await Task.WhenAll(_statusCodeHandler.Requests["/api/bank-connection/cycle"]
 			.Select(async request => await request.Content!.ReadAsStringAsync())))
 			.Should().Contain(_partnerIds.Select(id => @$"{{""rtgsGlobalId"":""{id}""}}"));
 }
