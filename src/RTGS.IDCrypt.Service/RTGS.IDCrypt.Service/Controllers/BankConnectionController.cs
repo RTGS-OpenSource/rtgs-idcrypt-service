@@ -23,9 +23,9 @@ public class BankConnectionController : ControllerBase
 	}
 
 	[HttpPost("cycle")]
-	public async Task<IActionResult> Cycle(CycleConnectionRequest request)
+	public async Task<IActionResult> Cycle(CycleConnectionRequest request, CancellationToken cancellationToken = default)
 	{
-		await _bankConnectionService.CycleAsync(request.RtgsGlobalId);
+		await _bankConnectionService.CycleAsync(request.RtgsGlobalId, cancellationToken);
 
 		return Ok();
 	}
