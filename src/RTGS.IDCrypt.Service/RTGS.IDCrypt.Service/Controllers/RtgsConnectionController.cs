@@ -11,9 +11,7 @@ public class RtgsConnectionController : ControllerBase
 {
 	private readonly IRtgsConnectionService _rtgsConnectionService;
 
-
-	public RtgsConnectionController(
-		IRtgsConnectionService rtgsConnectionService)
+	public RtgsConnectionController(IRtgsConnectionService rtgsConnectionService)
 	{
 		_rtgsConnectionService = rtgsConnectionService;
 	}

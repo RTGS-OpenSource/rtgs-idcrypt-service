@@ -2,7 +2,7 @@
 using RTGS.IDCrypt.Service.Controllers;
 using RTGS.IDCrypt.Service.Services;
 
-namespace RTGS.IDCrypt.Service.Tests.Controllers.ConnectionControllerTests.GivenCreateConnectionInvitationForRtgsRequest;
+namespace RTGS.IDCrypt.Service.Tests.Controllers.RtgsConnectionControllerTests.GivenCreateConnectionInvitationRequest;
 
 public class AndConnectionServiceUnavailable
 {

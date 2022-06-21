@@ -93,7 +93,7 @@ public class BankConnectionController : ControllerBase
 	}
 
 	/// <summary>
-	/// Endpoint to return distinct list of RtgsGlobalIds for Active partner backs that were Invited by us.
+	/// Endpoint to return distinct list of RtgsGlobalIds for active partner banks that were Invited by us.
 	/// </summary>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="OkObjectResult"/></returns>
