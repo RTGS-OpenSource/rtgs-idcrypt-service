@@ -1,12 +1,9 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.Controllers;
-using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.Wallet;
@@ -40,10 +37,9 @@ public class AndIdCryptVerifyPublicSignatureUnavailable
 
 		_controller = new MessageController(
 			_logger,
-			Mock.Of<IOptions<ConnectionsConfig>>(),
-			Mock.Of<IStorageTableResolver>(),
 			jsonSignaturesClientMock.Object,
-			Mock.Of<IDateTimeProvider>(),
+			Mock.Of<IBankPartnerConnectionRepository>(),
+			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IWalletClient>());
 	}
 

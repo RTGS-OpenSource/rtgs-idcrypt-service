@@ -8,13 +8,13 @@ using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.GivenVerifyRequest;
 
-public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingBankPartnerConnectionFixture>, IAsyncLifetime
+public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatchingConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly NoMatchingBankPartnerConnectionFixture _testFixture;
+	private readonly NoMatchingConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public AndNoMatchingBankPartnerConnectionExists(NoMatchingBankPartnerConnectionFixture testFixture)
+	public AndNoMatchingBankPartnerConnectionExists(NoMatchingConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -44,6 +44,6 @@ public class AndNoMatchingBankPartnerConnectionExists : IClassFixture<NoMatching
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Keys.Should().NotContain(VerifyPrivateSignature.Path);
 
 	[Fact]
-	public void ThenNotFoundResponseReceived() =>
-		_httpResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+	public void ThenInternalServerErrorResponseReceived() =>
+		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 }

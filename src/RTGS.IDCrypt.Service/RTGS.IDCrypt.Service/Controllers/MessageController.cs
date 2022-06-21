@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using RTGS.IDCrypt.Service.Config;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using RTGS.IDCrypt.Service.Contracts.Message.Sign;
 using RTGS.IDCrypt.Service.Contracts.Message.Verify;
-using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.Models;
-using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.JsonSignatures.Models;
 using RTGS.IDCryptSDK.Wallet;
@@ -17,83 +14,69 @@ namespace RTGS.IDCrypt.Service.Controllers;
 public class MessageController : ControllerBase
 {
 	private readonly ILogger<MessageController> _logger;
-	private readonly ConnectionsConfig _connectionsConfig;
-	private readonly IStorageTableResolver _storageTableResolver;
 	private readonly IJsonSignaturesClient _jsonSignaturesClient;
-	private readonly IDateTimeProvider _dateTimeProvider;
+	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
+	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IWalletClient _walletClient;
 
 	public MessageController(
 		ILogger<MessageController> logger,
-		IOptions<ConnectionsConfig> connectionsConfig,
-		IStorageTableResolver storageTableResolver,
 		IJsonSignaturesClient jsonSignaturesClient,
-		IDateTimeProvider dateTimeProvider,
+		IBankPartnerConnectionRepository bankPartnerConnectionRepository,
+		IRtgsConnectionRepository rtgsConnectionRepository,
 		IWalletClient walletClient)
 	{
 		_logger = logger;
-		_connectionsConfig = connectionsConfig.Value;
-		_storageTableResolver = storageTableResolver;
 		_jsonSignaturesClient = jsonSignaturesClient;
-		_dateTimeProvider = dateTimeProvider;
+		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
+		_rtgsConnectionRepository = rtgsConnectionRepository;
 		_walletClient = walletClient;
 	}
 
+	// TODO remove this method once sdk/e2e/simulators updated to use new sign/for-bank
+	[HttpPost("sign")]
+	[Obsolete("Use SignForBank instead")]
+	public async Task<IActionResult> Sign(
+		SignMessageForBankRequest signMessageRequest,
+		CancellationToken cancellationToken) =>
+		await SignForBank(signMessageRequest, cancellationToken);
+
 	/// <summary>
-	/// Endpoint to sign a document.
+	/// Endpoint to sign a document where the intended recipient is a bank.
 	/// </summary>
-	/// <param name="signMessageRequest">The data required to sign a message.</param>
+	/// <param name="signMessageForBankRequest">The data required to sign a message.</param>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="SignDocumentResponse"/></returns>
-	[HttpPost("sign")]
-	public async Task<IActionResult> Sign(
-		SignMessageRequest signMessageRequest,
+	[HttpPost("sign/for-bank")]
+	public async Task<IActionResult> SignForBank(
+		SignMessageForBankRequest signMessageForBankRequest,
 		CancellationToken cancellationToken)
 	{
-		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+		var connection =
+			await _bankPartnerConnectionRepository.GetEstablishedAsync(signMessageForBankRequest.RtgsGlobalId, cancellationToken);
 
-		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
+		var signMessageResponse = await Sign(signMessageForBankRequest.Message, connection.ConnectionId, connection.Alias,
+			cancellationToken);
 
-		var bankPartnerConnections = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-			.Where(bankPartnerConnection =>
-				bankPartnerConnection.PartitionKey == signMessageRequest.RtgsGlobalId
-				&& bankPartnerConnection.ActivatedAt <= dateThreshold
-				&& bankPartnerConnection.Status == ConnectionStatuses.Active).ToList();
+		return Ok(signMessageResponse);
+	}
 
-		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.ActivatedAt);
+	/// <summary>
+	/// Endpoint to sign a document where the intended recipient is RTGS.
+	/// </summary>
+	/// <param name="signMessageForRtgsRequest">The data required to sign a message.</param>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="SignDocumentResponse"/></returns>
+	[HttpPost("sign/for-rtgs")]
+	public async Task<IActionResult> SignForRtgs(
+		SignMessageForRtgsRequest signMessageForRtgsRequest,
+		CancellationToken cancellationToken)
+	{
+		var connection =
+			await _rtgsConnectionRepository.GetEstablishedAsync(cancellationToken);
 
-		if (bankPartnerConnection is null)
-		{
-			_logger.LogError(
-				"No activated bank partner connection found for RTGS Global ID {RtgsGlobalId}",
-				signMessageRequest.RtgsGlobalId);
-
-			return NotFound(new { Error = "No activated bank partner connection found, please try again in a few minutes." });
-		}
-
-		SignDocumentResponse signDocumentResponse;
-
-		try
-		{
-			signDocumentResponse = await _jsonSignaturesClient.SignDocumentAsync(
-				signMessageRequest.Message,
-				bankPartnerConnection.ConnectionId,
-				cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error occurred when signing JSON document");
-
-			throw;
-		}
-
-		var signMessageResponse = new SignMessageResponse
-		{
-			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
-			PublicDidSignature = signDocumentResponse.PublicDidSignature,
-			Alias = bankPartnerConnection.RowKey
-		};
+		var signMessageResponse = await Sign(signMessageForRtgsRequest.Message, connection.ConnectionId, connection.Alias,
+			cancellationToken);
 
 		return Ok(signMessageResponse);
 	}
@@ -109,28 +92,8 @@ public class MessageController : ControllerBase
 		VerifyRequest verifyRequest,
 		CancellationToken cancellationToken = default)
 	{
-		var bankPartnerConnectionsTable = _storageTableResolver.GetTable(
-			_connectionsConfig.BankPartnerConnectionsTableName);
-
-		var bankPartnerConnections = bankPartnerConnectionsTable
-			.Query<BankPartnerConnection>(cancellationToken: cancellationToken)
-			.Where(bankPartnerConnection =>
-				bankPartnerConnection.PartitionKey == verifyRequest.RtgsGlobalId
-				&& bankPartnerConnection.RowKey == verifyRequest.Alias
-				&& bankPartnerConnection.Status == ConnectionStatuses.Active)
-			.ToList();
-
-		if (!bankPartnerConnections.Any())
-		{
-			_logger.LogError(
-				"No bank partner connection found for RTGS Global ID {RtgsGlobalId} and Alias {Alias}",
-				verifyRequest.RtgsGlobalId,
-				verifyRequest.Alias);
-
-			return NotFound();
-		}
-
-		var bankPartnerConnection = bankPartnerConnections.Single();
+		var bankPartnerConnection =
+			await _bankPartnerConnectionRepository.GetActiveAsync(verifyRequest.RtgsGlobalId, verifyRequest.Alias, cancellationToken);
 
 		bool verified;
 		try
@@ -200,5 +163,31 @@ public class MessageController : ControllerBase
 		}
 
 		return Ok(new VerifyOwnMessageResponse { Verified = verified });
+	}
+
+	private async Task<SignMessageResponse> Sign(JsonElement message, string connectionId, string alias, CancellationToken cancellationToken)
+	{
+		SignDocumentResponse signDocumentResponse;
+
+		try
+		{
+			signDocumentResponse = await _jsonSignaturesClient.SignDocumentAsync(
+				message,
+				connectionId,
+				cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when signing JSON document");
+
+			throw;
+		}
+
+		return new SignMessageResponse
+		{
+			PairwiseDidSignature = signDocumentResponse.PairwiseDidSignature,
+			PublicDidSignature = signDocumentResponse.PublicDidSignature,
+			Alias = alias
+		};
 	}
 }

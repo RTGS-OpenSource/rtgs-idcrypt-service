@@ -3,9 +3,9 @@ using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-public class NoMatchingBankPartnerConnectionFixture : ConnectionsTestFixtureBase
+public class NoMatchingConnectionFixture : ConnectionsTestFixtureBase
 {
-	public NoMatchingBankPartnerConnectionFixture()
+	public NoMatchingConnectionFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()

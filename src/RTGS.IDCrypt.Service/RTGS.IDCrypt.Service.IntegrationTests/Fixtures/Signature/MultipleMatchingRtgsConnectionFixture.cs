@@ -1,21 +1,20 @@
 ﻿using Moq;
 using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.TestData;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Verify.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtureBase
+public class MultipleMatchingRtgsConnectionFixture : ConnectionsTestFixtureBase
 {
 	private readonly Mock<IDateTimeProvider> _dateTimeProviderMock = new();
 
 	private readonly DateTime _referenceDate =
 		DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
-	public MultipleMatchingBankPartnerConnectionFixture()
+	public MultipleMatchingRtgsConnectionFixture()
 	{
 		_dateTimeProviderMock.SetupGet(provider => provider.UtcNow)
 			.Returns(_referenceDate);
@@ -23,7 +22,6 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
 			.WithOkResponse(SignDocument.HttpRequestResponseContext)
-			.WithOkResponse(VerifyPrivateSignature.HttpRequestResponseContext)
 			.Build();
 	}
 
@@ -31,59 +29,53 @@ public class MultipleMatchingBankPartnerConnectionFixture : ConnectionsTestFixtu
 
 	protected override async Task Seed()
 	{
-		var tooOldConnection = new BankPartnerConnection
+		var tooOldConnection = new RtgsConnection
 		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias-1",
+			PartitionKey = "alias-1",
+			RowKey = "connection-1",
 			ConnectionId = "connection-1",
 			Alias = "alias-1",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = _referenceDate.Subtract(TimeSpan.FromDays(3)),
-			PublicDid = "public-did-1",
 			Status = "Active",
-			Role = "Inviter"
 		};
 
-		var tooNewConnection = new BankPartnerConnection
+		var tooNewConnection = new RtgsConnection
 		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias-2",
+			PartitionKey = "alias-2",
+			RowKey = "connection-2",
 			ConnectionId = "connection-2",
 			Alias = "alias-2",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = _referenceDate.Subtract(TimeSpan.FromMinutes(3)),
-			PublicDid = "public-did-2",
 			Status = "Active",
-			Role = "Inviter"
 		};
 
-		ValidConnection = new BankPartnerConnection
+		ValidConnection = new RtgsConnection
 		{
-			PartitionKey = "rtgs-global-id",
-			RowKey = "alias-3",
+			PartitionKey = "alias-3",
+			RowKey = "connection-3",
 			ConnectionId = "connection-3",
 			Alias = "alias-3",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = _referenceDate.Subtract(TimeSpan.FromDays(1)),
-			PublicDid = "public-did-3",
 			Status = "Active",
-			Role = "Inviter"
 		};
 
-		var bankPartnerConnections = new List<BankPartnerConnection>
+		var rtgsConnections = new List<RtgsConnection>
 		{
 			tooOldConnection,
 			tooNewConnection,
 			ValidConnection
 		};
 
-		foreach (var connection in bankPartnerConnections)
+		foreach (var connection in rtgsConnections)
 		{
-			await InsertBankPartnerConnectionAsync(connection);
+			await InsertRtgsConnectionAsync(connection);
 		}
 	}
 
-	public BankPartnerConnection ValidConnection { get; private set; }
+	public RtgsConnection ValidConnection { get; private set; }
 
 	protected override void CustomiseHost(IHostBuilder builder) =>
 		builder.ConfigureServices(services =>

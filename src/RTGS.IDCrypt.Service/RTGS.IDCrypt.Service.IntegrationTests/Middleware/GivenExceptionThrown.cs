@@ -16,7 +16,7 @@ public class GivenExceptionThrown : IClassFixture<ThrowingFixture>, IAsyncLifeti
 	}
 
 	public async Task InitializeAsync() =>
-		_httpResponse = await _client.PostAsJsonAsync("api/message/sign", ThrowingFixture.SignMessageRequest);
+		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-bank", ThrowingFixture.SignMessageForBankRequest);
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;

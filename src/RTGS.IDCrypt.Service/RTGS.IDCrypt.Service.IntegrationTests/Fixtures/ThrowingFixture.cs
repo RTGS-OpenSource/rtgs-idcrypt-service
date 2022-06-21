@@ -9,7 +9,7 @@ namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures;
 
 public class ThrowingFixture : WebApplicationFactory<Program>
 {
-	public static SignMessageRequest SignMessageRequest => new()
+	public static SignMessageForBankRequest SignMessageForBankRequest => new()
 	{
 		RtgsGlobalId = "rtgs-global-id",
 		Message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" })

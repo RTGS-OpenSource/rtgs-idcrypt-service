@@ -1,16 +1,11 @@
 ﻿using System.Text.Json;
-using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Moq;
-using RTGS.IDCrypt.Service.Config;
 using RTGS.IDCrypt.Service.Contracts.Message.Verify;
 using RTGS.IDCrypt.Service.Controllers;
-using RTGS.IDCrypt.Service.Helpers;
 using RTGS.IDCrypt.Service.Models;
-using RTGS.IDCrypt.Service.Storage;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
-using RTGS.IDCrypt.Service.Tests.TestData;
 using RTGS.IDCryptSDK.JsonSignatures;
 using RTGS.IDCryptSDK.Wallet;
 
@@ -36,9 +31,12 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 		};
 
 		_jsonSignaturesClientMock = new Mock<IJsonSignaturesClient>();
-		var storageTableResolverMock = new Mock<IStorageTableResolver>();
-		var tableClientMock = new Mock<TableClient>();
-		var bankPartnerConnectionsMock = new Mock<Azure.Pageable<BankPartnerConnection>>();
+
+		var bankPartnerConnectionRepositoryMock = new Mock<IBankPartnerConnectionRepository>();
+		bankPartnerConnectionRepositoryMock.Setup(connection =>
+				connection.GetActiveAsync(_verifyRequest.RtgsGlobalId, _verifyRequest.Alias,
+					It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new BankPartnerConnection { ConnectionId = "connection-id-1" });
 
 		_jsonSignaturesClientMock
 			.Setup(client => client.VerifyPrivateSignatureAsync(
@@ -49,35 +47,13 @@ public class AndMatchingBankPartnerConnectionExists : IAsyncLifetime
 			.ReturnsAsync(true)
 			.Verifiable();
 
-		bankPartnerConnectionsMock.Setup(bankPartnerConnections => bankPartnerConnections.GetEnumerator()).Returns(
-			TestBankPartnerConnections.Connections
-				.GetEnumerator());
-
-		tableClientMock.Setup(tableClient =>
-				tableClient.Query<BankPartnerConnection>(
-					It.IsAny<string>(),
-					It.IsAny<int?>(),
-					It.IsAny<IEnumerable<string>>(),
-					It.IsAny<CancellationToken>()))
-			.Returns(bankPartnerConnectionsMock.Object);
-
-		storageTableResolverMock
-			.Setup(storageTableResolver => storageTableResolver.GetTable("bankPartnerConnections"))
-			.Returns(tableClientMock.Object);
-
 		var logger = new FakeLogger<MessageController>();
-
-		var options = Options.Create(new ConnectionsConfig
-		{
-			BankPartnerConnectionsTableName = "bankPartnerConnections"
-		});
 
 		_controller = new MessageController(
 			logger,
-			options,
-			storageTableResolverMock.Object,
 			_jsonSignaturesClientMock.Object,
-			Mock.Of<IDateTimeProvider>(),
+			bankPartnerConnectionRepositoryMock.Object,
+			Mock.Of<IRtgsConnectionRepository>(),
 			Mock.Of<IWalletClient>());
 	}
 

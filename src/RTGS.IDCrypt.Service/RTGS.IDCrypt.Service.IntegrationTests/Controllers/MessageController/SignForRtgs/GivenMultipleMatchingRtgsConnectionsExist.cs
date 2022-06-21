@@ -3,18 +3,18 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using RTGS.IDCrypt.Service.Contracts.Message.Sign;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForRtgs;
 
-public class GivenMultipleMatchingBankPartnerConnectionsExist : IClassFixture<MultipleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
+public class GivenMultipleMatchingRtgsConnectionsExist : IClassFixture<MultipleMatchingRtgsConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly MultipleMatchingBankPartnerConnectionFixture _testFixture;
+	private readonly MultipleMatchingRtgsConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenMultipleMatchingBankPartnerConnectionsExist(MultipleMatchingBankPartnerConnectionFixture testFixture)
+	public GivenMultipleMatchingRtgsConnectionsExist(MultipleMatchingRtgsConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -27,13 +27,12 @@ public class GivenMultipleMatchingBankPartnerConnectionsExist : IClassFixture<Mu
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		var request = new SignMessageRequest
+		var request = new SignMessageForRtgsRequest
 		{
-			RtgsGlobalId = "rtgs-global-id",
 			Message = message
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/message/sign", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-rtgs", request);
 	}
 
 	public Task DisposeAsync() =>

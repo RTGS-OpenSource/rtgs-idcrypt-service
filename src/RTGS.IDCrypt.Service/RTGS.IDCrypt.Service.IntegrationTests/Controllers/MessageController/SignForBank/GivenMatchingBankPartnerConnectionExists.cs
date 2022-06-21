@@ -3,10 +3,10 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using RTGS.IDCrypt.Service.Contracts.Message.Sign;
-using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.TestData;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.Sign;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.SignForBank;
 
 public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatchingBankPartnerConnectionFixture>, IAsyncLifetime
 {
@@ -27,13 +27,13 @@ public class GivenMatchingBankPartnerConnectionExists : IClassFixture<SingleMatc
 	{
 		var message = JsonSerializer.SerializeToElement(new { Message = "I am the walrus" });
 
-		var request = new SignMessageRequest
+		var request = new SignMessageForBankRequest
 		{
 			RtgsGlobalId = "rtgs-global-id",
 			Message = message
 		};
 
-		_httpResponse = await _client.PostAsJsonAsync("api/message/sign", request);
+		_httpResponse = await _client.PostAsJsonAsync("api/message/sign/for-bank", request);
 	}
 
 	public Task DisposeAsync() =>
