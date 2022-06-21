@@ -1,20 +1,23 @@
 ﻿using System.Net.Http;
+using System.Text.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.ConnectionCycleScheduler;
 using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 
 namespace RTGS.IDCrypt.Service.Scheduler.Tests.BankConnectionCycleServiceTests.GivenTimerTriggered;
 
-public class AndNoPartnerIdsReturned : IAsyncLifetime
+public class AndMultiplePartnerIdsReturned : IAsyncLifetime
 {
 	private readonly StatusCodeHttpHandler _statusCodeHandler;
 	private readonly BankConnectionCycleService _bankConnectionCycleService;
+	private readonly string[] _partnerIds = { "rtgs-global-id-1", "rtgs-global-id-2" };
 
-	public AndNoPartnerIdsReturned()
+	public AndMultiplePartnerIdsReturned()
 	{
 		_statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/InvitedPartnerIds", "[]"))
+			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/InvitedPartnerIds", JsonSerializer.Serialize(_partnerIds)))
 			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/cycle", string.Empty))
 			.Build();
 
@@ -45,6 +48,8 @@ public class AndNoPartnerIdsReturned : IAsyncLifetime
 		_statusCodeHandler.Requests.Should().ContainKey("/api/bank-connection/InvitedPartnerIds");
 
 	[Fact]
-	public void ThenShouldNotCallCycleForEachInvitedPartner() =>
-		_statusCodeHandler.Requests.Should().NotContainKey("/api/bank-connection/cycle");
+	public async Task ThenShouldCallCycleForEachInvitedPartner() =>
+		(await Task.WhenAll(_statusCodeHandler.Requests["/api/bank-connection/cycle"]
+			.Select(async request => await request.Content!.ReadAsStringAsync())))
+			.Should().Contain(_partnerIds.Select(id => @$"{{""rtgsGlobalId"":""{id}""}}"));
 }

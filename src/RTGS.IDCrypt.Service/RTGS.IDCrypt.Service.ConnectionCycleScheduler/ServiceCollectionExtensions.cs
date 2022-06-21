@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace RTGS.IDCrypt.Service.Scheduler;
+namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler;
 
 public static class ServiceCollectionExtensions
 {

@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Fixtures;
+using RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests.Fixtures;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 
-namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.BankConnectionCycleServicesTests.GivenSchedulerRan;
+namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests.BankConnectionCycleServiceTests.GivenSchedulerRan;
 
 public class WhenIdCryptServiceAddressSet : IClassFixture<TestFixture>
 {

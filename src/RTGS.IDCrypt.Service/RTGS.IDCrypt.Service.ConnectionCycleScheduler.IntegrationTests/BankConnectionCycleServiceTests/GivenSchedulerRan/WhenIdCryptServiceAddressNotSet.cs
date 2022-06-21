@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Fixtures;
+using RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests.Fixtures;
 
-namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.BankConnectionCycleServicesTests.GivenSchedulerRan;
+namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests.BankConnectionCycleServiceTests.GivenSchedulerRan;
 
 public class WhenIdCryptServiceAddressNotSet
 {

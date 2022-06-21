@@ -99,7 +99,4 @@ LoggerConfiguration ConfigureLogging(LoggerConfiguration loggerConfiguration) =>
 		.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 		.WriteTo.Console();
 
-namespace RTGS.IDCrypt.Service
-{
-	public partial class Program { }
-}
+public partial class Program { }

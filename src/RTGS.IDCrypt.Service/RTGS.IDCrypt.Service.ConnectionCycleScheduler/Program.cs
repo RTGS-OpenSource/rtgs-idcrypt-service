@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 
-namespace RTGS.IDCrypt.Service.Scheduler;
+namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler;
 
 public static class Program
 {

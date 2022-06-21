@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RTGS.IDCrypt.Service.Contracts.Connection;
 
-namespace RTGS.IDCrypt.Service.Scheduler;
+namespace RTGS.IDCrypt.Service.ConnectionCleanupScheduler;
 
 public class BankConnectionCycleService : IHostedService
 {

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.ConnectionCycleScheduler;
 using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
 using RTGS.IDCrypt.Service.Scheduler.Tests.Logging;
 

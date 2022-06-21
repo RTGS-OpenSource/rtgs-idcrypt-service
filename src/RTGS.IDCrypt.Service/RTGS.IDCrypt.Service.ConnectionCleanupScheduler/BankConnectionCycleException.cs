@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace RTGS.IDCrypt.Service.Scheduler;
+namespace RTGS.IDCrypt.Service.ConnectionCleanupScheduler;
 
 [Serializable]
 public class BankConnectionCycleException : Exception

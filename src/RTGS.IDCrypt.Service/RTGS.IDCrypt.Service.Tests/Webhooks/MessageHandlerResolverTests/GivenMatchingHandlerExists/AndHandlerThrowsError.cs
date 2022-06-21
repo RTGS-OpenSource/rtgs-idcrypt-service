@@ -13,7 +13,6 @@ namespace RTGS.IDCrypt.Service.Tests.Webhooks.MessageHandlerResolverTests.GivenM
 public class AndHandlerThrowsError : IAsyncLifetime
 {
 	private readonly FakeLogger<MessageHandlerResolver> _logger;
-	private readonly Mock<IMessageHandler> _mockMessageHandler;
 	private readonly MessageHandlerResolver _resolver;
 	private DefaultHttpContext _defaultHttpContext;
 
@@ -21,14 +20,14 @@ public class AndHandlerThrowsError : IAsyncLifetime
 	{
 		_logger = new FakeLogger<MessageHandlerResolver>();
 
-		_mockMessageHandler = new Mock<IMessageHandler>();
+		var mockMessageHandler = new Mock<IMessageHandler>();
 
-		_mockMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
-		_mockMessageHandler.Setup(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
+		mockMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
+		mockMessageHandler.Setup(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
 		var messageHandlers = new List<IMessageHandler>()
 		{
-			_mockMessageHandler.Object
+			mockMessageHandler.Object
 		};
 
 		_resolver = new MessageHandlerResolver(_logger, messageHandlers);

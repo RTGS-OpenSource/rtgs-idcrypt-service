@@ -1,6 +1,6 @@
 ﻿using WireMock.Server;
 
-namespace RTGS.IDCrypt.Service.Scheduler.IntegrationTests.Fixtures;
+namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests.Fixtures;
 
 public sealed class TestFixture : IDisposable
 {

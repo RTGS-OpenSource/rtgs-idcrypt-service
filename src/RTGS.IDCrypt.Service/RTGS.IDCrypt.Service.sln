@@ -15,11 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.Integr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.Contracts", "RTGS.IDCrypt.Service.Contracts\RTGS.IDCrypt.Service.Contracts.csproj", "{95714053-3451-45F3-A618-0BE50A0BB0F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.Scheduler", "RTGS.IDCrypt.Service.Scheduler\RTGS.IDCrypt.Service.Scheduler.csproj", "{EB871651-CDDD-44D2-A550-BD634D2A8D7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.ConnectionCycleScheduler", "RTGS.IDCrypt.Service.ConnectionCycleScheduler\RTGS.IDCrypt.Service.ConnectionCycleScheduler.csproj", "{EB871651-CDDD-44D2-A550-BD634D2A8D7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.Scheduler.Tests", "RTGS.IDCrypt.Service.Scheduler.Tests\RTGS.IDCrypt.Service.Scheduler.Tests.csproj", "{19058B44-9392-463C-B5CB-303C700DD1D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests", "RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests\RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests.csproj", "{19058B44-9392-463C-B5CB-303C700DD1D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.Scheduler.IntegrationTests", "RTGS.IDCrypt.Service.Scheduler.IntegrationTests\RTGS.IDCrypt.Service.Scheduler.IntegrationTests.csproj", "{3CC6D284-AAF7-4B0E-AF1B-116C3F3DD0B7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests", "RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests\RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests.csproj", "{3CC6D284-AAF7-4B0E-AF1B-116C3F3DD0B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
