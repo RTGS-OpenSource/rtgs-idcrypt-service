@@ -25,11 +25,11 @@ public class BankConnectionCleanupService : IHostedService
 
 		try
 		{
-			connectionIds = await _httpClient.GetFromJsonAsync<string[]>("/api/bank-connection/StaleConnectionIds", cancellationToken);
+			connectionIds = await _httpClient.GetFromJsonAsync<string[]>("/api/bank-connection/ObsoleteConnectionIds", cancellationToken);
 		}
 		catch (Exception exception)
 		{
-			_logger.LogError(exception, "Error while getting stale connection ids");
+			_logger.LogError(exception, "Error while getting obsolete connection ids");
 			throw;
 		}
 
@@ -43,8 +43,7 @@ public class BankConnectionCleanupService : IHostedService
 
 			try
 			{
-				var response = await _httpClient.PostAsync($"/api/bank-connection/{connectionId}", null,
-					innerCancellationToken);
+				var response = await _httpClient.DeleteAsync($"/api/bank-connection/{connectionId}", innerCancellationToken);
 
 				response.EnsureSuccessStatusCode();
 			}

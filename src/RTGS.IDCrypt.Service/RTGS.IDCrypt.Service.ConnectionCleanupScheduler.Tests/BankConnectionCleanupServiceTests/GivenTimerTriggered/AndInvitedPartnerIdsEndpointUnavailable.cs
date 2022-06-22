@@ -15,7 +15,7 @@ public class AndInvitedPartnerIdsEndpointUnavailable
 	public AndInvitedPartnerIdsEndpointUnavailable()
 	{
 		StatusCodeHttpHandler statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithServiceUnavailableResponse("/api/bank-connection/StaleConnectionIds")
+			.WithServiceUnavailableResponse(new MockHttpRequest(HttpMethod.Get, "/api/bank-connection/ObsoleteConnectionIds"))
 			.Build();
 
 		var client = new HttpClient(statusCodeHandler)
@@ -45,6 +45,6 @@ public class AndInvitedPartnerIdsEndpointUnavailable
 			.Should()
 			.ThrowAsync<Exception>();
 
-		_fakeLogger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error while getting stale connection ids");
+		_fakeLogger.Logs[LogLevel.Error].Should().BeEquivalentTo("Error while getting obsolete connection ids");
 	}
 }

@@ -1,18 +1,19 @@
 ﻿using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests.Http;
 
 public sealed class StatusCodeHttpHandler : DelegatingHandler
 {
-	private readonly Dictionary<string, MockHttpResponse> _mockHttpResponses;
+	private readonly List<KeyValuePair<MockHttpRequest, MockHttpResponse>> _mockHttpResponses;
 
-	public ConcurrentDictionary<string, ConcurrentBag<HttpRequestMessage>> Requests { get; }
+	public ConcurrentDictionary<MockHttpRequest, ConcurrentBag<HttpRequestMessage>> Requests { get; }
 
-	private StatusCodeHttpHandler(Dictionary<string, MockHttpResponse> mockHttpResponses)
+	private StatusCodeHttpHandler(List<KeyValuePair<MockHttpRequest, MockHttpResponse>> mockHttpResponses)
 	{
-		Requests = new ConcurrentDictionary<string, ConcurrentBag<HttpRequestMessage>>();
+		Requests = new ConcurrentDictionary<MockHttpRequest, ConcurrentBag<HttpRequestMessage>>();
 		_mockHttpResponses = mockHttpResponses;
 	}
 
@@ -20,10 +21,15 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 	{
 		var requestPath = request.RequestUri!.LocalPath;
 
-		Requests.TryAdd(requestPath, new ConcurrentBag<HttpRequestMessage>());
-		Requests[requestPath].Add(request);
+		var mockRequest = new MockHttpRequest(request.Method, requestPath);
 
-		var responseMock = _mockHttpResponses[requestPath];
+		Requests.TryAdd(mockRequest, new ConcurrentBag<HttpRequestMessage>());
+		Requests[mockRequest].Add(request);
+
+		var responseMock = _mockHttpResponses
+			.Single(pair => pair.Key.Method == request.Method &&
+				new Regex(pair.Key.Path).IsMatch(requestPath))
+			.Value;
 
 		var response = new HttpResponseMessage(responseMock.HttpStatusCode)
 		{
@@ -36,25 +42,25 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 
 	public sealed class Builder
 	{
-		private Dictionary<string, MockHttpResponse> Responses { get; } = new();
+		private List<KeyValuePair<MockHttpRequest, MockHttpResponse>> Responses { get; } = new();
 
 		public static Builder Create() => new();
 
-		public Builder WithServiceUnavailableResponse(string path) =>
-			WithResponse(path, null, HttpStatusCode.ServiceUnavailable);
+		public Builder WithServiceUnavailableResponse(MockHttpRequest request) =>
+			WithResponse(request, null, HttpStatusCode.ServiceUnavailable);
 
 		public Builder WithOkResponse(HttpRequestResponseContext httpRequestResponseContext) =>
 			WithResponse(
-				httpRequestResponseContext.RequestPath,
+				httpRequestResponseContext.Request,
 				httpRequestResponseContext.ResponseContent,
 				HttpStatusCode.OK);
 
-		public Builder WithNotFoundResponse(string path) =>
-			WithResponse(path, null, HttpStatusCode.NotFound);
+		public Builder WithNotFoundResponse(MockHttpRequest request) =>
+			WithResponse(request, null, HttpStatusCode.NotFound);
 
 		public StatusCodeHttpHandler Build() => new(Responses);
 
-		private Builder WithResponse(string path, string content, HttpStatusCode statusCode)
+		private Builder WithResponse(MockHttpRequest request, string content, HttpStatusCode statusCode)
 		{
 			var mockResponse = new MockHttpResponse
 			{
@@ -62,7 +68,7 @@ public sealed class StatusCodeHttpHandler : DelegatingHandler
 				Content = content
 			};
 
-			Responses[path] = mockResponse;
+			Responses.Add(new KeyValuePair<MockHttpRequest, MockHttpResponse>(request, mockResponse));
 
 			return this;
 		}

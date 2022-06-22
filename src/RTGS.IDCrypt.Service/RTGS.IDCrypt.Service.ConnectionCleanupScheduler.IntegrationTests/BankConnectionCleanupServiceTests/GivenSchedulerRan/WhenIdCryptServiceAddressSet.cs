@@ -18,7 +18,7 @@ public class WhenIdCryptServiceAddressSet : IClassFixture<TestFixture>
 	public async Task ThenBaseAddressSet()
 	{
 		_testFixture.Server
-			.Given(Request.Create().WithPath("/api/bank-connection/StaleConnectionIds"))
+			.Given(Request.Create().WithPath("/api/bank-connection/ObsoleteConnectionIds"))
 			.RespondWith(
 				Response.Create()
 					.WithStatusCode(200)

@@ -1,3 +1,3 @@
 namespace RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests.Http;
 
-public record HttpRequestResponseContext(string RequestPath, string ResponseContent);
+public record HttpRequestResponseContext(MockHttpRequest Request, string ResponseContent);

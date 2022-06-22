@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -14,8 +15,8 @@ public class AndNoConnectionIdsReturned : IAsyncLifetime
 	public AndNoConnectionIdsReturned()
 	{
 		_statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/StaleConnectionIds", "[]"))
-			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/cycle", string.Empty))
+			.WithOkResponse(new HttpRequestResponseContext(new MockHttpRequest(HttpMethod.Get, "/api/bank-connection/ObsoleteConnectionIds"), "[]"))
+			.WithOkResponse(new HttpRequestResponseContext(new MockHttpRequest(HttpMethod.Delete, "/api/bank-connection/.*"), string.Empty))
 			.Build();
 
 		var client = new HttpClient(_statusCodeHandler)
@@ -42,11 +43,12 @@ public class AndNoConnectionIdsReturned : IAsyncLifetime
 
 	[Fact]
 	public void ThenShouldGetStaleConnectionIdsFromService() =>
-		_statusCodeHandler.Requests.Should().ContainKey("/api/bank-connection/StaleConnectionIds");
+		_statusCodeHandler.Requests.Should().ContainKey(new MockHttpRequest(HttpMethod.Get, "/api/bank-connection/ObsoleteConnectionIds"));
 
 	[Fact]
 	public void ThenShouldNotCallDeleteForEachStaleConnection() =>
-		_statusCodeHandler.Requests.Keys
-			.Where(key => !key.Equals("/api/bank-connection/StaleConnectionIds", StringComparison.OrdinalIgnoreCase))
-			.Should().NotContainMatch("/api/bank-connection/*");
+		_statusCodeHandler.Requests.Where(request =>
+				request.Key.Method == HttpMethod.Delete &&
+				new Regex("/api/bank-connection/.*").IsMatch(request.Key.Path))
+			.Should().BeEmpty();
 }

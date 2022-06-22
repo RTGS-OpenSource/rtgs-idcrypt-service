@@ -16,9 +16,9 @@ public class AndMultipleConnectionIdsReturned : IAsyncLifetime
 	public AndMultipleConnectionIdsReturned()
 	{
 		_statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/StaleConnectionIds", JsonSerializer.Serialize(_connectionIds)))
-			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/connection-id-1", string.Empty))
-			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/connection-id-2", string.Empty))
+			.WithOkResponse(new HttpRequestResponseContext(new MockHttpRequest(HttpMethod.Get, "/api/bank-connection/ObsoleteConnectionIds"), JsonSerializer.Serialize(_connectionIds)))
+			.WithOkResponse(new HttpRequestResponseContext(new MockHttpRequest(HttpMethod.Delete, "/api/bank-connection/connection-id-1"), string.Empty))
+			.WithOkResponse(new HttpRequestResponseContext(new MockHttpRequest(HttpMethod.Delete, "/api/bank-connection/connection-id-2"), string.Empty))
 			.Build();
 
 		var client = new HttpClient(_statusCodeHandler)
@@ -45,14 +45,14 @@ public class AndMultipleConnectionIdsReturned : IAsyncLifetime
 
 	[Fact]
 	public void ThenShouldGetStaleConnectionIdsFromService() =>
-		_statusCodeHandler.Requests.Should().ContainKey("/api/bank-connection/StaleConnectionIds");
+		_statusCodeHandler.Requests.Should().ContainKey(new MockHttpRequest(HttpMethod.Get, "/api/bank-connection/ObsoleteConnectionIds"));
 
 	[Fact]
 	public void ThenShouldCallDeleteForEachStaleConnection()
 	{
 		using var _ = new AssertionScope();
 
-		_statusCodeHandler.Requests.Should().ContainKey("/api/bank-connection/connection-id-1");
-		_statusCodeHandler.Requests.Should().ContainKey("/api/bank-connection/connection-id-2");
+		_statusCodeHandler.Requests.Should().ContainKey(new MockHttpRequest(HttpMethod.Delete, "/api/bank-connection/connection-id-1"));
+		_statusCodeHandler.Requests.Should().ContainKey(new MockHttpRequest(HttpMethod.Delete, "/api/bank-connection/connection-id-2"));
 	}
 }

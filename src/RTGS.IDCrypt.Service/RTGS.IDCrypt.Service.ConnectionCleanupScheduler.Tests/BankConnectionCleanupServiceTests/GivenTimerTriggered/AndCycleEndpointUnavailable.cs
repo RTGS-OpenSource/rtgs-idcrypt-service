@@ -17,9 +17,9 @@ public class AndCycleEndpointUnavailable
 	public AndCycleEndpointUnavailable()
 	{
 		StatusCodeHttpHandler statusCodeHandler = StatusCodeHttpHandler.Builder.Create()
-			.WithOkResponse(new HttpRequestResponseContext("/api/bank-connection/StaleConnectionIds", JsonSerializer.Serialize(_connectionIds)))
-			.WithServiceUnavailableResponse("/api/bank-connection/connection-id-1")
-			.WithServiceUnavailableResponse("/api/bank-connection/connection-id-2")
+			.WithOkResponse(new HttpRequestResponseContext(new MockHttpRequest(HttpMethod.Get, "/api/bank-connection/ObsoleteConnectionIds"), JsonSerializer.Serialize(_connectionIds)))
+			.WithServiceUnavailableResponse(new MockHttpRequest(HttpMethod.Delete, "/api/bank-connection/connection-id-1"))
+			.WithServiceUnavailableResponse(new MockHttpRequest(HttpMethod.Delete, "/api/bank-connection/connection-id-2"))
 			.Build();
 
 		var client = new HttpClient(statusCodeHandler)

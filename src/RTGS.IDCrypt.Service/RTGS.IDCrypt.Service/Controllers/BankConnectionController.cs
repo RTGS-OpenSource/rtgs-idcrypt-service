@@ -106,15 +106,18 @@ public class BankConnectionController : ControllerBase
 	}
 
 	/// <summary>
-	/// Endpoint to return distinct list of stale connection ids.
+	/// Endpoint to return distinct list of obsolete connection ids.
 	/// </summary>
 	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
 	/// <returns><see cref="OkObjectResult"/></returns>
-	[HttpGet("StaleConnectionIds")]
-	public async Task<IActionResult> StaleConnectionIds(CancellationToken cancellationToken = default)
+	[HttpGet("ObsoleteConnectionIds")]
+	public async Task<IActionResult> ObsoleteConnectionIds(CancellationToken cancellationToken = default)
 	{
-		var result = await _bankPartnerConnectionRepository.GetStaleConnectionIdsAsync(cancellationToken);
+		var staleConnectionIds = await _bankPartnerConnectionRepository.GetStaleConnectionIdsAsync(cancellationToken);
+		var expiredInvitationConnectionIds = await _bankPartnerConnectionRepository.GetExpiredInvitationConnectionIdsAsync(cancellationToken);
 
-		return Ok(result);
+		var obseleteConnectionIds = staleConnectionIds.Concat(expiredInvitationConnectionIds);
+
+		return Ok(obseleteConnectionIds);
 	}
 }
