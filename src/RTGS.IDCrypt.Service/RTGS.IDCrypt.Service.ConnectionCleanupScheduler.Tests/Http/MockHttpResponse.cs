@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests.Http;
+namespace RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests.Http;
 
 public record MockHttpResponse
 {

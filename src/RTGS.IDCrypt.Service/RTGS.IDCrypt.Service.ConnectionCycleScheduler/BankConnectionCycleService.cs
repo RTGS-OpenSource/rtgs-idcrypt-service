@@ -69,7 +69,7 @@ public class BankConnectionCycleService : IHostedService
 
 	public Task StopAsync(CancellationToken cancellationToken)
 	{
-		_logger.LogInformation("Stopped ID Crypt Service Scheduler");
+		_logger.LogInformation("Stopped ID Crypt Service Bank Connection Cycle Scheduler");
 
 		return Task.CompletedTask;
 	}

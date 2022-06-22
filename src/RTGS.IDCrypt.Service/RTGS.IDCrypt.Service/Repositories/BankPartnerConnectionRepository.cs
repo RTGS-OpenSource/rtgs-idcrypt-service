@@ -196,6 +196,37 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		return connection;
 	}
 
+	public async Task<IEnumerable<string>> GetStaleConnectionIdsAsync(CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+			var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
+
+			var connections
+				= await tableClient.QueryAsync<BankPartnerConnection>(
+						bankPartnerConnection =>
+							bankPartnerConnection.ActivatedAt <= dateThreshold &&
+							bankPartnerConnection.Status == ConnectionStatuses.Active &&
+							bankPartnerConnection.Role == ConnectionRoles.Inviter,
+						cancellationToken: cancellationToken,
+						select: new[] { "ConnectionId" })
+					.ToListAsync(cancellationToken);
+
+			return connections
+				.OrderByDescending(bankPartnerConnection => bankPartnerConnection.ActivatedAt)
+				.Skip(1)
+				.Select(bankPartnerConnection => bankPartnerConnection.ConnectionId);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when querying bank partner connections");
+
+			throw;
+		}
+	}
+
 	private async Task<BankPartnerConnection> GetFromTableAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{
 		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);

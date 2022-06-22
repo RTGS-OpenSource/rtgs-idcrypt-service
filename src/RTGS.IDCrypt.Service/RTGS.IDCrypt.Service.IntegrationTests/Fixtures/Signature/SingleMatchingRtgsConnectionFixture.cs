@@ -1,7 +1,7 @@
 ﻿using Moq;
 using RTGS.IDCrypt.Service.Helpers;
-using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Controllers.MessageController.TestData;
+using RTGS.IDCrypt.Service.IntegrationTests.Extensions;
 using RTGS.IDCrypt.Service.IntegrationTests.Helpers;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Signature;

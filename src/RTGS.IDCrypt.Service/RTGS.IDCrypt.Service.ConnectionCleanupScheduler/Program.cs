@@ -21,7 +21,7 @@ public static class Program
 				.ConfigureServices((context, services) =>
 				{
 					services.AddRtgsDependencies(context.Configuration);
-					services.AddHostedService<BankConnectionCycleService>();
+					services.AddHostedService<BankConnectionCleanupService>();
 				})
 				.UseSerilog((_, provider, config) =>
 				{

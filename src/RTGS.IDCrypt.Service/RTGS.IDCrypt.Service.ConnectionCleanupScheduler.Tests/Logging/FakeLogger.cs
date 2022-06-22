@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests.Logging;
+namespace RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests.Logging;
 
 public class FakeLogger<T> : ILogger<T>
 {

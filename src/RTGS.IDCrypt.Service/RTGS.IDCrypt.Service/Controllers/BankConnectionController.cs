@@ -104,4 +104,17 @@ public class BankConnectionController : ControllerBase
 
 		return Ok(result);
 	}
+
+	/// <summary>
+	/// Endpoint to return distinct list of stale connection ids.
+	/// </summary>
+	/// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+	/// <returns><see cref="OkObjectResult"/></returns>
+	[HttpGet("StaleConnectionIds")]
+	public async Task<IActionResult> StaleConnectionIds(CancellationToken cancellationToken = default)
+	{
+		var result = await _bankPartnerConnectionRepository.GetStaleConnectionIdsAsync(cancellationToken);
+
+		return Ok(result);
+	}
 }

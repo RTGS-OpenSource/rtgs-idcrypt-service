@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 
-namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests.Http;
+namespace RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests.Http;
 
 public sealed class StatusCodeHttpHandler : DelegatingHandler
 {

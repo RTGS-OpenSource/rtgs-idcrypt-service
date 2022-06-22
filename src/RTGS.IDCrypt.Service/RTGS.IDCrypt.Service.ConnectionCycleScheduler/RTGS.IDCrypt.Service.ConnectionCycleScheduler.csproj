@@ -5,7 +5,6 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
-        <RootNamespace>RTGS.IDCrypt.Service.ConnectionCycleScheduler</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

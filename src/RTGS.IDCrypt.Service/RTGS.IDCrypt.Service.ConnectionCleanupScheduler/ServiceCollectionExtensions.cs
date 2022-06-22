@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
 			var baseAddress = configuration.GetValue<string>("IdCryptServiceAddress");
 			if (string.IsNullOrEmpty(baseAddress))
 			{
-				throw new ConfigurationException("IdCryptServiceAddress not set.");
+				throw new ConfigurationException("IdCryptServiceAddress not set");
 			}
 			cfg.BaseAddress = new Uri(baseAddress);
 		});

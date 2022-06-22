@@ -2,11 +2,10 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RTGS.IDCrypt.Service.ConnectionCycleScheduler;
-using RTGS.IDCrypt.Service.Scheduler.Tests.Http;
-using RTGS.IDCrypt.Service.Scheduler.Tests.Logging;
+using RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests.Http;
+using RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests.Logging;
 
-namespace RTGS.IDCrypt.Service.Scheduler.Tests.BankConnectionCycleServiceTests.GivenTimerTriggered;
+namespace RTGS.IDCrypt.Service.ConnectionCycleScheduler.Tests.BankConnectionCycleServiceTests.GivenTimerTriggered;
 
 public class AndInvitedPartnerIdsEndpointUnavailable
 {
