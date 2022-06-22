@@ -196,6 +196,66 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		return connection;
 	}
 
+	public async Task<IEnumerable<string>> GetStaleConnectionIdsAsync(CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+			var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
+
+			var connections
+				= await tableClient.QueryAsync<BankPartnerConnection>(
+						bankPartnerConnection =>
+							bankPartnerConnection.ActivatedAt <= dateThreshold &&
+							bankPartnerConnection.Status == ConnectionStatuses.Active &&
+							bankPartnerConnection.Role == ConnectionRoles.Inviter,
+						cancellationToken: cancellationToken,
+						select: new[] { "ConnectionId", "ActivatedAt" })
+					.ToListAsync(cancellationToken);
+
+			return connections
+				.OrderByDescending(bankPartnerConnection => bankPartnerConnection.ActivatedAt)
+				.Skip(1)
+				.Select(bankPartnerConnection => bankPartnerConnection.ConnectionId);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when querying bank partner connections");
+
+			throw;
+		}
+	}
+
+	public async Task<IEnumerable<string>> GetExpiredInvitationConnectionIdsAsync(CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+			var expiryThreshold = _dateTimeProvider.UtcNow.Subtract(TimeSpan.FromMinutes(5));
+
+			var expiredInvitationConnectionIds
+				= (await tableClient.QueryAsync<BankPartnerConnection>(
+						bankPartnerConnection =>
+							bankPartnerConnection.CreatedAt <= expiryThreshold &&
+							bankPartnerConnection.Status == ConnectionStatuses.Pending &&
+							bankPartnerConnection.Role == ConnectionRoles.Inviter,
+						cancellationToken: cancellationToken,
+						select: new[] { "ConnectionId", "CreatedAt" })
+					.ToListAsync(cancellationToken))
+					.Select(connection => connection.ConnectionId);
+
+			return expiredInvitationConnectionIds;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when querying bank partner connections");
+
+			throw;
+		}
+	}
+
 	private async Task<BankPartnerConnection> GetFromTableAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{
 		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
