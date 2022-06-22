@@ -110,7 +110,7 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 
 			var invitation = await DoCreateConnectionInvitationForBankAsync(rtgsGlobalId, cancellationToken);
 
-			await _basicMessageClient.SendAsync(establishedConnection.ConnectionId, nameof(ConnectionInvitation), invitation, cancellationToken);
+			await _basicMessageClient.SendAsync(establishedConnection.ConnectionId, nameof(BankConnectionInvitation), invitation, cancellationToken);
 		}
 		catch (Exception ex)
 		{
