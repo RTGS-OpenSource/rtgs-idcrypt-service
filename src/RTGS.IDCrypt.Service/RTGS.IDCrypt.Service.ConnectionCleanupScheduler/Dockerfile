@@ -15,7 +15,7 @@ RUN dotnet test -c Release --no-restore "./RTGS.IDCrypt.Service.ConnectionCleanu
 
 FROM build AS publish
 WORKDIR "/src"
-RUN dotnet publish "./RTGS.IDCrypt.Service.Scheduler/RTGS.IDCrypt.Service.ConnectionCleanupScheduler.csproj" --no-restore -c Release -o /devops/publish
+RUN dotnet publish "./RTGS.IDCrypt.Service.ConnectionCleanupScheduler/RTGS.IDCrypt.Service.ConnectionCleanupScheduler.csproj" --no-restore -c Release -o /devops/publish
 
 FROM mcr.microsoft.com/dotnet/runtime:6.0 AS final
 WORKDIR "/app"
