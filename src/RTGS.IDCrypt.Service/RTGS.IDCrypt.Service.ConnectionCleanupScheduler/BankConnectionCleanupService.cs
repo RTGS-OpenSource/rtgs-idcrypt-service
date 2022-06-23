@@ -35,9 +35,7 @@ public class BankConnectionCleanupService : IHostedService
 
 		var failed = false;
 
-		var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 10, CancellationToken = cancellationToken };
-
-		await Parallel.ForEachAsync(connectionIds!, parallelOptions, async (connectionId, innerCancellationToken) =>
+		await Parallel.ForEachAsync(connectionIds!, cancellationToken, async (connectionId, innerCancellationToken) =>
 		{
 			_logger.LogInformation("Deleting connection {ConnectionId}", connectionId);
 
