@@ -18,6 +18,7 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   SERVICE_DOCKER_FILE: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service/Dockerfile
   CYCLE_SCHEDULER_DOCKER_FILE: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service.ConnectionCycleScheduler/Dockerfile
+  CLEANUP_SCHEDULER_DOCKER_FILE: src/RTGS.IDCrypt.Service/RTGS.IDCrypt.Service.ConnectionCleanupScheduler/Dockerfile
 
 jobs:
   build-and-test:
@@ -35,10 +36,12 @@ jobs:
         run: docker run --name azurite -d -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite-table --tableHost 0.0.0.0 --tablePort 10002
       - name: Build & run ID Crypt Service tests
         run: docker build -f ${{env.SERVICE_DOCKER_FILE}} ${{env.SOLUTION_FOLDER}} --target build --network=host
-      - name: Build & run ID Crypt Service Connection Cycle Scheduler tests
-        run: docker build -f ${{env.CYCLE_SCHEDULER_DOCKER_FILE}} ${{env.SOLUTION_FOLDER}} --target build --network=host
       - name: Remove Azurite Table Storage
         run: docker rm -f azurite
+      - name: Build & run ID Crypt Service Connection Cycle Scheduler tests
+        run: docker build -f ${{env.CYCLE_SCHEDULER_DOCKER_FILE}} ${{env.SOLUTION_FOLDER}} --target build
+      - name: Build & run ID Crypt Service Connection Cleanup Scheduler tests
+        run: docker build -f ${{env.CLEANUP_SCHEDULER_DOCKER_FILE}} ${{env.SOLUTION_FOLDER}} --target build
 
   publish-to-docker:
     name: publish-to-docker
@@ -69,6 +72,8 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:service-${{ github.run_number }}
           network: host
+      - name: Remove Azurite Table Storage
+        run: docker rm -f azurite
       - name: Build and push Connection Cycle Scheduler Docker image
         uses: docker/build-push-action@v2
         with:
@@ -76,9 +81,13 @@ jobs:
           context: ${{env.SOLUTION_FOLDER}}
           push: true
           tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:connection-cycle-scheduler-${{ github.run_number }}
-          network: host
-      - name: Remove Azurite Table Storage
-        run: docker rm -f azurite
+      - name: Build and push Connection Cleanup Scheduler Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: ${{env.CLEANUP_SCHEDULER_DOCKER_FILE}}
+          context: ${{env.SOLUTION_FOLDER}}
+          push: true
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:connection-cleanup-scheduler-${{ github.run_number }}
 
   trigger-devops-pipeline:
     name: trigger-devops-pipeline
@@ -124,6 +133,8 @@ jobs:
           push: true
           tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:service-${{ github.run_number }}
           network: host
+      - name: Remove Azurite Table Storage
+        run: docker rm -f azurite
       - name: Build and push Connection Cycle Scheduler Docker image
         uses: docker/build-push-action@v2
         with:
@@ -131,10 +142,14 @@ jobs:
           context: ${{env.SOLUTION_FOLDER}}
           push: true
           tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:connection-cycle-scheduler-${{ github.run_number }}
-          network: host
-      - name: Remove Azurite Table Storage
-        run: docker rm -f azurite
-
+      - name: Build and push Connection Cleanup Scheduler Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: ${{env.CLEANUP_SCHEDULER_DOCKER_FILE}}
+          context: ${{env.SOLUTION_FOLDER}}
+          push: true
+          tags: ${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }}:connection-cleanup-scheduler-${{ github.run_number }}
+          
   publish-to-nuget:
     if: github.event_name == 'release'
     needs: build-and-test

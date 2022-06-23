@@ -21,6 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.Connec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests", "RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests\RTGS.IDCrypt.Service.ConnectionCycleScheduler.IntegrationTests.csproj", "{3CC6D284-AAF7-4B0E-AF1B-116C3F3DD0B7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.ConnectionCleanupScheduler", "RTGS.IDCrypt.Service.ConnectionCleanupScheduler\RTGS.IDCrypt.Service.ConnectionCleanupScheduler.csproj", "{B90F03AA-8E89-48DC-8097-2F2580423C16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.ConnectionCleanupScheduler.IntegrationTests", "RTGS.IDCrypt.Service.ConnectionCleanupScheduler.IntegrationTests\RTGS.IDCrypt.Service.ConnectionCleanupScheduler.IntegrationTests.csproj", "{351FAD8D-7FBA-4E63-8394-655B7765EE14}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests", "RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests\RTGS.IDCrypt.Service.ConnectionCleanupScheduler.Tests.csproj", "{79BF9442-4241-40FD-9765-D2110C166138}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +61,18 @@ Global
 		{3CC6D284-AAF7-4B0E-AF1B-116C3F3DD0B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CC6D284-AAF7-4B0E-AF1B-116C3F3DD0B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CC6D284-AAF7-4B0E-AF1B-116C3F3DD0B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B90F03AA-8E89-48DC-8097-2F2580423C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B90F03AA-8E89-48DC-8097-2F2580423C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B90F03AA-8E89-48DC-8097-2F2580423C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B90F03AA-8E89-48DC-8097-2F2580423C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{351FAD8D-7FBA-4E63-8394-655B7765EE14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{351FAD8D-7FBA-4E63-8394-655B7765EE14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{351FAD8D-7FBA-4E63-8394-655B7765EE14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{351FAD8D-7FBA-4E63-8394-655B7765EE14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79BF9442-4241-40FD-9765-D2110C166138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79BF9442-4241-40FD-9765-D2110C166138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79BF9442-4241-40FD-9765-D2110C166138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79BF9442-4241-40FD-9765-D2110C166138}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +85,9 @@ Global
 		{EB871651-CDDD-44D2-A550-BD634D2A8D7E} = {D9A7FD22-6BCC-4FC8-88A0-2873D4203F6B}
 		{19058B44-9392-463C-B5CB-303C700DD1D5} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
 		{3CC6D284-AAF7-4B0E-AF1B-116C3F3DD0B7} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
+		{B90F03AA-8E89-48DC-8097-2F2580423C16} = {D9A7FD22-6BCC-4FC8-88A0-2873D4203F6B}
+		{351FAD8D-7FBA-4E63-8394-655B7765EE14} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
+		{79BF9442-4241-40FD-9765-D2110C166138} = {B60E7E07-8E30-485B-A971-AB3E649B338A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {072139B7-F9CE-4CC0-A335-02CF53AFB43B}
