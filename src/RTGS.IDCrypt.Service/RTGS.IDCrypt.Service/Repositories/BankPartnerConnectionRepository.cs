@@ -211,13 +211,15 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 							bankPartnerConnection.Status == ConnectionStatuses.Active &&
 							bankPartnerConnection.Role == ConnectionRoles.Inviter,
 						cancellationToken: cancellationToken,
-						select: new[] { "ConnectionId", "ActivatedAt" })
+						select: new[] { "PartitionKey", "ConnectionId", "ActivatedAt" })
 					.ToListAsync(cancellationToken);
 
 			return connections
-				.OrderByDescending(bankPartnerConnection => bankPartnerConnection.ActivatedAt)
-				.Skip(1)
-				.Select(bankPartnerConnection => bankPartnerConnection.ConnectionId);
+				.GroupBy(bankPartnerConnection => bankPartnerConnection.PartitionKey)
+				.SelectMany(grouping =>
+					grouping.OrderByDescending(bankPartnerConnection => bankPartnerConnection.ActivatedAt).Skip(1)
+						.Select(bankPartnerConnection => bankPartnerConnection.ConnectionId));
+
 		}
 		catch (Exception ex)
 		{

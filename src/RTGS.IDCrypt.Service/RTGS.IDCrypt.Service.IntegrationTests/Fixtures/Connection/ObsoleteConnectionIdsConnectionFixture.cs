@@ -25,7 +25,7 @@ public class ObsoleteConnectionIdsConnectionFixture : ConnectionsTestFixtureBase
 
 		var connections = new List<BankPartnerConnection>()
 		{
-			// 1 active with 2 stale (role is inviter)
+			// 1 active with 2 stale (role is inviter) - for rtgs-global-id-1
 			new()
 			{
 				PartitionKey = "rtgs-global-id-1",
@@ -56,6 +56,44 @@ public class ObsoleteConnectionIdsConnectionFixture : ConnectionsTestFixtureBase
 				RowKey = "alias-3",
 				ConnectionId = "connection-id-3",
 				Alias = "alias-3",
+				CreatedAt = createdDate,
+				ActivatedAt = activatedDate,
+				PublicDid = "public-did-1",
+				Status = "Active",
+				Role = "Inviter"
+			},
+
+			// 1 active with 2 stale (role is inviter) - for rtgs-global-id-2
+			new()
+			{
+				PartitionKey = "rtgs-global-id-2",
+				RowKey = "alias-2-1",
+				ConnectionId = "connection-id-2-1",
+				Alias = "alias-2-1",
+				CreatedAt = createdDate,
+				ActivatedAt = activatedDate.Subtract(TimeSpan.FromMinutes(2)),
+				PublicDid = "public-did-1",
+				Status = "Active",
+				Role = "Inviter"
+			},
+			new()
+			{
+				PartitionKey = "rtgs-global-id-2",
+				RowKey = "alias-2-2",
+				ConnectionId = "connection-id-2-2",
+				Alias = "alias-2-2",
+				CreatedAt = createdDate,
+				ActivatedAt = activatedDate.Subtract(TimeSpan.FromMinutes(1)),
+				PublicDid = "public-did-1",
+				Status = "Active",
+				Role = "Inviter"
+			},
+			new()
+			{
+				PartitionKey = "rtgs-global-id-2",
+				RowKey = "alias-2-3",
+				ConnectionId = "connection-id-2-3",
+				Alias = "alias-2-3",
 				CreatedAt = createdDate,
 				ActivatedAt = activatedDate,
 				PublicDid = "public-did-1",
