@@ -32,7 +32,9 @@ public class AndConnectionsExist : IClassFixture<ObsoleteConnectionIdsConnection
 		{
 			"connection-id-1",
 			"connection-id-2",
-			"connection-id-8"
+			"connection-id-8",
+			"connection-id-2-1",
+			"connection-id-2-2",
 		});
 	}
 }
