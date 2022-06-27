@@ -19,7 +19,8 @@ public class GivenStatusIsNotActive
 		var handler = new IdCryptConnectionMessageHandler(
 			logger,
 			Mock.Of<IProofClient>(),
-			Mock.Of<IRtgsConnectionRepository>());
+			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>());
 
 		var notActiveConnection = new IdCryptConnection
 		{

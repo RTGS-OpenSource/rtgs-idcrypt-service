@@ -8,7 +8,7 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.Proof;
 using RTGS.IDCryptSDK.Proof.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenStatusIsActive;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenCycledBankConnectionAndStatusIsActive;
 
 public class AndAgentNotAvailable
 {
@@ -41,7 +41,8 @@ public class AndAgentNotAvailable
 		_handler = new IdCryptConnectionMessageHandler(
 			_logger,
 			proofClientMock.Object,
-			Mock.Of<IRtgsConnectionRepository>());
+			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>());
 	}
 
 	[Fact]

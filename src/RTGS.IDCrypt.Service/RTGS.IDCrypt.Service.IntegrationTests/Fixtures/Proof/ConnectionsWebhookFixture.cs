@@ -22,7 +22,20 @@ public class ConnectionsWebhookFixture : ConnectionsTestFixtureBase
 			services.AddTestIdCryptHttpClient(IdCryptStatusCodeHttpHandler)
 		);
 
-	protected override async Task Seed() =>
+	protected override async Task Seed()
+	{
+		await InsertBankPartnerConnectionAsync(new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id-1",
+			RowKey = "bank-alias-1",
+			Alias = "bank-alias-1",
+			ConnectionId = "bank-connection-id-1",
+			PublicDid = "bank-public-did-1",
+			CreatedAt = DateTime.UtcNow,
+			Status = "Pending",
+			Role = "Inviter"
+		});
+
 		await InsertRtgsConnectionAsync(new RtgsConnection
 		{
 			PartitionKey = "alias",
@@ -32,4 +45,5 @@ public class ConnectionsWebhookFixture : ConnectionsTestFixtureBase
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			Status = "Pending"
 		});
+	}
 }

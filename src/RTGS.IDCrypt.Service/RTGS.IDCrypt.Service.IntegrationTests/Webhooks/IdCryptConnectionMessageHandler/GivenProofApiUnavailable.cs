@@ -22,8 +22,8 @@ public class GivenProofApiUnavailable : IClassFixture<SendProofRequestEndpointUn
 	{
 		var request = new IdCryptConnection
 		{
-			Alias = "alias",
-			ConnectionId = "connection-id",
+			Alias = "bank-alias-1",
+			ConnectionId = "bank-connection-id-1",
 			State = "active",
 			TheirLabel = "RTGS_Bank_Agent"
 		};
