@@ -9,7 +9,7 @@ using RTGS.IDCryptSDK.Proof;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests;
 
-public class GivenStatusIsNotActive
+public class GivenBankConnectionIsNotActive
 {
 	[Fact]
 	public async Task ThenLog()

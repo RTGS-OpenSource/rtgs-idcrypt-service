@@ -24,7 +24,7 @@ public class AndAgentAvailable : IAsyncLifetime
 		var bankPartnerConnectionsRepository = new Mock<IBankPartnerConnectionRepository>();
 
 		bankPartnerConnectionsRepository
-			.Setup(repo => repo.OtherActiveExists("alias", It.IsAny<CancellationToken>()))
+			.Setup(repo => repo.ActiveConnectionForBankExists("alias", It.IsAny<CancellationToken>()))
 			.ReturnsAsync(false);
 
 		_handler = new IdCryptConnectionMessageHandler(

@@ -58,18 +58,22 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 
 	private async Task HandleBankConnection(IdCryptConnection connection, CancellationToken cancellationToken)
 	{
-		var cycling = await _bankPartnerConnectionRepository.OtherActiveExists(connection.Alias, cancellationToken);
+		var cycling = await _bankPartnerConnectionRepository.ActiveConnectionForBankExists(connection.Alias, cancellationToken);
 
 		if (cycling)
 		{
+			await HandleCycledBankConnection(connection, cancellationToken);
 		}
 		else
 		{
-			await RequestProof(connection, cancellationToken);
+			await HandleInitialBankConnection(connection, cancellationToken);
 		}
 	}
 
-	private async Task RequestProof(IdCryptConnection connection, CancellationToken cancellationToken)
+	private async Task HandleCycledBankConnection(IdCryptConnection connection, CancellationToken cancellationToken) =>
+		await _bankPartnerConnectionRepository.ActivateAsync(connection.ConnectionId, cancellationToken);
+
+	private async Task HandleInitialBankConnection(IdCryptConnection connection, CancellationToken cancellationToken)
 	{
 		var request = new SendProofRequestRequest
 		{
@@ -137,7 +141,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 				Name = pair.Key,
 				Restrictions = new List<RequestedClaimCredentialDefinition>
 				{
-					new RequestedClaimCredentialDefinition { CredentialDefinitionId = pair.Value }
+					new() { CredentialDefinitionId = pair.Value }
 				}
 			});
 

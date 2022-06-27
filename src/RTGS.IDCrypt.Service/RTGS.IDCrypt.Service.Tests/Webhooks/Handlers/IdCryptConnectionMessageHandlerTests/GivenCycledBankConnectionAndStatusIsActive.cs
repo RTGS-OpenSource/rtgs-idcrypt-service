@@ -7,40 +7,44 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.Proof;
 using RTGS.IDCryptSDK.Proof.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenStatusIsActive;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests;
 
-public class AndAgentAvailable : IAsyncLifetime
+public class GivenCycledBankConnectionAndStatusIsActive : IAsyncLifetime
 {
 	private readonly Mock<IProofClient> _proofClientMock;
-	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionsRepository;
 	private readonly IdCryptConnectionMessageHandler _handler;
+	private readonly Mock<IBankPartnerConnectionRepository> _bankPartnerConnectionsRepository;
 
-	public AndAgentAvailable()
+	public GivenCycledBankConnectionAndStatusIsActive()
 	{
 		_proofClientMock = new Mock<IProofClient>();
 
 		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
-		_rtgsConnectionsRepository = new Mock<IRtgsConnectionRepository>();
+		_bankPartnerConnectionsRepository = new Mock<IBankPartnerConnectionRepository>();
+
+		_bankPartnerConnectionsRepository
+			.Setup(repo => repo.ActiveConnectionForBankExists("alias", It.IsAny<CancellationToken>()))
+			.ReturnsAsync(true);
 
 		_handler = new IdCryptConnectionMessageHandler(
 			logger,
 			_proofClientMock.Object,
-			_rtgsConnectionsRepository.Object,
-			Mock.Of<IBankPartnerConnectionRepository>());
+			Mock.Of<IRtgsConnectionRepository>(),
+			_bankPartnerConnectionsRepository.Object);
 	}
 
 	public async Task InitializeAsync()
 	{
-		var activeRtgsConnection = new IdCryptConnection
+		var activeBankConnection = new IdCryptConnection
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
 			State = "active",
-			TheirLabel = "RTGS_Jurisdiction_Agent_Test"
+			TheirLabel = "RTGS_Bank_Agent_Test"
 		};
 
-		var message = JsonSerializer.Serialize(activeRtgsConnection);
+		var message = JsonSerializer.Serialize(activeBankConnection);
 
 		await _handler.HandleAsync(message, default);
 	}
@@ -49,13 +53,13 @@ public class AndAgentAvailable : IAsyncLifetime
 
 	[Fact]
 	public void ThenSetConnectionActive() =>
-		_rtgsConnectionsRepository.Verify(repo =>
+		_bankPartnerConnectionsRepository.Verify(repo =>
 				repo.ActivateAsync("connection-id", It.IsAny<CancellationToken>()),
 			Times.Once);
 
 	[Fact]
 	public void ThenDoNotRequestProof() =>
 		_proofClientMock.Verify(client =>
-			client.SendProofRequestAsync(It.IsAny<SendProofRequestRequest>(), It.IsAny<CancellationToken>()),
+				client.SendProofRequestAsync(It.IsAny<SendProofRequestRequest>(), It.IsAny<CancellationToken>()),
 			Times.Never);
 }

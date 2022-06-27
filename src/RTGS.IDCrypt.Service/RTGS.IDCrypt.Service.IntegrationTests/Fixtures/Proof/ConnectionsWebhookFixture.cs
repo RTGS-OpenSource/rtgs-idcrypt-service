@@ -36,6 +36,30 @@ public class ConnectionsWebhookFixture : ConnectionsTestFixtureBase
 			Role = "Inviter"
 		});
 
+		await InsertBankPartnerConnectionAsync(new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id-2",
+			RowKey = "bank-alias-2",
+			Alias = "bank-alias-2",
+			ConnectionId = "bank-connection-id-2",
+			PublicDid = "bank-public-did-2",
+			CreatedAt = new DateTime(2022, 6, 27, 11, 33, 30).ToUniversalTime(),
+			Status = "Active",
+			Role = "Inviter"
+		});
+
+		await InsertBankPartnerConnectionAsync(new BankPartnerConnection
+		{
+			PartitionKey = "rtgs-global-id-2",
+			RowKey = "bank-alias-3",
+			Alias = "bank-alias-3",
+			ConnectionId = "bank-connection-id-3",
+			PublicDid = "bank-public-did-2",
+			CreatedAt = DateTime.UtcNow,
+			Status = "Pending",
+			Role = "Inviter"
+		});
+
 		await InsertRtgsConnectionAsync(new RtgsConnection
 		{
 			PartitionKey = "alias",

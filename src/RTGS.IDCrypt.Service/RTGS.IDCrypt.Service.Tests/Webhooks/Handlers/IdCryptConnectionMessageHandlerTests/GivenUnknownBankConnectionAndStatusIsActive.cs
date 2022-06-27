@@ -24,7 +24,7 @@ public class GivenUnknownBankConnectionAndStatusIsActive
 		var bankPartnerConnectionsRepository = new Mock<IBankPartnerConnectionRepository>();
 
 		bankPartnerConnectionsRepository
-			.Setup(repo => repo.OtherActiveExists("alias", It.IsAny<CancellationToken>()))
+			.Setup(repo => repo.ActiveConnectionForBankExists("alias", It.IsAny<CancellationToken>()))
 			.Throws<Exception>();
 
 		_handler = new IdCryptConnectionMessageHandler(

@@ -59,7 +59,7 @@ public static class ServiceCollectionExtensions
 			config["AgentApiKey"],
 			new Uri(config["AgentServiceEndpointAddress"])));
 
-		services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>(_ => new TelemetryInitializer(config));
+		services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer(config));
 
 		services.AddApplicationInsightsTelemetry();
 

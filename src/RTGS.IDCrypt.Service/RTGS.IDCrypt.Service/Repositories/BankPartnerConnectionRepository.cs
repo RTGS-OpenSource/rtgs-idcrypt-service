@@ -27,7 +27,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		_dateTimeProvider = dateTimeProvider;
 	}
 
-	private TableClient BankPartnerConnectionsTable => 
+	private TableClient BankPartnerConnectionsTable =>
 		_storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
 	public async Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default)
@@ -251,9 +251,9 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
-	public async Task<bool> OtherActiveExists(string alias, CancellationToken cancellationToken = default)
+	public async Task<bool> ActiveConnectionForBankExists(string alias, CancellationToken cancellationToken = default)
 	{
-		string rtgsGlobalId = null;
+		string rtgsGlobalId;
 
 		try
 		{
@@ -262,8 +262,8 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 						connection.RowKey == alias,
 					cancellationToken: cancellationToken,
 					select: new[] { "PartitionKey" })
-				.SingleOrDefaultAsync())?.PartitionKey;
-		} 
+				.SingleOrDefaultAsync(cancellationToken))?.PartitionKey;
+		}
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error occurred when querying bank partner connections");
@@ -273,12 +273,10 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 
 		if (rtgsGlobalId is null)
 		{
-			var errorMessage = $"Unable to find bank partner connection with alias {alias}";
+			_logger.LogError("Unable to find bank partner connection with alias {Alias}", alias);
 
-			_logger.LogError(errorMessage);
-
-			throw new Exception($"{errorMessage}.");
-		} 
+			throw new Exception($"Unable to find bank partner connection with alias {alias}.");
+		}
 
 		try
 		{

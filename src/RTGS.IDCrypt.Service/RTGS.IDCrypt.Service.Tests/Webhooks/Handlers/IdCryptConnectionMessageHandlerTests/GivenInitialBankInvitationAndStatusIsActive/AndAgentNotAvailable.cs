@@ -8,7 +8,7 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.Proof;
 using RTGS.IDCryptSDK.Proof.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenCycledBankConnectionAndStatusIsActive;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenInitialBankInvitationAndStatusIsActive;
 
 public class AndAgentNotAvailable
 {
@@ -28,6 +28,12 @@ public class AndAgentNotAvailable
 
 		_logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
+		var bankPartnerConnectionsRepository = new Mock<IBankPartnerConnectionRepository>();
+
+		bankPartnerConnectionsRepository
+			.Setup(repo => repo.ActiveConnectionForBankExists("alias", It.IsAny<CancellationToken>()))
+			.ReturnsAsync(false);
+
 		var activeConnection = new IdCryptConnection
 		{
 			Alias = "alias",
@@ -42,7 +48,7 @@ public class AndAgentNotAvailable
 			_logger,
 			proofClientMock.Object,
 			Mock.Of<IRtgsConnectionRepository>(),
-			Mock.Of<IBankPartnerConnectionRepository>());
+			bankPartnerConnectionsRepository.Object);
 	}
 
 	[Fact]
