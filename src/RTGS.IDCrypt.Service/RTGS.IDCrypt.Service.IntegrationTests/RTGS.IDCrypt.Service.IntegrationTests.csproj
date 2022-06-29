@@ -39,6 +39,10 @@
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Webhooks\IdCryptConnectionMessageHandler\GivenAgentAvailableAndConnectionIsActive\ProofBody.txt.verified.txt">
+      <ParentFile>ProofBody</ParentFile>
+      <DependentUpon>ProofBody.cs</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

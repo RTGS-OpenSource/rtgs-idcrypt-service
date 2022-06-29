@@ -6,16 +6,16 @@ using RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHan
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using VerifyXunit;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable.AndConnectionIsActive;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenInitialBankInvitationAndStatusIsActive;
 
 [UsesVerify]
-public class AndFromBank : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
+public class AndAgentAvailable : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly ConnectionsWebhookFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public AndFromBank(ConnectionsWebhookFixture testFixture)
+	public AndAgentAvailable(ConnectionsWebhookFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -28,8 +28,8 @@ public class AndFromBank : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifet
 	{
 		var request = new IdCryptConnection
 		{
-			Alias = "alias",
-			ConnectionId = "connection-id",
+			Alias = "bank-alias-1",
+			ConnectionId = "bank-connection-id-1",
 			State = "active",
 			TheirLabel = "RTGS_Bank_Agent"
 		};

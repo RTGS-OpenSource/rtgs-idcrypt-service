@@ -6,12 +6,12 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler;
 
-public class GivenProofApiUnavailable : IClassFixture<SendProofRequestEndpointUnavailableFixture>, IAsyncLifetime
+public class GivenUnknownBankConnectionAndStatusIsActive : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private HttpResponseMessage _httpResponse;
 
-	public GivenProofApiUnavailable(SendProofRequestEndpointUnavailableFixture testFixture)
+	public GivenUnknownBankConnectionAndStatusIsActive(ConnectionsWebhookFixture testFixture)
 	{
 		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
@@ -22,7 +22,7 @@ public class GivenProofApiUnavailable : IClassFixture<SendProofRequestEndpointUn
 	{
 		var request = new IdCryptConnection
 		{
-			Alias = "alias",
+			Alias = "unknown-alias",
 			ConnectionId = "connection-id",
 			State = "active",
 			TheirLabel = "RTGS_Bank_Agent"
@@ -35,14 +35,6 @@ public class GivenProofApiUnavailable : IClassFixture<SendProofRequestEndpointUn
 		Task.CompletedTask;
 
 	[Fact]
-	public async Task ThenReturnInternalServerError()
-	{
-		using var _ = new AssertionScope();
-
+	public void ThenReturnInternalServerError() =>
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-
-		var content = await _httpResponse.Content.ReadAsStringAsync();
-
-		content.Should().Be("{\"error\":\"Error sending send proof request request to agent\"}");
-	}
 }

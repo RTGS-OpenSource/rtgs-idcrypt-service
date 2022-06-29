@@ -27,6 +27,9 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		_dateTimeProvider = dateTimeProvider;
 	}
 
+	private TableClient BankPartnerConnectionsTable =>
+		_storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
 	public async Task ActivateAsync(string connectionId, CancellationToken cancellationToken = default)
 	{
 		try
@@ -63,10 +66,8 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
 			var connections
-				= await tableClient.QueryAsync<BankPartnerConnection>(
+				= await BankPartnerConnectionsTable.QueryAsync<BankPartnerConnection>(
 					bankPartnerConnection =>
 						bankPartnerConnection.Status == ConnectionStatuses.Active &&
 						bankPartnerConnection.Role == ConnectionRoles.Inviter,
@@ -92,9 +93,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		{
 			connection.CreatedAt = _dateTimeProvider.UtcNow;
 
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
-			await tableClient.AddEntityAsync(connection, cancellationToken);
+			await BankPartnerConnectionsTable.AddEntityAsync(connection, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -200,12 +199,10 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
 			var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
 
 			var connections
-				= await tableClient.QueryAsync<BankPartnerConnection>(
+				= await BankPartnerConnectionsTable.QueryAsync<BankPartnerConnection>(
 						bankPartnerConnection =>
 							bankPartnerConnection.ActivatedAt <= dateThreshold &&
 							bankPartnerConnection.Status == ConnectionStatuses.Active &&
@@ -233,12 +230,10 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	{
 		try
 		{
-			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
 			var expiryThreshold = _dateTimeProvider.UtcNow.Subtract(TimeSpan.FromMinutes(5));
 
 			var expiredInvitationConnectionIds
-				= (await tableClient.QueryAsync<BankPartnerConnection>(
+				= (await BankPartnerConnectionsTable.QueryAsync<BankPartnerConnection>(
 						bankPartnerConnection =>
 							bankPartnerConnection.CreatedAt <= expiryThreshold &&
 							bankPartnerConnection.Status == ConnectionStatuses.Pending &&
@@ -258,11 +253,55 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
+	public async Task<bool> ActiveConnectionForBankExists(string alias, CancellationToken cancellationToken = default)
+	{
+		string rtgsGlobalId;
+
+		try
+		{
+			rtgsGlobalId = (await BankPartnerConnectionsTable
+				.QueryAsync<BankPartnerConnection>(connection =>
+						connection.RowKey == alias,
+					cancellationToken: cancellationToken,
+					select: new[] { "PartitionKey" })
+				.SingleOrDefaultAsync(cancellationToken))?.PartitionKey;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when querying bank partner connections");
+
+			throw;
+		}
+
+		if (rtgsGlobalId is null)
+		{
+			_logger.LogError("Unable to find bank partner connection with alias {Alias}", alias);
+
+			throw new Exception($"Unable to find bank partner connection with alias {alias}.");
+		}
+
+		try
+		{
+			var connectionExists = await BankPartnerConnectionsTable
+				.QueryAsync<BankPartnerConnection>(connection =>
+						connection.PartitionKey == rtgsGlobalId &&
+						connection.Status == ConnectionStatuses.Active,
+					cancellationToken: cancellationToken)
+				.AnyAsync(cancellationToken);
+
+			return connectionExists;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when querying bank partner connections");
+
+			throw;
+		}
+	}
+
 	private async Task<BankPartnerConnection> GetFromTableAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{
-		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
-		var connection = await tableClient
+		var connection = await BankPartnerConnectionsTable
 			.QueryAsync(filterExpression, cancellationToken: cancellationToken)
 			.SingleOrDefaultAsync(cancellationToken);
 
@@ -272,12 +311,9 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 	private async Task<BankPartnerConnection> GetEstablishedFromTableAsync(string rtgsGlobalId,
 		CancellationToken cancellationToken)
 	{
-		var bankPartnerConnectionsTable =
-			_storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
-
 		var dateThreshold = _dateTimeProvider.UtcNow.Subtract(_connectionsConfig.MinimumConnectionAge);
 
-		var bankPartnerConnections = await bankPartnerConnectionsTable
+		var bankPartnerConnections = await BankPartnerConnectionsTable
 			.QueryAsync<BankPartnerConnection>(bankPartnerConnection =>
 					bankPartnerConnection.PartitionKey == rtgsGlobalId
 					&& bankPartnerConnection.ActivatedAt <= dateThreshold
@@ -286,6 +322,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			.ToListAsync(cancellationToken);
 
 		var bankPartnerConnection = bankPartnerConnections.MaxBy(connection => connection.ActivatedAt);
+
 		return bankPartnerConnection;
 	}
 }

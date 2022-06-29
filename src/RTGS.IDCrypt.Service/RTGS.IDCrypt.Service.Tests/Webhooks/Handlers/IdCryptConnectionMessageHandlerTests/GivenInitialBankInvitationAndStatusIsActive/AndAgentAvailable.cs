@@ -7,43 +7,36 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.Proof;
 using RTGS.IDCryptSDK.Proof.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenStatusIsActive;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests.GivenInitialBankInvitationAndStatusIsActive;
 
-public class AndAgentAvailable
+public class AndAgentAvailable : IAsyncLifetime
 {
 	private readonly Mock<IProofClient> _proofClientMock;
-	private readonly Mock<IRtgsConnectionRepository> _rtgsConnectionsRepository;
 	private readonly IdCryptConnectionMessageHandler _handler;
-	private SendProofRequestRequest _expectedRequest;
+	private IdCryptConnection _activeBankConnection;
 
 	public AndAgentAvailable()
 	{
 		_proofClientMock = new Mock<IProofClient>();
 
-		Func<SendProofRequestRequest, bool> requestMatches = request =>
-		{
-			request.Should().BeEquivalentTo(_expectedRequest);
-
-			return true;
-		};
-
-		_proofClientMock
-			.Setup(client => client.SendProofRequestAsync(
-				It.Is<SendProofRequestRequest>(request => requestMatches(request)),
-				It.IsAny<CancellationToken>()))
-			.Verifiable();
-
 		var logger = new FakeLogger<IdCryptConnectionMessageHandler>();
 
-		_rtgsConnectionsRepository = new Mock<IRtgsConnectionRepository>();
+		var bankPartnerConnectionsRepository = new Mock<IBankPartnerConnectionRepository>();
 
-		_handler = new IdCryptConnectionMessageHandler(logger, _proofClientMock.Object, _rtgsConnectionsRepository.Object);
+		bankPartnerConnectionsRepository
+			.Setup(repo => repo.ActiveConnectionForBankExists("alias", It.IsAny<CancellationToken>()))
+			.ReturnsAsync(false);
+
+		_handler = new IdCryptConnectionMessageHandler(
+			logger,
+			_proofClientMock.Object,
+			Mock.Of<IRtgsConnectionRepository>(),
+			bankPartnerConnectionsRepository.Object);
 	}
 
-	[Fact]
-	public async Task WhenPostingFromBank_ThenRequestProofAsyncWithExpected()
+	public async Task InitializeAsync()
 	{
-		var activeBankConnection = new IdCryptConnection
+		_activeBankConnection = new IdCryptConnection
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
@@ -51,42 +44,36 @@ public class AndAgentAvailable
 			TheirLabel = "RTGS_Bank_Agent_Test"
 		};
 
-		SetupExpectedRequest(activeBankConnection.ConnectionId);
-
-		var message = JsonSerializer.Serialize(activeBankConnection);
+		var message = JsonSerializer.Serialize(_activeBankConnection);
 
 		await _handler.HandleAsync(message, default);
-
-		_proofClientMock.Verify();
 	}
 
+	public Task DisposeAsync() => Task.CompletedTask;
+
 	[Fact]
-	public async Task WhenPostingFromRtgs_ThenSetConnectionActive()
+	public void WhenPostingInitialInvitationFromBank_ThenRequestProof()
 	{
-		var activeRtgsConnection = new IdCryptConnection
+		Func<SendProofRequestRequest, bool> requestMatches = request =>
 		{
-			Alias = "alias",
-			ConnectionId = "connection-id",
-			State = "active",
-			TheirLabel = "RTGS_Jurisdiction_Agent_Test"
+			var expectedRequest = GetExpectedRequest();
+
+			request.Should().BeEquivalentTo(expectedRequest);
+
+			return true;
 		};
 
-		SetupExpectedRequest(activeRtgsConnection.ConnectionId);
-
-		var message = JsonSerializer.Serialize(activeRtgsConnection);
-
-		await _handler.HandleAsync(message, default);
-
-		_rtgsConnectionsRepository.Verify(repo =>
-			repo.ActivateAsync("connection-id", It.IsAny<CancellationToken>()),
+		_proofClientMock.Verify(client => client.SendProofRequestAsync(
+				It.Is<SendProofRequestRequest>(request => requestMatches(request)),
+				It.IsAny<CancellationToken>()),
 			Times.Once);
 	}
 
-	private void SetupExpectedRequest(string connectionId)
+	private SendProofRequestRequest GetExpectedRequest()
 	{
-		_expectedRequest = new SendProofRequestRequest()
+		var expectedRequest = new SendProofRequestRequest()
 		{
-			ConnectionId = connectionId,
+			ConnectionId = _activeBankConnection.ConnectionId,
 			Comment = "Requesting identification",
 			RequestedProofDetails = new()
 			{
@@ -490,5 +477,7 @@ public class AndAgentAvailable
 				RequestedPredicates = new()
 			}
 		};
+
+		return expectedRequest;
 	}
 }

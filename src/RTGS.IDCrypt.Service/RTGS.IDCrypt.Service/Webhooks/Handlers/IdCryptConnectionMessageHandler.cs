@@ -12,15 +12,18 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 	private readonly ILogger<IdCryptConnectionMessageHandler> _logger;
 	private readonly IProofClient _proofClient;
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
+	private readonly IBankPartnerConnectionRepository _bankPartnerConnectionRepository;
 
 	public IdCryptConnectionMessageHandler(
 		ILogger<IdCryptConnectionMessageHandler> logger,
 		IProofClient proofClient,
-		IRtgsConnectionRepository rtgsConnectionRepository)
+		IRtgsConnectionRepository rtgsConnectionRepository,
+		IBankPartnerConnectionRepository bankPartnerConnectionRepository)
 	{
 		_logger = logger;
 		_proofClient = proofClient;
 		_rtgsConnectionRepository = rtgsConnectionRepository;
+		_bankPartnerConnectionRepository = bankPartnerConnectionRepository;
 	}
 
 	public string MessageType => "connections";
@@ -54,6 +57,23 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 		await _rtgsConnectionRepository.ActivateAsync(connection.ConnectionId, cancellationToken);
 
 	private async Task HandleBankConnection(IdCryptConnection connection, CancellationToken cancellationToken)
+	{
+		var cycling = await _bankPartnerConnectionRepository.ActiveConnectionForBankExists(connection.Alias, cancellationToken);
+
+		if (cycling)
+		{
+			await HandleCycledBankConnection(connection, cancellationToken);
+		}
+		else
+		{
+			await HandleInitialBankConnection(connection, cancellationToken);
+		}
+	}
+
+	private async Task HandleCycledBankConnection(IdCryptConnection connection, CancellationToken cancellationToken) =>
+		await _bankPartnerConnectionRepository.ActivateAsync(connection.ConnectionId, cancellationToken);
+
+	private async Task HandleInitialBankConnection(IdCryptConnection connection, CancellationToken cancellationToken)
 	{
 		var request = new SendProofRequestRequest
 		{
@@ -121,7 +141,7 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 				Name = pair.Key,
 				Restrictions = new List<RequestedClaimCredentialDefinition>
 				{
-					new RequestedClaimCredentialDefinition { CredentialDefinitionId = pair.Value }
+					new() { CredentialDefinitionId = pair.Value }
 				}
 			});
 

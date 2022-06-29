@@ -2,22 +2,18 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Proof;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler.GivenAgentAvailable.AndConnectionIsActive;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.IdCryptConnectionMessageHandler;
 
-public class AndFromRtgs : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
+public class GivenRtgsConnectionIsNotActive : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly ConnectionsWebhookFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 
-	public AndFromRtgs(ConnectionsWebhookFixture testFixture)
+	public GivenRtgsConnectionIsNotActive(ConnectionsWebhookFixture testFixture)
 	{
-		_testFixture = testFixture;
-
-		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
+		testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
 		_client = testFixture.CreateClient();
 	}
@@ -28,7 +24,7 @@ public class AndFromRtgs : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifet
 		{
 			Alias = "alias",
 			ConnectionId = "connection-id",
-			State = "active",
+			State = "not-active",
 			TheirLabel = "RTGS_Jurisdiction_Agent"
 		};
 
@@ -37,13 +33,6 @@ public class AndFromRtgs : IClassFixture<ConnectionsWebhookFixture>, IAsyncLifet
 
 	public Task DisposeAsync() =>
 		Task.CompletedTask;
-
-	[Fact]
-	public void ThenActivateConnection() =>
-		_testFixture.RtgsConnectionsTable
-			.Query<RtgsConnection>()
-			.Single(connection => connection.PartitionKey == "alias")
-			.Status.Should().Be("Active");
 
 	[Fact]
 	public void ThenReturnOk() =>

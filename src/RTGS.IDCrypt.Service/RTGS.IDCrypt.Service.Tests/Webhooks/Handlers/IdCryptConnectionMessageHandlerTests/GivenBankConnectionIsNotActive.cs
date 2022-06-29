@@ -9,7 +9,7 @@ using RTGS.IDCryptSDK.Proof;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptConnectionMessageHandlerTests;
 
-public class GivenStatusIsNotActive
+public class GivenBankConnectionIsNotActive
 {
 	[Fact]
 	public async Task ThenLog()
@@ -19,7 +19,8 @@ public class GivenStatusIsNotActive
 		var handler = new IdCryptConnectionMessageHandler(
 			logger,
 			Mock.Of<IProofClient>(),
-			Mock.Of<IRtgsConnectionRepository>());
+			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>());
 
 		var notActiveConnection = new IdCryptConnection
 		{
