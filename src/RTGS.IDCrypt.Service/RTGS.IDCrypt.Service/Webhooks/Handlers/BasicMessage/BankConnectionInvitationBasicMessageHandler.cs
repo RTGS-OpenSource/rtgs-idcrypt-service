@@ -16,6 +16,8 @@ public class BankConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 
 	public string MessageType => nameof(BankConnectionInvitation);
 
+	public bool RequiresActiveConnection => throw new NotImplementedException();
+
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default)
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<BankConnectionInvitation>>(message);
