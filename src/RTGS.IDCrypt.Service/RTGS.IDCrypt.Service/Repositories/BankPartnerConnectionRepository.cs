@@ -299,7 +299,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
-	public async Task<BankPartnerConnection> GetAsync(string rtgsGlobalId, string connectionId, CancellationToken cancellationToken)
+	public async Task<BankPartnerConnection> GetAsync(string rtgsGlobalId, string connectionId, CancellationToken cancellationToken = default)
 	{
 		var bankPartnerConnection = await GetFromTableAsync(connection =>
 				connection.PartitionKey == rtgsGlobalId
