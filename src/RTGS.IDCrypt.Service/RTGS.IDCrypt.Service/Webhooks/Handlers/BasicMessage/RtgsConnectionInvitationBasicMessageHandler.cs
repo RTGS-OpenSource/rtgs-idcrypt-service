@@ -16,6 +16,8 @@ public class RtgsConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 
 	public string MessageType => nameof(RtgsConnectionInvitation);
 
+	public bool RequiresActiveConnection => throw new NotImplementedException();
+
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default)
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<RtgsConnectionInvitation>>(message);

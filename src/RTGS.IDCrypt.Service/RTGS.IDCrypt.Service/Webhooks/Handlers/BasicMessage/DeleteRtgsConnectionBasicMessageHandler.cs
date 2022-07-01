@@ -14,6 +14,8 @@ public class DeleteRtgsConnectionBasicMessageHandler : IBasicMessageHandler
 
 	public string MessageType => nameof(DeleteRtgsConnectionBasicMessage);
 
+	public bool RequiresActiveConnection => throw new NotImplementedException();
+
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default) =>
 		await _rtgsConnectionService.DeleteAsync(connectionId, cancellationToken);
 }
