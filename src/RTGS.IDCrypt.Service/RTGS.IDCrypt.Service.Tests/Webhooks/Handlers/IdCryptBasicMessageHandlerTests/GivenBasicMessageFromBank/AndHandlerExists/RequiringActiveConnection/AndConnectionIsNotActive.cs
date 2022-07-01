@@ -1,15 +1,17 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageHandlerExists.RequiringActiveConnection;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageFromBank.AndHandlerExists.RequiringActiveConnection;
 
-public class AndConnectionIsActive : IAsyncLifetime
+public class AndConnectionIsNotActive : IAsyncLifetime
 {
 	private FakeLogger<IdCryptBasicMessageHandler> _logger;
 	private IdCryptBasicMessage _receivedBasicMessage;
@@ -25,7 +27,8 @@ public class AndConnectionIsActive : IAsyncLifetime
 			Content = JsonSerializer.Serialize(new BasicMessageContent<string>
 			{
 				MessageType = "message-type",
-				MessageContent = "hello"
+				MessageContent = "hello",
+				Source = "Bank-rtgs-global-id"
 			})
 		};
 
@@ -33,12 +36,20 @@ public class AndConnectionIsActive : IAsyncLifetime
 		_mockBasicMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
 		_mockBasicMessageHandler.SetupGet(handler => handler.RequiresActiveConnection).Returns(true);
 
-		var handler = new IdCryptBasicMessageHandler(
-			_logger, 
-			new[]
+		var mockBankPartnerConnectionRepository = new Mock<IBankPartnerConnectionRepository>();
+		mockBankPartnerConnectionRepository.Setup(repository =>
+				repository.GetAsync("rtgs-global-id", "connection-id", It.IsAny<CancellationToken>()))
+			.ReturnsAsync(new BankPartnerConnection
 			{
-				_mockBasicMessageHandler.Object,
+				ConnectionId = "connection-id",
+				Status = ConnectionStatuses.Pending
 			});
+
+		var handler = new IdCryptBasicMessageHandler(
+			_logger,
+			new[] { _mockBasicMessageHandler.Object },
+			Mock.Of<IRtgsConnectionRepository>(),
+			mockBankPartnerConnectionRepository.Object);
 
 		var message = JsonSerializer.Serialize(_receivedBasicMessage);
 
@@ -56,10 +67,10 @@ public class AndConnectionIsActive : IAsyncLifetime
 		}, options => options.WithStrictOrdering());
 
 	[Fact]
-	public void ThenHandlerIsInvoked() =>
+	public void ThenHandlerIsNotInvoked() =>
 		_mockBasicMessageHandler.Verify(handler => handler.HandleAsync(
 				_receivedBasicMessage.Content,
 				_receivedBasicMessage.ConnectionId,
 				It.IsAny<CancellationToken>()),
-			Times.Once);
+			Times.Never);
 }

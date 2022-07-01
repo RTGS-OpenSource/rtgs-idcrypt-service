@@ -1,19 +1,22 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageHandlerExists.NotRequiringActiveConnection;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageFromRtgs.AndHandlerExists.NotRequiringActiveConnection;
 
 public class AndConnectionIsNotActive : IAsyncLifetime
 {
 	private FakeLogger<IdCryptBasicMessageHandler> _logger;
 	private IdCryptBasicMessage _receivedBasicMessage;
 	private Mock<IBasicMessageHandler> _mockBasicMessageHandler;
+	private Mock<IRtgsConnectionRepository> _mockRtgsConnectionRepository;
+	private Mock<IBankPartnerConnectionRepository> _mockBankPartnerConnectionRepository;
 
 	public async Task InitializeAsync()
 	{
@@ -33,12 +36,14 @@ public class AndConnectionIsNotActive : IAsyncLifetime
 		_mockBasicMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
 		_mockBasicMessageHandler.SetupGet(handler => handler.RequiresActiveConnection).Returns(false);
 
+		_mockRtgsConnectionRepository = new Mock<IRtgsConnectionRepository>();
+		_mockBankPartnerConnectionRepository = new Mock<IBankPartnerConnectionRepository>();
+
 		var handler = new IdCryptBasicMessageHandler(
 			_logger,
-			new[]
-			{
-				_mockBasicMessageHandler.Object,
-			});
+			new[] { _mockBasicMessageHandler.Object },
+			_mockRtgsConnectionRepository.Object,
+			_mockBankPartnerConnectionRepository.Object);
 
 		var message = JsonSerializer.Serialize(_receivedBasicMessage);
 

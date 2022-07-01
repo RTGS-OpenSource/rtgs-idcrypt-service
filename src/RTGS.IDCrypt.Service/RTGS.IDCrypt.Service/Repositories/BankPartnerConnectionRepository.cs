@@ -299,6 +299,23 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
+	public async Task<BankPartnerConnection> GetAsync(string rtgsGlobalId, string connectionId, CancellationToken cancellationToken)
+	{
+		var bankPartnerConnection = await GetFromTableAsync(connection =>
+				connection.PartitionKey == rtgsGlobalId
+				&& connection.ConnectionId == connectionId,
+			cancellationToken);
+
+		if (bankPartnerConnection == null)
+		{
+			_logger.LogError("Unable to find bank partner connection with Connection ID {ConnectionId}", connectionId);
+
+			throw new Exception($"Unable to find bank partner connection with Connection ID {connectionId}.");
+		}
+
+		return bankPartnerConnection;
+	}
+
 	private async Task<BankPartnerConnection> GetFromTableAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{
 		var connection = await BankPartnerConnectionsTable

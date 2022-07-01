@@ -57,7 +57,8 @@ public static class ServiceCollectionExtensions
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(
 			new Uri(config["AgentApiAddress"]),
 			config["AgentApiKey"],
-			new Uri(config["AgentServiceEndpointAddress"])));
+			new Uri(config["AgentServiceEndpointAddress"]),
+			$"Bank-{config["RtgsGlobalId"]}"));
 
 		services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer(config));
 

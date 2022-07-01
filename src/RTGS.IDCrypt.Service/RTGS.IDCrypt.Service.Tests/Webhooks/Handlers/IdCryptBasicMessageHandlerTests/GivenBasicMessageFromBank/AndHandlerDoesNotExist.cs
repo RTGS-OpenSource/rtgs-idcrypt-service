@@ -1,13 +1,14 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageFromBank;
 
 public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 {
@@ -31,7 +32,11 @@ public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 		_mockBasicMessageHandler = new Mock<IBasicMessageHandler>();
 		_mockBasicMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
 
-		var handler = new IdCryptBasicMessageHandler(_logger, new[] { _mockBasicMessageHandler.Object });
+		var handler = new IdCryptBasicMessageHandler(
+			_logger,
+			new[] { _mockBasicMessageHandler.Object },
+			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>());
 
 		var message = JsonSerializer.Serialize(basicMessage);
 
