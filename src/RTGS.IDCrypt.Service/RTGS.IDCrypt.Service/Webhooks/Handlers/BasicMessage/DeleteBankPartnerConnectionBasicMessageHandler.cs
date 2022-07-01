@@ -14,7 +14,7 @@ public class DeleteBankPartnerConnectionBasicMessageHandler : IBasicMessageHandl
 
 	public string MessageType => nameof(DeleteBankPartnerConnectionBasicMessage);
 
-	public bool RequiresActiveConnection => throw new NotImplementedException();
+	public bool RequiresActiveConnection => false;
 
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default) =>
 		await _bankConnectionService.DeleteAsync(connectionId, false, cancellationToken);

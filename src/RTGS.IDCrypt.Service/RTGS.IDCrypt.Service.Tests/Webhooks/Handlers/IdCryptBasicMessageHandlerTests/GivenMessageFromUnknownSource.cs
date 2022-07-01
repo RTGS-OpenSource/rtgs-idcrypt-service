@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
@@ -9,9 +8,9 @@ using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageFromBank.AndHandlerExists.RequiringActiveConnection;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests;
 
-public class AndConnectionIsNotActive : IAsyncLifetime
+public class GivenMessageFromUnknownSource : IAsyncLifetime
 {
 	private FakeLogger<IdCryptBasicMessageHandler> _logger;
 	private IdCryptBasicMessage _receivedBasicMessage;
@@ -28,7 +27,7 @@ public class AndConnectionIsNotActive : IAsyncLifetime
 			{
 				MessageType = "message-type",
 				MessageContent = "hello",
-				Source = "Bank-rtgs-global-id"
+				Source = "Unknown-Source"
 			})
 		};
 
@@ -36,20 +35,11 @@ public class AndConnectionIsNotActive : IAsyncLifetime
 		_mockBasicMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
 		_mockBasicMessageHandler.SetupGet(handler => handler.RequiresActiveConnection).Returns(true);
 
-		var mockBankPartnerConnectionRepository = new Mock<IBankPartnerConnectionRepository>();
-		mockBankPartnerConnectionRepository.Setup(repository =>
-				repository.GetAsync("rtgs-global-id", "connection-id", It.IsAny<CancellationToken>()))
-			.ReturnsAsync(new BankPartnerConnection
-			{
-				ConnectionId = "connection-id",
-				Status = ConnectionStatuses.Pending
-			});
-
 		var handler = new IdCryptBasicMessageHandler(
 			_logger,
 			new[] { _mockBasicMessageHandler.Object },
 			Mock.Of<IRtgsConnectionRepository>(),
-			mockBankPartnerConnectionRepository.Object);
+			Mock.Of<IBankPartnerConnectionRepository>());
 
 		var message = JsonSerializer.Serialize(_receivedBasicMessage);
 
@@ -63,7 +53,7 @@ public class AndConnectionIsNotActive : IAsyncLifetime
 		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo(new[]
 		{
 			"Received message-type BasicMessage from ConnectionId connection-id",
-			"Message not handled because connection connection-id is not active"
+			"Message not handled because message source Unknown-Source is not recognised"
 		}, options => options.WithStrictOrdering());
 
 	[Fact]

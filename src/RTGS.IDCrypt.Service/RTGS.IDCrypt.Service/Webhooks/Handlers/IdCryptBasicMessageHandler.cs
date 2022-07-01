@@ -50,9 +50,21 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 			return;
 		}
 
-		if (messageContent.Source.StartsWith("Bank"))
+		const string bankSourcePrefix = "Bank-";
+
+		var messageSourceIsBank = messageContent.Source.StartsWith(bankSourcePrefix);
+		var messageSourceIsRtgs = messageContent.Source == "RTGS";
+
+		if (!messageSourceIsBank && !messageSourceIsRtgs)
 		{
-			var rtgsGlobalId = messageContent.Source[5..];
+			_logger.LogInformation("Message not handled because message source {MessageSource} is not recognised", messageContent.Source);
+
+			return;
+		}
+
+		if (messageSourceIsBank)
+		{
+			var rtgsGlobalId = messageContent.Source[bankSourcePrefix.Length..];
 
 			var bankPartnerConnection = await _bankPartnerConnectionRepository.GetAsync(rtgsGlobalId, message.ConnectionId, cancellationToken);
 
@@ -64,7 +76,7 @@ public class IdCryptBasicMessageHandler : IMessageHandler
 			}
 		}
 
-		if (messageContent.Source == "RTGS")
+		if (messageSourceIsRtgs)
 		{
 			var rtgsConnection = await _rtgsConnectionRepository.GetAsync(message.ConnectionId, cancellationToken);
 

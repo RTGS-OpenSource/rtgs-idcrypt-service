@@ -63,7 +63,7 @@ public class AndConnectionIsNotActive : IAsyncLifetime
 		_logger.Logs[LogLevel.Information].Should().BeEquivalentTo(new[]
 		{
 			"Received message-type BasicMessage from ConnectionId connection-id",
-			"Handled message-type BasicMessage"
+			"Message not handled because connection connection-id is not active"
 		}, options => options.WithStrictOrdering());
 
 	[Fact]

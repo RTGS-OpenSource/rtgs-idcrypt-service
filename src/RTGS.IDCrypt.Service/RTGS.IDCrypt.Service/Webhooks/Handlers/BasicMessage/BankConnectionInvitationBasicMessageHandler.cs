@@ -16,7 +16,7 @@ public class BankConnectionInvitationBasicMessageHandler : IBasicMessageHandler
 
 	public string MessageType => nameof(BankConnectionInvitation);
 
-	public bool RequiresActiveConnection => throw new NotImplementedException();
+	public bool RequiresActiveConnection => false;
 
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default)
 	{
