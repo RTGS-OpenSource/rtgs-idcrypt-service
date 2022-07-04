@@ -8,9 +8,9 @@ using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageFromBank.AndHandlerExists.NotRequiringActiveConnection;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageFromBank.AndHandlerExists;
 
-public class AndConnectionIsNotActive : IAsyncLifetime
+public class NotRequiringActiveConnection : IAsyncLifetime
 {
 	private FakeLogger<IdCryptBasicMessageHandler> _logger;
 	private IdCryptBasicMessage _receivedBasicMessage;
@@ -26,7 +26,8 @@ public class AndConnectionIsNotActive : IAsyncLifetime
 			Content = JsonSerializer.Serialize(new BasicMessageContent<string>
 			{
 				MessageType = "message-type",
-				MessageContent = "hello"
+				MessageContent = "hello",
+				Source = "Bank-rtgs-global-id"
 			})
 		};
 
