@@ -143,6 +143,22 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 		}
 	}
 
+	public async Task<RtgsConnection> GetAsync(string connectionId, CancellationToken cancellationToken = default)
+	{
+		var rtgsConnection = await GetFromTableAsync(connection =>
+			connection.ConnectionId == connectionId,
+			cancellationToken);
+
+		if (rtgsConnection is null)
+		{
+			_logger.LogError("Unable to find RTGS connection with Connection ID {ConnectionId}", connectionId);
+
+			throw new Exception($"Unable to find RTGS connection with Connection ID {connectionId}.");
+		}
+
+		return rtgsConnection;
+	}
+
 	private async Task<RtgsConnection> GetFromTableAsync(Expression<Func<RtgsConnection, bool>> filterExpression, CancellationToken cancellationToken)
 	{
 		var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);

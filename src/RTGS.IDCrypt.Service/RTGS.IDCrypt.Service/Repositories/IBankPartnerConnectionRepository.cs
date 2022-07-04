@@ -14,4 +14,5 @@ public interface IBankPartnerConnectionRepository
 	Task<IEnumerable<string>> GetStaleConnectionIdsAsync(CancellationToken cancellationToken = default);
 	Task<IEnumerable<string>> GetExpiredInvitationConnectionIdsAsync(CancellationToken cancellationToken = default);
 	Task<bool> ActiveConnectionForBankExists(string alias, CancellationToken cancellationToken = default);
+	Task<BankPartnerConnection> GetAsync(string rtgsGlobalId, string connectionId, CancellationToken cancellationToken = default);
 }

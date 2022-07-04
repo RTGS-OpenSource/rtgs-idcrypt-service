@@ -1,26 +1,28 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Moq;
+using RTGS.IDCrypt.Service.Repositories;
 using RTGS.IDCrypt.Service.Tests.Logging;
 using RTGS.IDCrypt.Service.Webhooks.Handlers;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests;
+namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.IdCryptBasicMessageHandlerTests.GivenBasicMessageFromRtgs.AndHandlerExists;
 
-public class GivenBasicMessageHandlerExists : IAsyncLifetime
+public class NotRequiringActiveConnection : IAsyncLifetime
 {
 	private FakeLogger<IdCryptBasicMessageHandler> _logger;
+	private IdCryptBasicMessage _receivedBasicMessage;
 	private Mock<IBasicMessageHandler> _mockBasicMessageHandler;
 
 	public async Task InitializeAsync()
 	{
 		_logger = new FakeLogger<IdCryptBasicMessageHandler>();
-		const string connectionId = "connection-id";
-		var basicMessage = new IdCryptBasicMessage
+
+		_receivedBasicMessage = new IdCryptBasicMessage
 		{
-			ConnectionId = connectionId,
+			ConnectionId = "connection-id",
 			Content = JsonSerializer.Serialize(new BasicMessageContent<string>
 			{
 				MessageType = "message-type",
@@ -30,13 +32,15 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 
 		_mockBasicMessageHandler = new Mock<IBasicMessageHandler>();
 		_mockBasicMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
-		_mockBasicMessageHandler.Setup(handler =>
-			handler.HandleAsync(It.Is<string>(value => value == basicMessage.Content), connectionId, It.IsAny<CancellationToken>()))
-			.Verifiable();
+		_mockBasicMessageHandler.SetupGet(handler => handler.RequiresActiveConnection).Returns(false);
 
-		var handler = new IdCryptBasicMessageHandler(_logger, new[] { _mockBasicMessageHandler.Object });
+		var handler = new IdCryptBasicMessageHandler(
+			_logger,
+			new[] { _mockBasicMessageHandler.Object },
+			Mock.Of<IRtgsConnectionRepository>(),
+			Mock.Of<IBankPartnerConnectionRepository>());
 
-		var message = JsonSerializer.Serialize(basicMessage);
+		var message = JsonSerializer.Serialize(_receivedBasicMessage);
 
 		await handler.HandleAsync(message, default);
 	}
@@ -52,5 +56,10 @@ public class GivenBasicMessageHandlerExists : IAsyncLifetime
 		}, options => options.WithStrictOrdering());
 
 	[Fact]
-	public void ThenCallsHandleAsync() => _mockBasicMessageHandler.Verify();
+	public void ThenHandlerIsInvoked() =>
+		_mockBasicMessageHandler.Verify(handler => handler.HandleAsync(
+				_receivedBasicMessage.Content,
+				_receivedBasicMessage.ConnectionId,
+				It.IsAny<CancellationToken>()),
+			Times.Once);
 }
