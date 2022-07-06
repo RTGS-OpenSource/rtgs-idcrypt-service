@@ -137,7 +137,7 @@ public class RtgsConnectionService : ConnectionServiceBase, IRtgsConnectionServi
 	{
 		if (rtgsGlobalId == _rtgsGlobalId)
 		{
-			var rtgsConnections = await _rtgsConnectionRepository.GetMatchingAsync(default, cancellationToken);
+			var rtgsConnections = await _rtgsConnectionRepository.GetMatchingAsync(null, cancellationToken);
 			foreach (RtgsConnection rtgsConnection in rtgsConnections)
 			{
 				await _rtgsConnectionRepository.DeleteAsync(rtgsConnection.ConnectionId, cancellationToken);

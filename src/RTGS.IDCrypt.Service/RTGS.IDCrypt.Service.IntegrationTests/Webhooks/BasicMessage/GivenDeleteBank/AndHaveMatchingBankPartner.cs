@@ -4,8 +4,8 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Models;
+using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Webhooks.Models;
-using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 using RTGSIDCryptWorker.Contracts;
 
@@ -29,10 +29,9 @@ public class AndHaveMatchingBankPartner : IClassFixture<DeleteBankFixture>, IAsy
 
 	public async Task InitializeAsync()
 	{
-		await _testFixture.TestSeed();
 		_message = new BasicMessageContent<DeleteBankRequest>
 		{
-			MessageType = nameof(DeleteBankPartnerConnectionBasicMessage),
+			MessageType = nameof(DeleteBankRequest),
 			MessageContent = new DeleteBankRequest("rtgs-global-id-1"),
 			Source = "RTGS"
 		};
@@ -49,24 +48,32 @@ public class AndHaveMatchingBankPartner : IClassFixture<DeleteBankFixture>, IAsy
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void WhenPosting_ThenShouldCallDeleteOnAllConnectionsForThePartner()
+	public void WhenPosting_ThenAgentDeleteCalledAndSelectedConnectionsDeleted()
 	{
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKeys(
 			"/connections/connection-id-1");
 
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKeys(
 			"/connections/connection-id-4");
-	}
-
-	[Fact]
-	public void WhenPosting_ThenDeleteRelatedPartnerConnectionsFromTableStorage() =>
+		
 		_testFixture.BankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
 			.Where(connection => connection.ConnectionId == "connection-id-1" || connection.ConnectionId == "connection-id-4")
 			.Should()
 			.BeEmpty();
 
-	[Fact]
-	public void ThenReturnOk() =>
+		_testFixture.BankPartnerConnectionsTable
+			.Query<BankPartnerConnection>()
+			.Count()
+			.Should()
+			.Be(3);
+
+		_testFixture.RtgsConnectionsTable
+			.Query<RtgsConnection>()
+			.Count()
+			.Should()
+			.Be(2);
+		
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+	}
 }

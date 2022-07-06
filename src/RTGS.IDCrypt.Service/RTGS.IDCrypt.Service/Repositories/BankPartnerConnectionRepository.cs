@@ -260,11 +260,13 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			var connections = await tableClient
-				.QueryAsync(filterExpression, cancellationToken: cancellationToken)
-				.ToListAsync(cancellationToken);
-
-			return connections;
+			return filterExpression == null
+				? await tableClient
+					.QueryAsync<BankPartnerConnection>(cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken)
+				: await tableClient
+					.QueryAsync(filterExpression, cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken);
 		}
 		catch (Exception ex)
 		{

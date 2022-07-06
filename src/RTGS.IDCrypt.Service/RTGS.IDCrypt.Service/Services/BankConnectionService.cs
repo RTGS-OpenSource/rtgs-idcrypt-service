@@ -173,7 +173,7 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 	{
 		if (rtgsGlobalId == _rtgsGlobalId)
 		{
-			var allConnections = await _bankPartnerConnectionRepository.GetMatchingAsync(default, cancellationToken);
+			var allConnections = await _bankPartnerConnectionRepository.GetMatchingAsync(null, cancellationToken);
 			foreach (BankPartnerConnection bankPartnerConnection in allConnections)
 			{
 				await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,

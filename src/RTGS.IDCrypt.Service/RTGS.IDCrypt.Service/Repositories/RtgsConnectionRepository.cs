@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
@@ -166,11 +167,13 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
 
-			var connections = await tableClient
-				.QueryAsync(filterExpression, cancellationToken: cancellationToken)
-				.ToListAsync(cancellationToken);
-
-			return connections;
+			return filterExpression == null
+				? await tableClient
+					.QueryAsync<RtgsConnection>(cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken)
+				: await tableClient
+					.QueryAsync(filterExpression, cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken);
 		}
 		catch (Exception ex)
 		{
