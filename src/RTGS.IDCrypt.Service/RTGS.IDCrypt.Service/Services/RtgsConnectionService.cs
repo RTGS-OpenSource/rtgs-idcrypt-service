@@ -132,4 +132,18 @@ public class RtgsConnectionService : ConnectionServiceBase, IRtgsConnectionServi
 			throw aggregateTask?.Exception ?? e;
 		}
 	}
+
+	public async Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
+	{
+		if (rtgsGlobalId == _rtgsGlobalId)
+		{
+			var rtgsConnections = await _rtgsConnectionRepository.GetMatchingAsync(default, cancellationToken);
+			foreach (RtgsConnection rtgsConnection in rtgsConnections)
+			{
+				await _rtgsConnectionRepository.DeleteAsync(rtgsConnection.ConnectionId, cancellationToken);
+
+				await ConnectionsClient.DeleteConnectionAsync(rtgsConnection.ConnectionId, cancellationToken);
+			}
+		}
+	}
 }

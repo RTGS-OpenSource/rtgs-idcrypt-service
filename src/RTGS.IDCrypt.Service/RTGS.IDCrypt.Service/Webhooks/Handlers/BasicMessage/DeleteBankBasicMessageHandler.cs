@@ -8,10 +8,14 @@ namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 public class DeleteBankBasicMessageHandler : IBasicMessageHandler
 {
 	private readonly IBankConnectionService _bankConnectionService;
+	private readonly IRtgsConnectionService _rtgsConnectionService;
 
-	public DeleteBankBasicMessageHandler(IBankConnectionService bankConnectionService)
+	public DeleteBankBasicMessageHandler(
+		IBankConnectionService bankConnectionService, 
+		IRtgsConnectionService rtgsConnectionService)
 	{
 		_bankConnectionService = bankConnectionService;
+		_rtgsConnectionService = rtgsConnectionService;
 	}
 
 	public string MessageType => nameof(DeleteBankRequest);
@@ -21,17 +25,12 @@ public class DeleteBankBasicMessageHandler : IBasicMessageHandler
 	public async Task HandleAsync(string message, string connectionId, CancellationToken cancellationToken = default)
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<DeleteBankRequest>>(message);
+		if (request.Source != "RTGS")
+		{
+			throw new InvalidMessageSourceException($"Source {request.Source} is not valid.");
+		}
 
-		// is the source of the message "RTGS" - if not then throw
-
-		// Is this the bank being deleted?
-
-		// yes - retrieve All connections from rtgs AND bank partners
-		// call delete on the agent for each connectionid
-		// delete both tables
-
-		// no - retrieve bank partner connections for the specified bank partner
-		// call delete on the agent for each connectionid
-		// delete the selected bank partner rows
+		await _bankConnectionService.DeleteBankAsync(request.MessageContent.RtgsGlobalId, cancellationToken);
+		await _rtgsConnectionService.DeleteBankAsync(request.MessageContent.RtgsGlobalId, cancellationToken);
 	}
 }

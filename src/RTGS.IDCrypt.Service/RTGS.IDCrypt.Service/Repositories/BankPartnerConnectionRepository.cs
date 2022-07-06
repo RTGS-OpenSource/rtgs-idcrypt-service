@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
@@ -253,6 +254,27 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
+	public async Task<IEnumerable<BankPartnerConnection>> GetMatchingAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+			var connections = await tableClient
+				.QueryAsync(filterExpression, cancellationToken: cancellationToken)
+				.ToListAsync(cancellationToken);
+
+			return connections;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when getting matching bank connections");
+
+			throw;
+		}
+	}
+	
+	
 	public async Task<bool> ActiveConnectionForBankExists(string alias, CancellationToken cancellationToken = default)
 	{
 		string rtgsGlobalId;
