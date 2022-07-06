@@ -29,7 +29,7 @@ public class AndIsNotLocalBank : IAsyncLifetime
 	{
 		var logger = new FakeLogger<BankConnectionService>();
 
-		var coreOptions = Options.Create(new CoreConfig {RtgsGlobalId = LocalRtgsGlobalId});
+		var coreOptions = Options.Create(new CoreConfig { RtgsGlobalId = LocalRtgsGlobalId });
 
 		Expression<Func<BankPartnerConnection, bool>> connectionExpression =
 			connection => connection.PartitionKey == RtgsGlobalId;
@@ -39,7 +39,7 @@ public class AndIsNotLocalBank : IAsyncLifetime
 				repo.GetMatchingAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expr =>
 						LambdaCompare.Eq(expr, connectionExpression)), It.IsAny<CancellationToken>()))
-			.ReturnsAsync(new[] {new BankPartnerConnection {PartitionKey = RtgsGlobalId, ConnectionId = ConnectionId}});
+			.ReturnsAsync(new[] { new BankPartnerConnection { PartitionKey = RtgsGlobalId, ConnectionId = ConnectionId } });
 
 		_bankPartnerConnectionRepositoryMock
 			.Setup(repo => repo.DeleteAsync(ConnectionId, It.IsAny<CancellationToken>()))

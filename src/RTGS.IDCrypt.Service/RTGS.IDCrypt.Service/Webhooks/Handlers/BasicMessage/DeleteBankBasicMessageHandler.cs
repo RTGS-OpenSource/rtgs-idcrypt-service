@@ -11,7 +11,7 @@ public class DeleteBankBasicMessageHandler : IBasicMessageHandler
 	private readonly IRtgsConnectionService _rtgsConnectionService;
 
 	public DeleteBankBasicMessageHandler(
-		IBankConnectionService bankConnectionService, 
+		IBankConnectionService bankConnectionService,
 		IRtgsConnectionService rtgsConnectionService)
 	{
 		_bankConnectionService = bankConnectionService;

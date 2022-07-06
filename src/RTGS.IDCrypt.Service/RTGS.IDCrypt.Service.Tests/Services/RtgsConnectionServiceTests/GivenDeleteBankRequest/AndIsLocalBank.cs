@@ -15,7 +15,7 @@ public class AndIsLocalBank : IAsyncLifetime
 {
 	private readonly Mock<IConnectionsClient> _connectionsClientMock = new();
 	private readonly Mock<IRtgsConnectionRepository> _mockRtgsConnectionRepository = new();
-	
+
 	private readonly RtgsConnectionService _rtgsConnectionService;
 
 	private const string RtgsGlobalId = "rtgs-global-id-1";
@@ -24,7 +24,7 @@ public class AndIsLocalBank : IAsyncLifetime
 	public AndIsLocalBank()
 	{
 		var logger = new FakeLogger<RtgsConnectionService>();
-		
+
 		var coreOptions = Options.Create(new CoreConfig
 		{
 			RtgsGlobalId = RtgsGlobalId
@@ -44,9 +44,9 @@ public class AndIsLocalBank : IAsyncLifetime
 		_mockRtgsConnectionRepository
 			.Setup(repo => repo.DeleteAsync(ConnectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
-		
+
 		_connectionsClientMock
-			.Setup(conn=>conn.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
+			.Setup(conn => conn.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		_rtgsConnectionService = new RtgsConnectionService(
@@ -57,7 +57,7 @@ public class AndIsLocalBank : IAsyncLifetime
 			Mock.Of<IWalletClient>(),
 			coreOptions);
 	}
-	
+
 	public async Task InitializeAsync() =>
 		await _rtgsConnectionService.DeleteBankAsync(RtgsGlobalId, default);
 

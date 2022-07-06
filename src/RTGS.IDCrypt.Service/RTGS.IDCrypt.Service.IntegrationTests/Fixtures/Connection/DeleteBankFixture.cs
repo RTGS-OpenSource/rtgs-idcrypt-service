@@ -55,7 +55,7 @@ public class DeleteBankFixture : ConnectionsTestFixtureBase
 		uniqueIndex = 0;
 		var connections = new List<(string alias, string status)>
 		{
-			("alias-1", "Active"), 
+			("alias-1", "Active"),
 			("alias-2", "Pending")
 		};
 		var rtgsConnections = connections.Select(conn => new RtgsConnection

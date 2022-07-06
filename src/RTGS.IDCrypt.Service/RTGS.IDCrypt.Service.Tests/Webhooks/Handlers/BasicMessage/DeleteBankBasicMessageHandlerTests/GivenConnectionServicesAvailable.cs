@@ -21,17 +21,18 @@ public class GivenConnectionServicesAvailable : IAsyncLifetime
 		_mockBankConnectionService
 			.Setup(c => c.DeleteBankAsync(RtgsGlobalIdToDelete, It.IsAny<CancellationToken>()))
 			.Verifiable();
-		
+
 		_mockRtgsConnectionService
-			.Setup(r=>r.DeleteBankAsync(RtgsGlobalIdToDelete, It.IsAny<CancellationToken>()))
+			.Setup(r => r.DeleteBankAsync(RtgsGlobalIdToDelete, It.IsAny<CancellationToken>()))
 			.Verifiable();
-		
+
 		var handler = new DeleteBankBasicMessageHandler(_mockBankConnectionService.Object, _mockRtgsConnectionService.Object);
 
 		var messageContent = new DeleteBankRequest(RtgsGlobalIdToDelete);
 		var message = JsonSerializer.Serialize(new BasicMessageContent<DeleteBankRequest>
 		{
-			MessageContent = messageContent, Source = MessageSource
+			MessageContent = messageContent,
+			Source = MessageSource
 		});
 
 		await handler.HandleAsync(message, "connection-1", default);

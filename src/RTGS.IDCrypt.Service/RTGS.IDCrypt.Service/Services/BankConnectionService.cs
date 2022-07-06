@@ -178,23 +178,23 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 			{
 				await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,
 					cancellationToken);
-				
+
 				await ConnectionsClient.DeleteConnectionAsync(bankPartnerConnection.ConnectionId, cancellationToken);
 			}
 		}
 		else
 		{
-			var partnerConnections = await _bankPartnerConnectionRepository.GetMatchingAsync(conn=>conn.PartitionKey == rtgsGlobalId, cancellationToken);
+			var partnerConnections = await _bankPartnerConnectionRepository.GetMatchingAsync(conn => conn.PartitionKey == rtgsGlobalId, cancellationToken);
 			foreach (BankPartnerConnection bankPartnerConnection in partnerConnections)
 			{
 				await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,
 					cancellationToken);
-				
+
 				await ConnectionsClient.DeleteConnectionAsync(bankPartnerConnection.ConnectionId, cancellationToken);
 			}
 		}
 	}
-	
+
 	private async Task<BankConnectionInvitation> DoCreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken)
 	{
 		var alias = _aliasProvider.Provide();

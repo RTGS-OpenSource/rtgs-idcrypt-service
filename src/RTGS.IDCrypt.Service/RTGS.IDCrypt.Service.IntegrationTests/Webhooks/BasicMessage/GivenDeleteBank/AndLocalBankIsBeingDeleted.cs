@@ -9,7 +9,7 @@ using RTGS.IDCryptSDK.BasicMessage.Models;
 using RTGSIDCryptWorker.Contracts;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteBank;
-public class AndLocalBankIsBeingDeleted: IClassFixture<DeleteBankFixture>, IAsyncLifetime
+public class AndLocalBankIsBeingDeleted : IClassFixture<DeleteBankFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly DeleteBankFixture _testFixture;
@@ -24,14 +24,14 @@ public class AndLocalBankIsBeingDeleted: IClassFixture<DeleteBankFixture>, IAsyn
 		_testFixture.IdCryptStatusCodeHttpHandler.Reset();
 
 		_client = testFixture.CreateClient();
-		
+
 		var message = new BasicMessageContent<DeleteBankRequest>
 		{
 			MessageType = nameof(DeleteBankRequest),
 			MessageContent = new DeleteBankRequest("rtgs-global-id"),
 			Source = "RTGS"
 		};
-		
+
 		_basicMessage = new IdCryptBasicMessage
 		{
 			ConnectionId = "connection-id-1",
@@ -39,7 +39,7 @@ public class AndLocalBankIsBeingDeleted: IClassFixture<DeleteBankFixture>, IAsyn
 		};
 	}
 
-	public async Task InitializeAsync() => 
+	public async Task InitializeAsync() =>
 		_httpResponse = await _client.PostAsJsonAsync("/v1/idcrypt/topic/basicmessages", _basicMessage);
 
 	public Task DisposeAsync() => Task.CompletedTask;
@@ -48,7 +48,7 @@ public class AndLocalBankIsBeingDeleted: IClassFixture<DeleteBankFixture>, IAsyn
 	public void WhenPosting_ThenAgentDeleteCalledAndConnectionsDeleted()
 	{
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Count.Should().Be(7);
-		
+
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Should().ContainKeys(
 			"/connections/connection-id-1",
 			"/connections/connection-id-2",
@@ -57,7 +57,7 @@ public class AndLocalBankIsBeingDeleted: IClassFixture<DeleteBankFixture>, IAsyn
 			"/connections/connection-id-5",
 			"/connections/rtgs-connection-id-1",
 			"/connections/rtgs-connection-id-2");
-		
+
 		_testFixture.BankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
 			.Should()
@@ -68,6 +68,6 @@ public class AndLocalBankIsBeingDeleted: IClassFixture<DeleteBankFixture>, IAsyn
 			.Should()
 			.BeEmpty();
 
-			_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 	}
 }

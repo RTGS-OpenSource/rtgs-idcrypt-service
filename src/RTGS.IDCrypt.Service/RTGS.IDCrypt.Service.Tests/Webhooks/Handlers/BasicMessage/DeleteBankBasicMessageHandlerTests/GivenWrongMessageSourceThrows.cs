@@ -16,7 +16,7 @@ public class GivenWrongMessageSourceThrows : IAsyncLifetime
 	private readonly Mock<IRtgsConnectionService> _mockRtgsConectionService = new();
 	private DeleteBankBasicMessageHandler _handler;
 	private string _message;
-	
+
 	public Task InitializeAsync()
 	{
 		_handler = new DeleteBankBasicMessageHandler(_mockBankConnectionService.Object, _mockRtgsConectionService.Object);

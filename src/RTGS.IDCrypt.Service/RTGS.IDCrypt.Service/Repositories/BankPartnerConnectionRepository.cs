@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
@@ -275,8 +274,8 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			throw;
 		}
 	}
-	
-	
+
+
 	public async Task<bool> ActiveConnectionForBankExists(string alias, CancellationToken cancellationToken = default)
 	{
 		string rtgsGlobalId;

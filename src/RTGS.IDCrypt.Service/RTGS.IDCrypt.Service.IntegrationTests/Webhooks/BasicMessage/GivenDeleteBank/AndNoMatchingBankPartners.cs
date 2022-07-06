@@ -9,7 +9,7 @@ using RTGS.IDCryptSDK.BasicMessage.Models;
 using RTGSIDCryptWorker.Contracts;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteBank;
-public class AndNoMatchingBankPartners: IClassFixture<DeleteBankFixture>, IAsyncLifetime
+public class AndNoMatchingBankPartners : IClassFixture<DeleteBankFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly DeleteBankFixture _testFixture;
@@ -49,7 +49,7 @@ public class AndNoMatchingBankPartners: IClassFixture<DeleteBankFixture>, IAsync
 	public void WhenPosting_ThenAgentDeleteCalledAndSelectedConnectionsDeleted()
 	{
 		_testFixture.IdCryptStatusCodeHttpHandler.Requests.Count.Should().Be(0);
-		
+
 		_testFixture.BankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
 			.Count()
@@ -61,7 +61,7 @@ public class AndNoMatchingBankPartners: IClassFixture<DeleteBankFixture>, IAsync
 			.Count()
 			.Should()
 			.Be(2);
-		
+
 		_httpResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 	}
 }
