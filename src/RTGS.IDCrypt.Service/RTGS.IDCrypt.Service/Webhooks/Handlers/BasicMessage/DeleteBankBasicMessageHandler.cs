@@ -22,6 +22,8 @@ public class DeleteBankBasicMessageHandler : IBasicMessageHandler
 	{
 		var request = JsonSerializer.Deserialize<BasicMessageContent<DeleteBankRequest>>(message);
 
+		// is the source of the message "RTGS" - if not then throw
+
 		// Is this the bank being deleted?
 
 		// yes - retrieve All connections from rtgs AND bank partners
