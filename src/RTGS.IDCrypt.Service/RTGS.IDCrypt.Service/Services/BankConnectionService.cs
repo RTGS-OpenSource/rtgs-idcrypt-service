@@ -172,8 +172,8 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 	public async Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
 	{
 		var connectionsToDelete = rtgsGlobalId == _rtgsGlobalId
-			? await _bankPartnerConnectionRepository.GetMatchingAsync(null, cancellationToken)
-			: await _bankPartnerConnectionRepository.GetMatchingAsync(
+			? await _bankPartnerConnectionRepository.FindAsync(null, cancellationToken)
+			: await _bankPartnerConnectionRepository.FindAsync(
 				conn => conn.PartitionKey == rtgsGlobalId,
 				cancellationToken);
 
