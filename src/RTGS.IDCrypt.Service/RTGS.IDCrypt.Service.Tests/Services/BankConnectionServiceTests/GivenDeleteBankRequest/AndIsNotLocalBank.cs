@@ -35,7 +35,7 @@ public class AndIsNotLocalBank : IAsyncLifetime
 
 		_bankPartnerConnectionRepositoryMock
 			.Setup(repo =>
-				repo.GetMatchingAsync(
+				repo.FindAsync(
 					It.Is<Expression<Func<BankPartnerConnection, bool>>>(expr =>
 						LambdaCompare.Eq(expr, connectionExpression)), It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new[] { new BankPartnerConnection { PartitionKey = RtgsGlobalId, ConnectionId = ConnectionId } });

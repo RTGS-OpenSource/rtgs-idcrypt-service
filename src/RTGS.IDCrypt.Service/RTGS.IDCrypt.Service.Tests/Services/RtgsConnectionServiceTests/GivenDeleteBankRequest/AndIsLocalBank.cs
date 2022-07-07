@@ -31,7 +31,7 @@ public class AndIsLocalBank : IAsyncLifetime
 		});
 
 		_mockRtgsConnectionRepository
-			.Setup(repo => repo.GetMatchingAsync(default, It.IsAny<CancellationToken>()))
+			.Setup(repo => repo.FindAsync(default, It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new[]
 			{
 				new RtgsConnection

@@ -160,18 +160,18 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 		return rtgsConnection;
 	}
 
-	public async Task<IEnumerable<RtgsConnection>> GetMatchingAsync(Expression<Func<RtgsConnection, bool>> filterExpression, CancellationToken cancellationToken = default)
+	public async Task<IEnumerable<RtgsConnection>> FindAsync(Expression<Func<RtgsConnection, bool>> filter, CancellationToken cancellationToken = default)
 	{
 		try
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
 
-			return filterExpression == null
+			return filter == null
 				? await tableClient
 					.QueryAsync<RtgsConnection>(cancellationToken: cancellationToken)
 					.ToListAsync(cancellationToken)
 				: await tableClient
-					.QueryAsync(filterExpression, cancellationToken: cancellationToken)
+					.QueryAsync(filter, cancellationToken: cancellationToken)
 					.ToListAsync(cancellationToken);
 		}
 		catch (Exception ex)

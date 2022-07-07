@@ -31,7 +31,7 @@ public class AndIsLocalBank : IAsyncLifetime
 		var coreOptions = Options.Create(new CoreConfig { RtgsGlobalId = RtgsGlobalId });
 
 		_bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.GetMatchingAsync(default, It.IsAny<CancellationToken>()))
+			.Setup(repo => repo.FindAsync(default, It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new[]
 			{
 				new BankPartnerConnection { PartitionKey = "rtgs-global-id-1", ConnectionId = Connection1 },

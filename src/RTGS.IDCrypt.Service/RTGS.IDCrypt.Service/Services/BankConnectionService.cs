@@ -163,7 +163,7 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 	}
 
 	/// <summary>
-	/// Deletes connections related to a bank
+	/// Deletes a banks
 	/// </summary>
 	/// <remarks>
 	/// If we are deleting ourselves then delete all connections, if another delete all connections to it.</remarks>
@@ -172,8 +172,8 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 	public async Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
 	{
 		var connectionsToDelete = rtgsGlobalId == _rtgsGlobalId
-			? await _bankPartnerConnectionRepository.GetMatchingAsync(null, cancellationToken)
-			: await _bankPartnerConnectionRepository.GetMatchingAsync(
+			? await _bankPartnerConnectionRepository.FindAsync(null, cancellationToken)
+			: await _bankPartnerConnectionRepository.FindAsync(
 				conn => conn.PartitionKey == rtgsGlobalId,
 				cancellationToken);
 
