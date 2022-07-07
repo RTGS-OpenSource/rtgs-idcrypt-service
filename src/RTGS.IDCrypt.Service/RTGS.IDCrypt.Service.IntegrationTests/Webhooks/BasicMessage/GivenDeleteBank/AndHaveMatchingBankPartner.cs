@@ -57,7 +57,7 @@ public class AndHaveMatchingBankPartner : IClassFixture<DeleteBankFixture>, IAsy
 
 		_testFixture.BankPartnerConnectionsTable
 			.Query<BankPartnerConnection>()
-			.Where(connection => connection.ConnectionId == "connection-id-1" || connection.ConnectionId == "connection-id-4")
+			.Where(connection => connection.ConnectionId is "connection-id-1" or "connection-id-4")
 			.Should()
 			.BeEmpty();
 

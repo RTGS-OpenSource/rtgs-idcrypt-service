@@ -13,7 +13,7 @@ public class GivenUnknownBankConnectionAndStatusIsActive
 {
 	private readonly Mock<IProofClient> _proofClientMock;
 	private readonly IdCryptConnectionMessageHandler _handler;
-	private string _message;
+	private readonly string _message;
 
 	public GivenUnknownBankConnectionAndStatusIsActive()
 	{

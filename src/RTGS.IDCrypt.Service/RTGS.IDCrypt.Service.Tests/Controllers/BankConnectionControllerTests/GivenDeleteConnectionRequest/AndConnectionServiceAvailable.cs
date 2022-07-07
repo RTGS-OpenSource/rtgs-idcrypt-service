@@ -33,5 +33,5 @@ public class AndConnectionServiceAvailable : IAsyncLifetime
 	public void WhenDeleting_ThenReturnNoContent() => _response.Should().BeOfType<NoContentResult>();
 
 	[Fact]
-	public void WhenDeleting_AndCallServiceDeleteAsync() => _bankConnectionServiceMock.Verify();
+	public void WhenDeleting_ThenCallServiceDelete() => _bankConnectionServiceMock.Verify();
 }

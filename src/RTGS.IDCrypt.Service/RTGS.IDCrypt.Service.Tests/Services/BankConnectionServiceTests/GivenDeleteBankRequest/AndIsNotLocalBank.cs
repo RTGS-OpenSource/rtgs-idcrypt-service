@@ -22,14 +22,13 @@ public class AndIsNotLocalBank : IAsyncLifetime
 	private readonly BankConnectionService _bankConnectionService;
 
 	private const string RtgsGlobalId = "rtgs-global-id-1";
-	private const string LocalRtgsGlobalId = "rtgs-global-id-2";
 	private const string ConnectionId = "connection-id-321";
 
 	public AndIsNotLocalBank()
 	{
 		var logger = new FakeLogger<BankConnectionService>();
 
-		var coreOptions = Options.Create(new CoreConfig { RtgsGlobalId = LocalRtgsGlobalId });
+		var coreOptions = Options.Create(new CoreConfig { RtgsGlobalId = "local-rtgs-global-id" });
 
 		Expression<Func<BankPartnerConnection, bool>> connectionExpression =
 			connection => connection.PartitionKey == RtgsGlobalId;
@@ -60,7 +59,7 @@ public class AndIsNotLocalBank : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		await _bankConnectionService.DeleteBankAsync(RtgsGlobalId, default);
+		await _bankConnectionService.DeleteBankAsync(RtgsGlobalId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 

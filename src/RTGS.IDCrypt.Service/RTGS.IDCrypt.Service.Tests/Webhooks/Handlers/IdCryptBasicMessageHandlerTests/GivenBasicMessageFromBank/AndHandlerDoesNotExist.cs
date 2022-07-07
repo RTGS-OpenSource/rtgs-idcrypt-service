@@ -54,6 +54,6 @@ public class GivenBasicMessageHandlerDoesNotExist : IAsyncLifetime
 		}, options => options.WithStrictOrdering());
 
 	[Fact]
-	public void ThenDoesNotCallHandleAsync() => _mockBasicMessageHandler
+	public void ThenDoesNotCallHandle() => _mockBasicMessageHandler
 		.Verify(handler => handler.HandleAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 }

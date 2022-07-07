@@ -50,5 +50,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsAcceptInvitationAsync() => _bankConnectionServiceMock.Verify();
+	public void ThenCallsAcceptInvitation() => _bankConnectionServiceMock.Verify();
 }

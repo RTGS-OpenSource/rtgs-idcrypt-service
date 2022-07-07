@@ -15,7 +15,6 @@ public class GivenConnectionServicesAvailable : IAsyncLifetime
 	private readonly Mock<IBankConnectionService> _mockBankConnectionService = new();
 	private readonly Mock<IRtgsConnectionService> _mockRtgsConnectionService = new();
 
-
 	public async Task InitializeAsync()
 	{
 		_mockBankConnectionService
@@ -35,9 +34,8 @@ public class GivenConnectionServicesAvailable : IAsyncLifetime
 			Source = MessageSource
 		});
 
-		await handler.HandleAsync(message, "connection-1", default);
+		await handler.HandleAsync(message, "connection-1");
 	}
-
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
