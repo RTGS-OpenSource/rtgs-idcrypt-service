@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using Azure.Data.Tables;
 using Microsoft.Extensions.Options;
 using RTGS.IDCrypt.Service.Config;
@@ -157,6 +158,28 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 		}
 
 		return rtgsConnection;
+	}
+
+	public async Task<IEnumerable<RtgsConnection>> FindAsync(Expression<Func<RtgsConnection, bool>> filter, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.RtgsConnectionsTableName);
+
+			return filter == null
+				? await tableClient
+					.QueryAsync<RtgsConnection>(cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken)
+				: await tableClient
+					.QueryAsync(filter, cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when finding rtgs connections");
+
+			throw;
+		}
 	}
 
 	private async Task<RtgsConnection> GetFromTableAsync(Expression<Func<RtgsConnection, bool>> filterExpression, CancellationToken cancellationToken)

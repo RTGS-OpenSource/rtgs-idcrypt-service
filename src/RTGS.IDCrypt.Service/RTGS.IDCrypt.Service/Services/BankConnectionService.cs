@@ -162,6 +162,30 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 		}
 	}
 
+	/// <summary>
+	/// Deletes a banks
+	/// </summary>
+	/// <remarks>
+	/// If we are deleting ourselves then delete all connections, if another delete all connections to it.</remarks>
+	/// <param name="rtgsGlobalId">RTGS.Global Id that belongs to bank being deleted</param>
+	/// <param name="cancellationToken">Cancellation Token</param>
+	public async Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
+	{
+		var connectionsToDelete = rtgsGlobalId == _rtgsGlobalId
+			? await _bankPartnerConnectionRepository.FindAsync(null, cancellationToken)
+			: await _bankPartnerConnectionRepository.FindAsync(
+				conn => conn.PartitionKey == rtgsGlobalId,
+				cancellationToken);
+
+		foreach (BankPartnerConnection bankPartnerConnection in connectionsToDelete)
+		{
+			await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,
+				cancellationToken);
+
+			await ConnectionsClient.DeleteConnectionAsync(bankPartnerConnection.ConnectionId, cancellationToken);
+		}
+	}
+
 	private async Task<BankConnectionInvitation> DoCreateConnectionInvitationForBankAsync(string toRtgsGlobalId, CancellationToken cancellationToken)
 	{
 		var alias = _aliasProvider.Provide();

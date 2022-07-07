@@ -36,8 +36,8 @@ public class AndConnectionIsActive : IAsyncLifetime
 		_mockBasicMessageHandler.SetupGet(handler => handler.MessageType).Returns("message-type");
 		_mockBasicMessageHandler.SetupGet(handler => handler.RequiresActiveConnection).Returns(true);
 
-		var _mockRtgsConnectionRepository = new Mock<IRtgsConnectionRepository>();
-		_mockRtgsConnectionRepository.Setup(repository =>
+		var mockRtgsConnectionRepository = new Mock<IRtgsConnectionRepository>();
+		mockRtgsConnectionRepository.Setup(repository =>
 				repository.GetAsync("connection-id", It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new RtgsConnection
 			{
@@ -48,7 +48,7 @@ public class AndConnectionIsActive : IAsyncLifetime
 		var handler = new IdCryptBasicMessageHandler(
 			_logger,
 			new[] { _mockBasicMessageHandler.Object },
-			_mockRtgsConnectionRepository.Object,
+			mockRtgsConnectionRepository.Object,
 			Mock.Of<IBankPartnerConnectionRepository>());
 
 		var message = JsonSerializer.Serialize(_receivedBasicMessage);

@@ -216,7 +216,6 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 				.SelectMany(grouping =>
 					grouping.OrderByDescending(bankPartnerConnection => bankPartnerConnection.ActivatedAt).Skip(1)
 						.Select(bankPartnerConnection => bankPartnerConnection.ConnectionId));
-
 		}
 		catch (Exception ex)
 		{
@@ -248,6 +247,28 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error occurred when querying bank partner connections");
+
+			throw;
+		}
+	}
+
+	public async Task<IEnumerable<BankPartnerConnection>> FindAsync(Expression<Func<BankPartnerConnection, bool>> filter, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
+
+			return filter == null
+				? await tableClient
+					.QueryAsync<BankPartnerConnection>(cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken)
+				: await tableClient
+					.QueryAsync(filter, cancellationToken: cancellationToken)
+					.ToListAsync(cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred when finding bank connections");
 
 			throw;
 		}

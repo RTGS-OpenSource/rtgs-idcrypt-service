@@ -35,5 +35,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsDeleteAsync() => _rtgsConnectionServiceMock.Verify();
+	public void ThenCallsDelete() => _rtgsConnectionServiceMock.Verify();
 }

@@ -7,4 +7,5 @@ public interface IRtgsConnectionService
 	Task AcceptInvitationAsync(RtgsConnectionInvitation invitation, CancellationToken cancellationToken = default);
 	Task<RtgsConnectionInvitation> CreateInvitationAsync(CancellationToken cancellationToken = default);
 	Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default);
+	Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default);
 }
