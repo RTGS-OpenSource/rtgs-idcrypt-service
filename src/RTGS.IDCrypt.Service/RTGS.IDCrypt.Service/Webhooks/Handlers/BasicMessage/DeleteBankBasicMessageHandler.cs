@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
+using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCryptSDK.BasicMessage.Models;
-using RTGSIDCryptWorker.Contracts;
 
 namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 

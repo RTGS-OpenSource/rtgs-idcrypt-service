@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using Moq;
+using RTGS.IDCrypt.Service.Models;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCryptSDK.BasicMessage.Models;
-using RTGSIDCryptWorker.Contracts;
 
 namespace RTGS.IDCrypt.Service.Tests.Webhooks.Handlers.BasicMessage.DeleteBankBasicMessageHandlerTests;
 
