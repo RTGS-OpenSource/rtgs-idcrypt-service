@@ -268,7 +268,7 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when getting matching bank connections");
+			_logger.LogError(ex, "Error occurred when finding bank connections");
 
 			throw;
 		}

@@ -33,7 +33,7 @@ public class AndLocalBankIsBeingDeleted : IClassFixture<DeleteBankFixture>, IAsy
 
 		_basicMessage = new IdCryptBasicMessage
 		{
-			ConnectionId = "connection-id-1",
+			ConnectionId = "rtgs-connection-id-1",
 			Content = JsonSerializer.Serialize(message),
 		};
 	}

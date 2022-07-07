@@ -35,7 +35,7 @@ public class AndNoMatchingBankPartners : IClassFixture<DeleteBankFixture>, IAsyn
 
 		var basicMessage = new IdCryptBasicMessage
 		{
-			ConnectionId = "connection-id-1",
+			ConnectionId = "rtgs-connection-id-1",
 			Content = JsonSerializer.Serialize(_message)
 		};
 

@@ -9,14 +9,14 @@ using RTGS.IDCryptSDK.BasicMessage.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteBank;
 
-public class AndMessageSourceIsNotRtgs : IClassFixture<DeleteBankFixture>, IAsyncLifetime
+public class AndMessageNotSentUsingRtgsConnection : IClassFixture<DeleteBankFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
 	private readonly DeleteBankFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 	private BasicMessageContent<DeleteBankRequest> _message;
 
-	public AndMessageSourceIsNotRtgs(DeleteBankFixture testFixture)
+	public AndMessageNotSentUsingRtgsConnection(DeleteBankFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -31,7 +31,7 @@ public class AndMessageSourceIsNotRtgs : IClassFixture<DeleteBankFixture>, IAsyn
 		{
 			MessageType = nameof(DeleteBankRequest),
 			MessageContent = new DeleteBankRequest("rtgs-global-id-1"),
-			Source = "BOB"
+			Source = "RTGS"
 		};
 
 		var basicMessage = new IdCryptBasicMessage
@@ -66,6 +66,6 @@ public class AndMessageSourceIsNotRtgs : IClassFixture<DeleteBankFixture>, IAsyn
 
 		var content = await _httpResponse.Content.ReadAsStringAsync();
 
-		content.Should().Be("{\"error\":\"Source BOB is not valid.\"}");
+		content.Should().Be("{\"error\":\"Message did not originate from RTGS.\"}");
 	}
 }

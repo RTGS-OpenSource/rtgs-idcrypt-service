@@ -17,7 +17,7 @@ public class RtgsConnectionService : ConnectionServiceBase, IRtgsConnectionServi
 	private readonly IRtgsConnectionRepository _rtgsConnectionRepository;
 	private readonly IAliasProvider _aliasProvider;
 	private readonly IWalletClient _walletClient;
-	private readonly string _rtgsGlobalId;
+	private readonly string _localRtgsGlobalId;
 
 	public RtgsConnectionService(
 		IConnectionsClient connectionsClient,
@@ -38,7 +38,7 @@ public class RtgsConnectionService : ConnectionServiceBase, IRtgsConnectionServi
 			throw new ArgumentException("RtgsGlobalId configuration option is not set.");
 		}
 
-		_rtgsGlobalId = coreOptions.Value.RtgsGlobalId;
+		_localRtgsGlobalId = coreOptions.Value.RtgsGlobalId;
 	}
 
 	public async Task AcceptInvitationAsync(RtgsConnectionInvitation invitation, CancellationToken cancellationToken = default)
@@ -98,7 +98,7 @@ public class RtgsConnectionService : ConnectionServiceBase, IRtgsConnectionServi
 
 			await _rtgsConnectionRepository.CreateAsync(connection, cancellationToken);
 
-			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation<RtgsConnectionInvitation>(publicDid, _rtgsGlobalId);
+			var connectionInvitation = createConnectionInvitationResponse.MapToConnectionInvitation<RtgsConnectionInvitation>(publicDid, _localRtgsGlobalId);
 
 			return connectionInvitation;
 		}
@@ -135,7 +135,7 @@ public class RtgsConnectionService : ConnectionServiceBase, IRtgsConnectionServi
 
 	public async Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
 	{
-		if (rtgsGlobalId == _rtgsGlobalId)
+		if (rtgsGlobalId == _localRtgsGlobalId)
 		{
 			var rtgsConnections = await _rtgsConnectionRepository.FindAsync(null, cancellationToken);
 			foreach (RtgsConnection rtgsConnection in rtgsConnections)

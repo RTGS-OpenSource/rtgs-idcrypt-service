@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 
 namespace RTGS.IDCrypt.Service.Tests;
 
-
 /// <summary>
 /// Class to compare Lambda expressions
 /// Taken from https://stackoverflow.com/questions/283537/most-efficient-way-to-test-equality-of-lambda-expressions/24528357#24528357

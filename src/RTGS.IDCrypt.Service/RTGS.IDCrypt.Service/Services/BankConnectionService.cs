@@ -167,7 +167,7 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 	/// </summary>
 	/// <remarks>
 	/// If we are deleting ourselves then delete all connections, if another delete all connections to it.</remarks>
-	/// <param name="rtgsGlobalId">RTGS Global Id that belongs to bank being deleted</param>
+	/// <param name="rtgsGlobalId">RTGS.Global Id that belongs to bank being deleted</param>
 	/// <param name="cancellationToken">Cancellation Token</param>
 	public async Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
 	{

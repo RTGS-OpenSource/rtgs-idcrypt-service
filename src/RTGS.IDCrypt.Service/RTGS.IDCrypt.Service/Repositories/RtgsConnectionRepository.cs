@@ -176,7 +176,7 @@ public class RtgsConnectionRepository : IRtgsConnectionRepository
 		}
 		catch (Exception ex)
 		{
-			_logger.LogError(ex, "Error occurred when getting matching rtgs connections");
+			_logger.LogError(ex, "Error occurred when finding rtgs connections");
 
 			throw;
 		}
