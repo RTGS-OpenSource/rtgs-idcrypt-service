@@ -20,35 +20,38 @@ public class AndIsLocalBank : IAsyncLifetime
 
 	private readonly BankConnectionService _bankConnectionService;
 
-	private const string RtgsGlobalId = "rtgs-global-id-1";
-	private const string ConnectionId = "connection-id-123";
+	private const string RtgsGlobalId = "rtgs-global-id";
+	private const string Connection1 = "connection-id-1";
+	private const string Connection2 = "connection-id-2";
 
 	public AndIsLocalBank()
 	{
 		var logger = new FakeLogger<BankConnectionService>();
 
-		var coreOptions = Options.Create(new CoreConfig
-		{
-			RtgsGlobalId = RtgsGlobalId
-		});
+		var coreOptions = Options.Create(new CoreConfig { RtgsGlobalId = RtgsGlobalId });
 
 		_bankPartnerConnectionRepositoryMock
 			.Setup(repo => repo.FindAsync(default, It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new[]
 			{
-				new BankPartnerConnection
-				{
-					PartitionKey = RtgsGlobalId,
-					ConnectionId = ConnectionId
-				}
+				new BankPartnerConnection { PartitionKey = "rtgs-global-id-1", ConnectionId = Connection1 },
+				new BankPartnerConnection { PartitionKey = "rtgs-global-id-2", ConnectionId = Connection2 }
 			});
 
 		_bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.DeleteAsync(ConnectionId, It.IsAny<CancellationToken>()))
+			.Setup(repo => repo.DeleteAsync(Connection1, It.IsAny<CancellationToken>()))
+			.Verifiable();
+
+		_bankPartnerConnectionRepositoryMock
+			.Setup(repo => repo.DeleteAsync(Connection2, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		_connectionsClientMock
-			.Setup(conn => conn.DeleteConnectionAsync(ConnectionId, It.IsAny<CancellationToken>()))
+			.Setup(conn => conn.DeleteConnectionAsync(Connection1, It.IsAny<CancellationToken>()))
+			.Verifiable();
+
+		_connectionsClientMock
+			.Setup(conn => conn.DeleteConnectionAsync(Connection2, It.IsAny<CancellationToken>()))
 			.Verifiable();
 
 		_bankConnectionService = new BankConnectionService(
@@ -62,13 +65,13 @@ public class AndIsLocalBank : IAsyncLifetime
 	}
 
 	public async Task InitializeAsync() =>
-		await _bankConnectionService.DeleteBankAsync(RtgsGlobalId, default);
+		await _bankConnectionService.DeleteBankAsync(RtgsGlobalId);
 
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenDeleteIsCalled() => _bankPartnerConnectionRepositoryMock.Verify();
+	public void ThenAllBankConnectionsAreDeleted() => _bankPartnerConnectionRepositoryMock.Verify();
 
 	[Fact]
-	public void ThenCallsDeleteOnAgent() => _connectionsClientMock.Verify();
+	public void ThenAllAgentConnectionsAreDeleted() => _connectionsClientMock.Verify();
 }

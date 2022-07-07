@@ -171,27 +171,18 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 	/// <param name="cancellationToken">Cancellation Token</param>
 	public async Task DeleteBankAsync(string rtgsGlobalId, CancellationToken cancellationToken = default)
 	{
-		if (rtgsGlobalId == _rtgsGlobalId)
-		{
-			var allConnections = await _bankPartnerConnectionRepository.FindAsync(null, cancellationToken);
-			foreach (BankPartnerConnection bankPartnerConnection in allConnections)
-			{
-				await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,
-					cancellationToken);
+		var connectionsToDelete = rtgsGlobalId == _rtgsGlobalId
+			? await _bankPartnerConnectionRepository.GetMatchingAsync(null, cancellationToken)
+			: await _bankPartnerConnectionRepository.GetMatchingAsync(
+				conn => conn.PartitionKey == rtgsGlobalId,
+				cancellationToken);
 
-				await ConnectionsClient.DeleteConnectionAsync(bankPartnerConnection.ConnectionId, cancellationToken);
-			}
-		}
-		else
+		foreach (BankPartnerConnection bankPartnerConnection in connectionsToDelete)
 		{
-			var partnerConnections = await _bankPartnerConnectionRepository.FindAsync(conn => conn.PartitionKey == rtgsGlobalId, cancellationToken);
-			foreach (BankPartnerConnection bankPartnerConnection in partnerConnections)
-			{
-				await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,
-					cancellationToken);
+			await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,
+				cancellationToken);
 
-				await ConnectionsClient.DeleteConnectionAsync(bankPartnerConnection.ConnectionId, cancellationToken);
-			}
+			await ConnectionsClient.DeleteConnectionAsync(bankPartnerConnection.ConnectionId, cancellationToken);
 		}
 	}
 

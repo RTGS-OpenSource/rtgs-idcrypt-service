@@ -216,7 +216,6 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 				.SelectMany(grouping =>
 					grouping.OrderByDescending(bankPartnerConnection => bankPartnerConnection.ActivatedAt).Skip(1)
 						.Select(bankPartnerConnection => bankPartnerConnection.ConnectionId));
-
 		}
 		catch (Exception ex)
 		{
@@ -274,7 +273,6 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 			throw;
 		}
 	}
-
 
 	public async Task<bool> ActiveConnectionForBankExists(string alias, CancellationToken cancellationToken = default)
 	{

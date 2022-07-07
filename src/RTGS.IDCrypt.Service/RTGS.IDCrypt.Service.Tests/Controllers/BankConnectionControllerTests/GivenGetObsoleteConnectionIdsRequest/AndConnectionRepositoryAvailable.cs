@@ -42,5 +42,5 @@ public class AndConnectionRepositoryAvailable : IAsyncLifetime
 		.Should().BeEquivalentTo(new List<string> { "id1", "id2", "id3", "id4" });
 
 	[Fact]
-	public void WhenInvoked_ThenCallRepositoryAsync() => _bankPartnerConnectionRepositoryMock.Verify();
+	public void WhenInvoked_ThenCallRepository() => _bankPartnerConnectionRepositoryMock.Verify();
 }

@@ -35,5 +35,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsDeleteAsync() => _bankConnectionServiceMock.Verify();
+	public void ThenCallsDelete() => _bankConnectionServiceMock.Verify();
 }

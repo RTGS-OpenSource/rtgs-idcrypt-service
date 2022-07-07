@@ -49,5 +49,5 @@ public class GivenConnectionServiceAvailable : IAsyncLifetime
 	public Task DisposeAsync() => Task.CompletedTask;
 
 	[Fact]
-	public void ThenCallsAcceptInvitationAsync() => _rtgsConnectionServiceMock.Verify();
+	public void ThenCallsAcceptInvitation() => _rtgsConnectionServiceMock.Verify();
 }
