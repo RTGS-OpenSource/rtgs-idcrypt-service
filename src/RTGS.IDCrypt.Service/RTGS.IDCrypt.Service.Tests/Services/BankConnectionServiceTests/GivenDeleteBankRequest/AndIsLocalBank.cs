@@ -33,7 +33,7 @@ public class AndIsLocalBank : IAsyncLifetime
 		});
 
 		_bankPartnerConnectionRepositoryMock
-			.Setup(repo => repo.GetMatchingAsync(default, It.IsAny<CancellationToken>()))
+			.Setup(repo => repo.FindAsync(default, It.IsAny<CancellationToken>()))
 			.ReturnsAsync(new[]
 			{
 				new BankPartnerConnection

@@ -173,7 +173,7 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 	{
 		if (rtgsGlobalId == _rtgsGlobalId)
 		{
-			var allConnections = await _bankPartnerConnectionRepository.GetMatchingAsync(null, cancellationToken);
+			var allConnections = await _bankPartnerConnectionRepository.FindAsync(null, cancellationToken);
 			foreach (BankPartnerConnection bankPartnerConnection in allConnections)
 			{
 				await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,
@@ -184,7 +184,7 @@ public class BankConnectionService : ConnectionServiceBase, IBankConnectionServi
 		}
 		else
 		{
-			var partnerConnections = await _bankPartnerConnectionRepository.GetMatchingAsync(conn => conn.PartitionKey == rtgsGlobalId, cancellationToken);
+			var partnerConnections = await _bankPartnerConnectionRepository.FindAsync(conn => conn.PartitionKey == rtgsGlobalId, cancellationToken);
 			foreach (BankPartnerConnection bankPartnerConnection in partnerConnections)
 			{
 				await _bankPartnerConnectionRepository.DeleteAsync(bankPartnerConnection.ConnectionId,

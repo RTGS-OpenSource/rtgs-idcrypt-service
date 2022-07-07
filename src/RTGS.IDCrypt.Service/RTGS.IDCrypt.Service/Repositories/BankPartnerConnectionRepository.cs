@@ -253,18 +253,18 @@ public class BankPartnerConnectionRepository : IBankPartnerConnectionRepository
 		}
 	}
 
-	public async Task<IEnumerable<BankPartnerConnection>> GetMatchingAsync(Expression<Func<BankPartnerConnection, bool>> filterExpression, CancellationToken cancellationToken = default)
+	public async Task<IEnumerable<BankPartnerConnection>> FindAsync(Expression<Func<BankPartnerConnection, bool>> filter, CancellationToken cancellationToken = default)
 	{
 		try
 		{
 			var tableClient = _storageTableResolver.GetTable(_connectionsConfig.BankPartnerConnectionsTableName);
 
-			return filterExpression == null
+			return filter == null
 				? await tableClient
 					.QueryAsync<BankPartnerConnection>(cancellationToken: cancellationToken)
 					.ToListAsync(cancellationToken)
 				: await tableClient
-					.QueryAsync(filterExpression, cancellationToken: cancellationToken)
+					.QueryAsync(filter, cancellationToken: cancellationToken)
 					.ToListAsync(cancellationToken);
 		}
 		catch (Exception ex)

@@ -11,5 +11,5 @@ public interface IRtgsConnectionRepository
 	Task<RtgsConnection> GetEstablishedAsync(CancellationToken cancellationToken = default);
 	Task DeleteAsync(string connectionId, CancellationToken cancellationToken = default);
 	Task<RtgsConnection> GetAsync(string connectionId, CancellationToken cancellationToken = default);
-	Task<IEnumerable<RtgsConnection>> GetMatchingAsync(Expression<Func<RtgsConnection, bool>> filterExpression, CancellationToken cancellationToken = default);
+	Task<IEnumerable<RtgsConnection>> FindAsync(Expression<Func<RtgsConnection, bool>> filter, CancellationToken cancellationToken = default);
 }
