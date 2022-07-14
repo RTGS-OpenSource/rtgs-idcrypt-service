@@ -96,6 +96,7 @@ void CreateSerilogLogger() =>
 LoggerConfiguration ConfigureLogging(LoggerConfiguration loggerConfiguration) =>
 	loggerConfiguration
 		.Enrich.FromLogContext()
+		.MinimumLevel.Debug()
 		.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 		.WriteTo.Console();
 
