@@ -15,8 +15,8 @@ public class IgnoreRequestPathsTelemetryProcessor : ITelemetryProcessor
 
 	public void Process(ITelemetry item)
 	{
-		if (item is RequestTelemetry request && 
-		    request.Url.AbsolutePath.StartsWith("/healthz/"))
+		if (item is RequestTelemetry request &&
+			request.Url.AbsolutePath.StartsWith("/healthz/"))
 		{
 			return;
 		}
