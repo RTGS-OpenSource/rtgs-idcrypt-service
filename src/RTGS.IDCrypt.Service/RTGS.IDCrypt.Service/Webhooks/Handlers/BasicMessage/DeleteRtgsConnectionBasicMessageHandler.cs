@@ -1,5 +1,5 @@
-﻿using RTGS.IDCrypt.Service.Services;
-using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
+﻿using RTGS.IDCrypt.Service.Contracts.BasicMessage;
+using RTGS.IDCrypt.Service.Services;
 
 namespace RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 
