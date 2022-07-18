@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Moq;
+using RTGS.IDCrypt.Service.Contracts.BasicMessage;
 using RTGS.IDCrypt.Service.Services;
 using RTGS.IDCrypt.Service.Webhooks.Handlers.BasicMessage;
 using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
