@@ -9,16 +9,16 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteConnection;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteBankPartnerConnection;
 
-public class AndAgentAvailable : IClassFixture<DeleteConnectionFixture>, IAsyncLifetime
+public class AndAgentAvailable : IClassFixture<DeleteBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly DeleteConnectionFixture _testFixture;
+	private readonly DeleteBankPartnerConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 	private BasicMessageContent<DeleteBankPartnerConnectionBasicMessage> _message;
 
-	public AndAgentAvailable(DeleteConnectionFixture testFixture)
+	public AndAgentAvailable(DeleteBankPartnerConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
