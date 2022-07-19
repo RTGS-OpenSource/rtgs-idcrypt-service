@@ -6,14 +6,14 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Controllers.BankConnectionController.GivenDeleteConnectionRequest;
 
-public class AndConnectionExists : IClassFixture<DeleteConnectionFixture>, IAsyncLifetime
+public class AndConnectionExists : IClassFixture<DeleteBankPartnerConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly DeleteConnectionFixture _testFixture;
+	private readonly DeleteBankPartnerConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
 	private const string ConnectionId = "connection-id-1";
 
-	public AndConnectionExists(DeleteConnectionFixture testFixture)
+	public AndConnectionExists(DeleteBankPartnerConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 

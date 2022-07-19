@@ -53,6 +53,7 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<IBasicMessageHandler, BankConnectionInvitationBasicMessageHandler>();
 		services.AddSingleton<IBasicMessageHandler, RtgsConnectionInvitationBasicMessageHandler>();
 		services.AddSingleton<IBasicMessageHandler, DeleteBankPartnerConnectionBasicMessageHandler>();
+		services.AddSingleton<IBasicMessageHandler, DeleteRtgsConnectionBasicMessageHandler>();
 		services.AddSingleton<IBasicMessageHandler, DeleteBankBasicMessageHandler>();
 
 		services.AddIdCryptSdk(new IdCryptSdkConfiguration(

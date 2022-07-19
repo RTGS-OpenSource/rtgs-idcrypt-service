@@ -7,7 +7,7 @@ using RTGS.IDCrypt.Service.Webhooks.Models;
 using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteConnection;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteBankPartnerConnection;
 
 public class AndAgentUnavailable : IClassFixture<DeleteConnectionAgentBasicMessageApiUnavailableFixture>, IAsyncLifetime
 {

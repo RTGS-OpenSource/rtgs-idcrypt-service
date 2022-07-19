@@ -2,21 +2,21 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using RTGS.IDCrypt.Service.Contracts.BasicMessage;
 using RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 using RTGS.IDCrypt.Service.Webhooks.Models;
-using RTGS.IDCrypt.Service.Webhooks.Models.BasicMessageModels;
 using RTGS.IDCryptSDK.BasicMessage.Models;
 
-namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteConnection;
+namespace RTGS.IDCrypt.Service.IntegrationTests.Webhooks.BasicMessage.GivenDeleteRtgsConnection;
 
-public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>, IAsyncLifetime
+public class AndConnectionDoesNotExist : IClassFixture<DeleteRtgsConnectionFixture>, IAsyncLifetime
 {
 	private readonly HttpClient _client;
-	private readonly DeleteConnectionFixture _testFixture;
+	private readonly DeleteRtgsConnectionFixture _testFixture;
 	private HttpResponseMessage _httpResponse;
-	private BasicMessageContent<DeleteBankPartnerConnectionBasicMessage> _message;
+	private BasicMessageContent<DeleteRtgsConnectionBasicMessage> _message;
 
-	public AndConnectionDoesNotExist(DeleteConnectionFixture testFixture)
+	public AndConnectionDoesNotExist(DeleteRtgsConnectionFixture testFixture)
 	{
 		_testFixture = testFixture;
 
@@ -27,10 +27,10 @@ public class AndConnectionDoesNotExist : IClassFixture<DeleteConnectionFixture>,
 
 	public async Task InitializeAsync()
 	{
-		_message = new BasicMessageContent<DeleteBankPartnerConnectionBasicMessage>
+		_message = new BasicMessageContent<DeleteRtgsConnectionBasicMessage>
 		{
-			MessageType = nameof(DeleteBankPartnerConnectionBasicMessage),
-			MessageContent = new DeleteBankPartnerConnectionBasicMessage()
+			MessageType = nameof(DeleteRtgsConnectionBasicMessage),
+			MessageContent = new DeleteRtgsConnectionBasicMessage()
 		};
 
 		var basicMessage = new IdCryptBasicMessage

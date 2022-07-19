@@ -5,9 +5,9 @@ using RTGS.IDCrypt.Service.Models;
 
 namespace RTGS.IDCrypt.Service.IntegrationTests.Fixtures.Connection;
 
-public class DeleteConnectionFixture : ConnectionsTestFixtureBase
+public class DeleteRtgsConnectionFixture : ConnectionsTestFixtureBase
 {
-	public DeleteConnectionFixture()
+	public DeleteRtgsConnectionFixture()
 	{
 		IdCryptStatusCodeHttpHandler = StatusCodeHttpHandler.Builder
 			.Create()
@@ -22,7 +22,7 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 	{
 		var aDate = DateTime.SpecifyKind(new(2022, 4, 1, 0, 0, 0), DateTimeKind.Utc);
 
-		var bankPartnerConnection = new BankPartnerConnection
+		var rtgsConnection = new RtgsConnection
 		{
 			PartitionKey = "rtgs-global-id",
 			RowKey = "alias-1",
@@ -30,12 +30,10 @@ public class DeleteConnectionFixture : ConnectionsTestFixtureBase
 			Alias = "alias-1",
 			CreatedAt = new DateTime(2000, 01, 01).ToUniversalTime(),
 			ActivatedAt = aDate,
-			PublicDid = "public-did-1",
 			Status = "Pending",
-			Role = "Inviter"
 		};
 
-		await InsertBankPartnerConnectionAsync(bankPartnerConnection);
+		await InsertRtgsConnectionAsync(rtgsConnection);
 	}
 
 	protected override void CustomiseHost(IHostBuilder builder) =>
