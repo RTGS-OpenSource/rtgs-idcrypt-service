@@ -65,6 +65,7 @@ public static class ServiceCollectionExtensions
 		services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer(config));
 
 		services.AddApplicationInsightsTelemetry();
+		services.AddApplicationInsightsTelemetryProcessor<IgnoreRequestPathsTelemetryProcessor>();
 
 		services.AddHealthChecks();
 
