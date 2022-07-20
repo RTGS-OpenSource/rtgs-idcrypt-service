@@ -5,7 +5,6 @@
 		"signUrl": "https://localhost:7033/api/message/sign/for-bank",
 		"verifyUrl": "https://localhost:7033/api/message/verify",
 		"signApiKey": "",
-		"verifyApiKey": "",
-		"pingUrl": "https://bank-of-chris-dev-idcrypt-api.rtgs.global/api/doc#/"
+		"verifyApiKey": ""
 	}
 ]

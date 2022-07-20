@@ -4,13 +4,12 @@ using NBomber;
 using NBomber.Contracts;
 using NBomber.CSharp;
 using NBomber.Plugins.Http.CSharp;
-using NBomber.Plugins.Network.Ping;
 
 namespace RTGS.IDCrypt.LoadTest;
 
 public class Program
 {
-	public static void Main(string[] args)
+	public static void Main()
 	{
 		var configuration = FeedData.FromJson<Configuration>("./configuration.json").Single();
 
@@ -31,7 +30,7 @@ public class Program
 
 		var signStep = Step.Create("sign document",
 			clientFactory: clientFactory,
-			timeout: TimeSpan.FromSeconds(5),
+			timeout: TimeSpan.FromSeconds(60),
 			execute: context =>
 			{
 				var request = Http.CreateRequest("POST", configuration.SignUrl)
@@ -53,7 +52,7 @@ public class Program
 
 		var verifyStep = Step.Create("verify document",
 			clientFactory: clientFactory,
-			timeout: TimeSpan.FromSeconds(5),
+			timeout: TimeSpan.FromSeconds(60),
 			execute: context =>
 			{
 				var signatures = context.GetPreviousStepResponse<SignDocumentResponse>();
@@ -72,23 +71,19 @@ public class Program
 				return Http.Send(request, context);
 			});
 
-		var scenario = ScenarioBuilder
-			.CreateScenario("Signing", signStep, verifyStep)
+		var signAndVerifyScenario = ScenarioBuilder
+			.CreateScenario("Signing and Verifying", signStep, verifyStep)
 			.WithWarmUpDuration(TimeSpan.FromSeconds(5))
 			.WithLoadSimulations(
-				Simulation.InjectPerSec(rate: 1, during: TimeSpan.FromSeconds(10))
-			//Simulation.InjectPerSec(rate: 3, during: TimeSpan.FromSeconds(60)),
-			//Simulation.InjectPerSec(rate: 5, during: TimeSpan.FromSeconds(60)),
-			//Simulation.InjectPerSec(rate: 10, during: TimeSpan.FromSeconds(60)),
-			//Simulation.InjectPerSec(rate: 20, during: TimeSpan.FromSeconds(60))
+				Simulation.InjectPerSec(rate: 1, during: TimeSpan.FromSeconds(60)),
+				Simulation.InjectPerSec(rate: 3, during: TimeSpan.FromSeconds(60)),
+				Simulation.InjectPerSec(rate: 5, during: TimeSpan.FromSeconds(60)),
+				Simulation.InjectPerSec(rate: 10, during: TimeSpan.FromSeconds(60)),
+				Simulation.InjectPerSec(rate: 20, during: TimeSpan.FromSeconds(60))
 			);
 
-		var pingPluginConfig = PingPluginConfig.CreateDefault(configuration.PingUrl);
-		var pingPlugin = new PingPlugin(pingPluginConfig);
-
 		NBomberRunner
-			.RegisterScenarios(scenario)
-			.WithWorkerPlugins(pingPlugin)
+			.RegisterScenarios(signAndVerifyScenario)
 			.Run();
 	}
 }

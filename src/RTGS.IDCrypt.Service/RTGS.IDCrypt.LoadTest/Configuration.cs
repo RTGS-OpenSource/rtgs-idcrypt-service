@@ -7,5 +7,4 @@ internal class Configuration
 	public string VerifyUrl { get; set; }
 	public string SignApiKey { get; set; }
 	public string VerifyApiKey { get; set; }
-	public string PingUrl { get; set; }
 }
