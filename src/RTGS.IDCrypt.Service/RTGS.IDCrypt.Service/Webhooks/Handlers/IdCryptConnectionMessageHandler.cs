@@ -32,7 +32,10 @@ public class IdCryptConnectionMessageHandler : IMessageHandler
 	{
 		var connection = JsonSerializer.Deserialize<IdCryptConnection>(jsonMessage);
 
-		if (connection!.State is not "active")
+		_logger.LogDebug("Received connection webhook with alias {Alias} and state {State}",
+				connection!.Alias, connection.State);
+
+		if (connection.State is not "active")
 		{
 			_logger.LogDebug("Ignoring connection with alias {Alias} because state is {State}",
 				connection.Alias, connection.State);

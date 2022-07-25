@@ -34,7 +34,10 @@ public class GivenBankConnectionIsNotActive
 
 		await handler.HandleAsync(message, default);
 
-		logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(
-			"Ignoring connection with alias alias because state is not-active");
+		logger.Logs[LogLevel.Debug].Should().BeEquivalentTo(new[]{
+			"Received connection webhook with alias alias and state not-active",
+			"Ignoring connection with alias alias because state is not-active"
+
+		}, options => options.WithStrictOrdering());
 	}
 }
